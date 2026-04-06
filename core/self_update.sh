@@ -10,30 +10,20 @@ run_bootstrap_update() {
     return 1
   fi
 
-  read -r -p "当前为非git安装，是否通过 ${BOOTSTRAP_URL} 执行更新？(y/N): " ans
-  if [[ "$ans" != "y" && "$ans" != "Y" ]]; then
-    echo "已取消更新"
-    return 0
-  fi
-
-  if bash <(curl -fsSL "$BOOTSTRAP_URL"); then
-    echo "更新完成"
-    return 0
-  fi
-
-  echo "远程更新失败，请稍后重试"
-  return 1
+  bash <(curl -fsSL "$BOOTSTRAP_URL") || {
+    echo "远程更新失败，请稍后重试"
+    return 1
+  }
+  return 0
 }
 
 self_update() {
   if ! command -v git >/dev/null 2>&1; then
-    echo "缺少 git，切换到远程更新模式"
     run_bootstrap_update
     return $?
   fi
 
   if ! git -C "$ROOT_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-    echo "当前安装不是 git 工作树，切换到远程更新模式"
     run_bootstrap_update
     return $?
   fi

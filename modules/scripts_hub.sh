@@ -17,10 +17,6 @@ require_jq() {
   fi
 }
 
-list_enabled_scripts() {
-  jq -r '.scripts[] | select(.enabled == true) | [.id, .name] | @tsv' "$ROOT_DIR/integrations/index.json"
-}
-
 run_integration_script() {
   local script_id="$1"
   local index_file="$ROOT_DIR/integrations/index.json"
@@ -61,8 +57,11 @@ run_integration_script() {
 
 scripts_hub() {
   local index_file="$ROOT_DIR/integrations/index.json"
-  local entries choice selected_id
-  local i=1
+  local choice selected_id
+  local -a selected_ids
+  local -a self_entries
+  local -a third_entries
+  local i
 
   if ! require_jq; then
     return 1
@@ -73,18 +72,40 @@ scripts_hub() {
     return 1
   fi
 
-  mapfile -t entries < <(list_enabled_scripts)
-  if [[ "${#entries[@]}" -eq 0 ]]; then
+  mapfile -t self_entries < <(jq -r '.scripts[] | select(.enabled == true and (.tags | index("self-project"))) | [.id, .name] | @tsv' "$index_file")
+  mapfile -t third_entries < <(jq -r '.scripts[] | select(.enabled == true and ((.tags | index("self-project")) | not)) | [.id, .name] | @tsv' "$index_file")
+
+  if [[ "${#self_entries[@]}" -eq 0 && "${#third_entries[@]}" -eq 0 ]]; then
     echo "暂无可用脚本"
     return 0
   fi
 
-  echo "一键脚本列表:"
-  for entry in "${entries[@]}"; do
-    echo "[$i] $(awk -F$'\t' '{print $2}' <<<"$entry")"
-    ((i++))
-  done
-  echo "[0] 返回上级菜单"
+  echo "========================================"
+  echo "一键脚本"
+  echo "========================================"
+
+  i=1
+  if [[ "${#self_entries[@]}" -gt 0 ]]; then
+    echo "[落魄的脚本]"
+    for entry in "${self_entries[@]}"; do
+      selected_ids+=("$(awk -F$'\t' '{print $1}' <<<"$entry")")
+      printf " %d. %s\n" "$i" "$(awk -F$'\t' '{print $2}' <<<"$entry")"
+      ((i++))
+    done
+  fi
+
+  if [[ "${#third_entries[@]}" -gt 0 ]]; then
+    echo "[第三方脚本]"
+    for entry in "${third_entries[@]}"; do
+      selected_ids+=("$(awk -F$'\t' '{print $1}' <<<"$entry")")
+      printf " %d. %s\n" "$i" "$(awk -F$'\t' '{print $2}' <<<"$entry")"
+      ((i++))
+    done
+  fi
+
+  echo "----------------------------------------"
+  echo " 0. 返回上级菜单"
+  echo "========================================"
 
   read -r -p "请输入脚本编号: " choice
   if [[ "$choice" == "0" ]]; then
@@ -94,12 +115,12 @@ scripts_hub() {
     echo "无效选项"
     return 1
   fi
-  if (( choice < 1 || choice > ${#entries[@]} )); then
+  if (( choice < 1 || choice > ${#selected_ids[@]} )); then
     echo "选项超出范围"
     return 1
   fi
 
-  selected_id="$(awk -F$'\t' '{print $1}' <<<"${entries[$((choice - 1))]}")"
+  selected_id="${selected_ids[$((choice - 1))]}"
   log_action "scripts_hub:run:$selected_id"
   run_integration_script "$selected_id"
 }

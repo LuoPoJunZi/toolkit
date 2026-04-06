@@ -16,15 +16,46 @@ print_head() {
   echo "[ $title ]"
 }
 
+format_kv() {
+  local key="$1"
+  local value="$2"
+  printf '%-8s : %s' "$key" "${value:-N/A}"
+}
+
 print_two_col() {
   local l_key="$1"
   local l_val="$2"
   local r_key="$3"
   local r_val="$4"
   local left right
-  left="$(printf '%-8s : %s' "$l_key" "${l_val:-N/A}")"
-  right="$(printf '%-8s : %s' "$r_key" "${r_val:-N/A}")"
-  printf '%-39s%s\n' "$left" "$right"
+  left="$(format_kv "$l_key" "$l_val")"
+  right="$(format_kv "$r_key" "$r_val")"
+  printf '%-37s | %-37s\n' "$left" "$right"
+}
+
+print_single_col() {
+  local key="$1"
+  local value="$2"
+  printf '%-8s : %s\n' "$key" "${value:-N/A}"
+}
+
+compact_dns() {
+  local dns_raw="$1"
+  if [[ -z "$dns_raw" || "$dns_raw" == "N/A" ]]; then
+    echo "N/A"
+    return
+  fi
+
+  # shellcheck disable=SC2206
+  local items=($dns_raw)
+  local count="${#items[@]}"
+
+  if (( count <= 2 )); then
+    echo "${items[*]}" | sed 's/ /, /g'
+    return
+  fi
+
+  echo "${items[0]}, ${items[1]} (+$((count - 2)))"
 }
 
 to_cn_uptime() {
@@ -190,7 +221,7 @@ show_system_info() {
   local hostname os_name kernel cpu_arch cpu_model cpu_cores cpu_freq cpu_usage loadavg conns
   local mem_swap mem_info swap_info disk_info net_totals rx_total tx_total
   local algo ips ipv4 ipv6 dns geo isp location
-  local now_str up_human up_cn tcp_count udp_count dns_pretty
+  local now_str up_human up_cn tcp_count udp_count dns_compact
   local mem_pretty swap_pretty disk_pretty cpu_line flow_line
 
   hostname="$(hostname 2>/dev/null || echo "N/A")"
@@ -230,7 +261,7 @@ show_system_info() {
   up_cn="$(to_cn_uptime "up $up_human")"
   tcp_count="${conns%%|*}"
   udp_count="${conns##*|}"
-  dns_pretty="$(echo "${dns:-N/A}" | sed 's/ /, /g')"
+  dns_compact="$(compact_dns "${dns:-N/A}")"
   mem_pretty="$(space_slash "$mem_info")"
   swap_pretty="$(space_slash "$swap_info")"
   disk_pretty="$(space_slash "$disk_info")"
@@ -244,15 +275,15 @@ show_system_info() {
   print_two_col "系统时间" "$now_str" "系统架构" "$cpu_arch"
   print_sep
   print_head "硬件与资源"
-  echo "处理器型 : $cpu_line"
+  print_single_col "处理器型" "$cpu_line"
   print_two_col "系统负载" "$loadavg" "CPU 占用" "$cpu_usage"
   print_two_col "物理内存" "$mem_pretty" "虚拟内存" "$swap_pretty"
-  echo "硬盘占用 : $disk_pretty"
+  print_single_col "硬盘占用" "$disk_pretty"
   print_sep
   print_head "网络与位置"
   print_two_col "IPv4地址" "$ipv4" "网络运营" "$isp"
   print_two_col "IPv6地址" "$ipv6" "地理位置" "$location"
   print_two_col "网络连接" "TCP: ${tcp_count} | UDP: ${udp_count}" "网络流量" "$flow_line"
-  print_two_col "网络算法" "$algo" "DNS 地址" "${dns_pretty:-N/A}"
+  print_two_col "网络算法" "$algo" "DNS地址" "${dns_compact:-N/A}"
   print_sep
 }

@@ -67,19 +67,17 @@ docker_manager() {
   local choice
   while true; do
     clear
+    echo "========================================"
     echo "Docker 管理"
-    echo "------------------------"
-    echo "1. 安装 Docker"
-    echo "2. 启动 Docker"
-    echo "3. 停止 Docker"
-    echo "4. 重启 Docker"
-    echo "5. Docker 状态"
-    echo "6. 查看容器列表"
-    echo "7. 查看镜像列表"
-    echo "8. 清理无用资源"
-    echo "0. 返回上级菜单"
-    echo ""
-    read -r -p "请输入你的选择: " choice
+    echo "========================================"
+    printf " %-2s %-16s %-2s %-16s\n" "1." "安装 Docker" "5." "Docker 状态"
+    printf " %-2s %-16s %-2s %-16s\n" "2." "启动 Docker" "6." "查看容器列表"
+    printf " %-2s %-16s %-2s %-16s\n" "3." "停止 Docker" "7." "查看镜像列表"
+    printf " %-2s %-16s %-2s %-16s\n" "4." "重启 Docker" "8." "清理无用资源"
+    echo "----------------------------------------"
+    printf " %-2s %-16s\n" "0." "返回上级"
+    echo "========================================"
+    read -r -p "请输入选择: " choice
 
     case "$choice" in
       1)

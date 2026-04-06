@@ -18,10 +18,10 @@ LuoPo VPS Toolkit 是一个面向新手站长的 Linux VPS 一键工具箱（首
 bash <(curl -fsSL https://z.evzzz.com)
 ```
 
-安装完成后会自动进入主菜单。若只想安装不自动进入，可使用：
+备用安装命令（GitHub Raw）：
 
 ```bash
-AUTO_LAUNCH=0 bash <(curl -fsSL https://z.evzzz.com)
+bash <(curl -fsSL https://raw.githubusercontent.com/LuoPoJunZi/toolkit/main/install.sh)
 ```
 
 如果你是本地仓库开发环境，也可以：

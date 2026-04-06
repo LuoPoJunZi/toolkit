@@ -21,6 +21,23 @@ LuoPo VPS Toolkit v${version}
 EOF
 }
 
+supports_color() {
+  [[ -t 1 ]] || return 1
+  command -v tput >/dev/null 2>&1 || return 1
+  [[ "$(tput colors 2>/dev/null || echo 0)" -ge 8 ]]
+}
+
+color_text() {
+  local color="$1"
+  shift
+  local text="$*"
+  if supports_color; then
+    printf '\033[%sm%s\033[0m' "$color" "$text"
+    return
+  fi
+  printf '%s' "$text"
+}
+
 msg() {
   local key="$1"
   shift || true

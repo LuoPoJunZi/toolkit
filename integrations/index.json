@@ -3,7 +3,7 @@
   "scripts": [
     {
       "id": "luopojunzi-hysteria2-luopo",
-      "name": "LuoPoJunZi Hysteria2 脚本",
+      "name": "落魄 Hysteria2 一键脚本",
       "source": "https://raw.githubusercontent.com/LuoPoJunZi/hysteria2-luopo/main/install.sh",
       "homepage": "https://github.com/LuoPoJunZi/hysteria2-luopo",
       "pinned_version": "main-install-sh",
@@ -14,7 +14,7 @@
     },
     {
       "id": "luopojunzi-sing-box-ev",
-      "name": "LuoPoJunZi Sing-box EV 脚本",
+      "name": "落魄 Sing-box 一键脚本",
       "source": "https://raw.githubusercontent.com/LuoPoJunZi/sing-box-ev/main/install.sh",
       "homepage": "https://github.com/LuoPoJunZi/sing-box-ev",
       "pinned_version": "main-install-sh",
@@ -22,6 +22,17 @@
       "manual_confirm": true,
       "enabled": true,
       "tags": ["self-project", "sing-box", "luopojunzi"]
+    },
+    {
+      "id": "mhsanaei-3x-ui",
+      "name": "3X-UI 一键安装脚本",
+      "source": "https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh",
+      "homepage": "https://github.com/MHSanaei/3x-ui",
+      "pinned_version": "master-install-sh",
+      "sha256": "1eede4f955d69eae6ce944d589d2430bd4dab35fc0f61c1b9286d5811983959b",
+      "manual_confirm": true,
+      "enabled": true,
+      "tags": ["3x-ui", "x-ui", "reference"]
     },
     {
       "id": "fscarmen-sing-box",

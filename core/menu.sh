@@ -40,19 +40,22 @@ main_menu() {
 
   while true; do
     clear
-    render_banner
-    echo "------------------------"
-    msg menu_1
-    msg menu_2
-    msg menu_3
-    msg menu_4
-    msg menu_5
-    echo "------------------------"
-    msg menu_00
-    msg menu_88
-    echo "------------------------"
-    msg menu_0
-    echo ""
+    local version title
+    version="$(get_toolkit_version)"
+    title="LuoPo VPS Toolkit v${version} (快捷启动: z)"
+
+    echo "========================================"
+    color_text 36 "$title"
+    echo
+    echo "========================================"
+    printf " %-2s %-16s %-2s %-16s\n" "1." "$(msg menu_label_1)" "4." "$(msg menu_label_4)"
+    printf " %-2s %-16s %-2s %-16s\n" "2." "$(msg menu_label_2)" "5." "$(msg menu_label_5)"
+    printf " %-2s %-16s\n" "3." "$(msg menu_label_3)"
+    echo "----------------------------------------"
+    printf " %-24s %s\n" "$(color_text 36 "99. $(msg menu_label_99)")" "$(color_text 31 "88. $(msg menu_label_88)")"
+    echo "----------------------------------------"
+    printf " %-2s %-16s\n" "0." "$(msg menu_label_0)"
+    echo "========================================"
     read -r -p "$(msg prompt_select)" choice
     case "$choice" in
       1)
@@ -80,7 +83,7 @@ main_menu() {
         run_action "docker_manager" docker_manager
         press_enter
         ;;
-      00)
+      99|00)
         log_action "menu:self_update"
         run_action "self_update" self_update
         press_enter
