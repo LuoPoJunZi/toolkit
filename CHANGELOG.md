@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.4
+- Auto release: v0.1.4
+- docs: rewrite README with structured toolkit guide (dbb6008)
+
 ## 0.1.3
 - Auto release: v0.1.3
 - feat: polish toolkit UI, script hub grouping, and update UX (6a75b4a)
