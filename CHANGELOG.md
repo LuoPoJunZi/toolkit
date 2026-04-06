@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.2.0
+- Auto release: v0.2.0
+- style: improve main menu spacing and column alignment (1d3aed0)
+- docs: remove duplicated language link blocks from READMEs (ed09c60)
+- docs: sync multilingual READMEs and release version badges (b2635a1)
+- docs: add multilingual README language-switch section (9c48ef6)
+- chore: refine auto-release version bump policy (406661c)
+
 ## 0.1.4
 - Auto release: v0.1.4
 - docs: rewrite README with structured toolkit guide (dbb6008)
