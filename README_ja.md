@@ -26,8 +26,6 @@ VPS初心者向けのターミナルツールキット。<br>
 
 `LuoPo VPS Toolkit` は Linux初心者向けのミニマルな VPS ワンクリックツールキットです。Ubuntu / Debian に対応し、システム運用、Docker 管理、厳選スクリプト連携を提供します。
 
-> 简体中文: [README.md](README.md) | 英語: [README_en.md](README_en.md) | 繁體中文: [README_zh-TW.md](README_zh-TW.md) | 한국어: [README_ko.md](README_ko.md) | Русский: [README_ru.md](README_ru.md)
-
 ## 1. これは何ですか？誰向けですか？
 
 `LuoPo VPS Toolkit` は Bash 製の VPS メニューツールで、日常の高頻度操作に特化しています。
