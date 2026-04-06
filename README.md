@@ -10,9 +10,42 @@
 [![Version](https://img.shields.io/badge/Version-0.1.2-blue?style=flat-square)](#)
 [![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
 
+<br>
+
+[![简体中文](https://img.shields.io/badge/简体中文-2f4858?style=for-the-badge)](#简体中文说明)
+[![ENGLISH](https://img.shields.io/badge/ENGLISH-2f4858?style=for-the-badge)](#english)
+[![繁體中文](https://img.shields.io/badge/繁體中文-455a64?style=for-the-badge)](#traditional-chinese)
+[![日本語](https://img.shields.io/badge/日本語-455a64?style=for-the-badge)](#japanese)
+[![한국어](https://img.shields.io/badge/한국어-455a64?style=for-the-badge)](#korean)
+[![РУССКИЙ](https://img.shields.io/badge/РУССКИЙ-455a64?style=for-the-badge)](#russian)
+
 </div>
 
 ---
+
+## 简体中文说明
+
+`LuoPo VPS Toolkit` 是一个面向 Linux 新手站长的极简 VPS 一键工具箱，支持 Ubuntu / Debian，集成系统运维、Docker 管理与精选脚本。
+
+## English
+
+`LuoPo VPS Toolkit` is a minimalist VPS one-click toolbox for Linux beginners, supporting Ubuntu/Debian with system operations, Docker management, and curated script integrations.
+
+## Traditional Chinese
+
+`LuoPo VPS Toolkit` 是一個面向 Linux 新手站長的極簡 VPS 一鍵工具箱，支援 Ubuntu / Debian，整合系統維運、Docker 管理與精選腳本。
+
+## Japanese
+
+`LuoPo VPS Toolkit` は、Linux 初心者向けのミニマルな VPS ワンクリックツールキットです。Ubuntu / Debian に対応し、システム運用、Docker 管理、厳選スクリプト連携を提供します。
+
+## Korean
+
+`LuoPo VPS Toolkit`은 Linux 초보 사용자를 위한 미니멀 VPS 원클릭 툴킷입니다. Ubuntu / Debian을 지원하며, 시스템 운영, Docker 관리, 엄선된 스크립트 통합 기능을 제공합니다.
+
+## Russian
+
+`LuoPo VPS Toolkit` — это минималистичный набор one-click инструментов для VPS, ориентированный на начинающих пользователей Linux. Поддерживает Ubuntu / Debian, включает системное администрирование, управление Docker и интеграцию проверенных скриптов.
 
 ## 1. 这是什么？适合谁用？
 
@@ -49,28 +82,38 @@
 ## 3. 快速开始
 
 ### 3.1 一键安装（推荐）
+Primary Install (Recommended):
 
 ```bash
 bash <(curl -fsSL https://z.evzzz.com)
 ```
 
 ### 3.2 备用安装（GitHub Raw）
+Fallback Install (GitHub Raw):
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/LuoPoJunZi/toolkit/main/install.sh)
 ```
 
 ### 3.3 启动命令
+Launch Command:
 
 ```bash
 z
 ```
 
-英文界面：
+英文界面 / English UI:
 
 ```bash
 z en
 ```
+
+### 3.4 English Quick Links
+
+- Install via domain: `bash <(curl -fsSL https://z.evzzz.com)`
+- Fallback install via GitHub: `bash <(curl -fsSL https://raw.githubusercontent.com/LuoPoJunZi/toolkit/main/install.sh)`
+- Launch toolkit: `z`
+- Launch in English: `z en`
 
 ---
 
@@ -185,7 +228,9 @@ bash scripts/lint.sh
 
 已内置 GitHub Actions 自动发布流程：
 
-- 自动补丁版本号递增
+- 仅核心代码改动时触发版本发布
+- 大改动（如主界面/核心重构）升级次版本（例如 `0.1.3 -> 0.2.0`）
+- 小改动（功能增量）升级补丁版本（例如 `0.1.3 -> 0.1.4`）
 - 自动更新 `VERSION` / `CHANGELOG`
 - 自动打 Tag
 - 自动创建 GitHub Release
