@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - main
+    paths-ignore:
+      - '**/*.md'
 
 permissions:
   contents: write
@@ -27,14 +29,17 @@ jobs:
         run: bash scripts/auto-release.sh
 
       - name: Push release commit
+        if: ${{ env.SKIP_RELEASE != '1' }}
         run: git push origin main
 
       - name: Create and push tag
+        if: ${{ env.SKIP_RELEASE != '1' }}
         run: |
           git tag "${NEXT_TAG}"
           git push origin "${NEXT_TAG}"
 
       - name: Create GitHub Release
+        if: ${{ env.SKIP_RELEASE != '1' }}
         uses: softprops/action-gh-release@v2
         with:
           tag_name: ${{ env.NEXT_TAG }}

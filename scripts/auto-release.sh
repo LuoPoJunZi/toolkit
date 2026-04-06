@@ -4,6 +4,46 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 cd "$ROOT_DIR"
 
+is_core_file() {
+  local f="$1"
+  [[ "$f" =~ ^core/ ]] && return 0
+  [[ "$f" =~ ^modules/ ]] && return 0
+  [[ "$f" =~ ^integrations/ ]] && return 0
+  [[ "$f" =~ ^lang/ ]] && return 0
+  [[ "$f" == "toolkit.sh" ]] && return 0
+  [[ "$f" == "install.sh" ]] && return 0
+  return 1
+}
+
+is_big_change_file() {
+  local f="$1"
+  [[ "$f" == "core/menu.sh" ]] && return 0
+  [[ "$f" == "core/ui.sh" ]] && return 0
+  [[ "$f" == "toolkit.sh" ]] && return 0
+  return 1
+}
+
+head_msg="$(git log -1 --pretty=%B)"
+mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r HEAD)
+
+core_changed=0
+big_changed=0
+for f in "${changed_files[@]:-}"; do
+  if is_core_file "$f"; then
+    core_changed=1
+  fi
+  if is_big_change_file "$f"; then
+    big_changed=1
+  fi
+done
+
+# No version release for non-core changes (e.g. docs only)
+if [[ "$core_changed" -eq 0 ]]; then
+  echo "No core code changes detected, skip auto release."
+  echo "SKIP_RELEASE=1" >> "$GITHUB_ENV"
+  exit 0
+fi
+
 latest_tag="$(git tag --list 'v*' --sort=-v:refname | head -n1 || true)"
 has_latest_tag=1
 if [[ -z "$latest_tag" ]]; then
@@ -26,12 +66,29 @@ major="${major:-0}"
 minor="${minor:-0}"
 patch="${patch:-0}"
 
-next_patch=$((patch + 1))
-next_version="${major}.${minor}.${next_patch}"
+# Version bump policy:
+# - [major] in commit message OR big change file touched => bump minor (0.1.3 -> 0.2.0)
+# - otherwise bump patch (0.1.3 -> 0.1.4)
+bump_type="patch"
+if [[ "$head_msg" =~ \[major\] ]] || [[ "$head_msg" =~ BREAKING ]] || [[ "$big_changed" -eq 1 ]]; then
+  bump_type="minor"
+fi
+if [[ "$head_msg" =~ \[patch\] ]]; then
+  bump_type="patch"
+fi
+
+if [[ "$bump_type" == "minor" ]]; then
+  next_minor=$((minor + 1))
+  next_version="${major}.${next_minor}.0"
+else
+  next_patch=$((patch + 1))
+  next_version="${major}.${minor}.${next_patch}"
+fi
 next_tag="v${next_version}"
 
 if git rev-parse "$next_tag" >/dev/null 2>&1; then
   echo "Tag $next_tag already exists, skip."
+  echo "SKIP_RELEASE=1" >> "$GITHUB_ENV"
   exit 0
 fi
 
@@ -67,6 +124,7 @@ mv "$tmp_changelog" CHANGELOG.md
 git add VERSION CHANGELOG.md
 git commit -m "chore(release): ${next_tag}"
 
+echo "SKIP_RELEASE=0" >> "$GITHUB_ENV"
 echo "NEXT_VERSION=$next_version" >> "$GITHUB_ENV"
 echo "NEXT_TAG=$next_tag" >> "$GITHUB_ENV"
 echo "RELEASE_NOTES_FILE=$release_notes_file" >> "$GITHUB_ENV"
