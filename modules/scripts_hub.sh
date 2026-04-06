@@ -24,14 +24,12 @@ list_enabled_scripts() {
 run_integration_script() {
   local script_id="$1"
   local index_file="$ROOT_DIR/integrations/index.json"
-  local source_url pinned_version sha256 manual_confirm
-  local cache_file display_name
+  local source_url pinned_version sha256
+  local cache_file
 
   source_url="$(jq -r --arg id "$script_id" '.scripts[] | select(.id == $id) | .source' "$index_file")"
   pinned_version="$(jq -r --arg id "$script_id" '.scripts[] | select(.id == $id) | .pinned_version' "$index_file")"
   sha256="$(jq -r --arg id "$script_id" '.scripts[] | select(.id == $id) | .sha256' "$index_file")"
-  manual_confirm="$(jq -r --arg id "$script_id" '.scripts[] | select(.id == $id) | .manual_confirm' "$index_file")"
-  display_name="$(jq -r --arg id "$script_id" '.scripts[] | select(.id == $id) | .name' "$index_file")"
 
   if [[ -z "$source_url" || "$source_url" == "null" ]]; then
     echo "脚本源地址无效: $script_id"
@@ -42,8 +40,6 @@ run_integration_script() {
   mkdir -p "$ROOT_DIR/data/cache"
   cache_file="$ROOT_DIR/data/cache/${script_id}-${pinned_version}.sh"
 
-  echo "已选择: $display_name"
-  echo "开始下载: $source_url"
   fetch_script_to_cache "$source_url" "$cache_file"
   chmod +x "$cache_file"
 
@@ -60,8 +56,7 @@ run_integration_script() {
     return 1
   fi
 
-  echo "SHA256 校验通过"
-  safe_run_script "$cache_file" "$manual_confirm"
+  safe_run_script "$cache_file"
 }
 
 scripts_hub() {
