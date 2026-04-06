@@ -4,6 +4,7 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INSTALL_DIR="${INSTALL_DIR:-/opt/luopo-toolkit}"
 BIN_PATH="/usr/local/bin/z"
+AUTO_LAUNCH="${AUTO_LAUNCH:-1}"
 
 require_root() {
   if [[ "${EUID:-$(id -u)}" -ne 0 ]]; then
@@ -52,6 +53,11 @@ main() {
   echo "项目目录: $INSTALL_DIR"
   echo "快捷命令: $BIN_PATH"
   echo "现在可直接运行: z"
+
+  if [[ "$AUTO_LAUNCH" == "1" && -e /dev/tty ]]; then
+    echo "正在进入 LuoPo VPS Toolkit 主菜单..."
+    bash "$INSTALL_DIR/toolkit.sh" </dev/tty >/dev/tty 2>/dev/tty
+  fi
 }
 
 main "$@"

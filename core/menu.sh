@@ -12,6 +12,8 @@ source "$ROOT_DIR/core/logger.sh"
 # shellcheck disable=SC1091
 source "$ROOT_DIR/core/self_update.sh"
 # shellcheck disable=SC1091
+source "$ROOT_DIR/core/uninstall.sh"
+# shellcheck disable=SC1091
 source "$ROOT_DIR/modules/system_info.sh"
 # shellcheck disable=SC1091
 source "$ROOT_DIR/modules/system_update.sh"
@@ -47,6 +49,7 @@ main_menu() {
     msg menu_5
     echo "------------------------"
     msg menu_00
+    msg menu_88
     echo "------------------------"
     msg menu_0
     echo ""
@@ -81,6 +84,10 @@ main_menu() {
         log_action "menu:self_update"
         run_action "self_update" self_update
         press_enter
+        ;;
+      88)
+        log_action "menu:uninstall"
+        run_action "uninstall_toolkit" uninstall_toolkit
         ;;
       0)
         msg bye

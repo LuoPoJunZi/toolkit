@@ -9,6 +9,7 @@ declare -A I18N=(
   [menu_4]="4. 一键脚本"
   [menu_5]="5. Docker 管理"
   [menu_00]="00. 脚本更新"
+  [menu_88]="88. 卸载脚本"
   [menu_0]="0. 退出脚本"
   [prompt_select]="请输入你的选择: "
   [prompt_press_enter]="按回车继续..."

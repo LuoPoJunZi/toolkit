@@ -2,17 +2,40 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
+BOOTSTRAP_URL="${LUOPO_BOOTSTRAP_URL:-https://z.evzzz.com}"
 
-self_update() {
-  if ! command -v git >/dev/null 2>&1; then
-    echo "缺少 git，无法执行脚本更新"
+run_bootstrap_update() {
+  if ! command -v curl >/dev/null 2>&1; then
+    echo "缺少 curl，无法执行远程更新"
     return 1
   fi
 
+  read -r -p "当前为非git安装，是否通过 ${BOOTSTRAP_URL} 执行更新？(y/N): " ans
+  if [[ "$ans" != "y" && "$ans" != "Y" ]]; then
+    echo "已取消更新"
+    return 0
+  fi
+
+  if bash <(curl -fsSL "$BOOTSTRAP_URL"); then
+    echo "更新完成"
+    return 0
+  fi
+
+  echo "远程更新失败，请稍后重试"
+  return 1
+}
+
+self_update() {
+  if ! command -v git >/dev/null 2>&1; then
+    echo "缺少 git，切换到远程更新模式"
+    run_bootstrap_update
+    return $?
+  fi
+
   if ! git -C "$ROOT_DIR" rev-parse --is-inside-work-tree >/dev/null 2>&1; then
-    echo "当前安装不是 git 工作树，无法走在线更新"
-    echo "请重新执行安装脚本"
-    return 1
+    echo "当前安装不是 git 工作树，切换到远程更新模式"
+    run_bootstrap_update
+    return $?
   fi
 
   if ! git -C "$ROOT_DIR" diff --quiet || ! git -C "$ROOT_DIR" diff --cached --quiet; then

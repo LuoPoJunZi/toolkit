@@ -15,7 +15,13 @@ LuoPo VPS Toolkit 是一个面向新手站长的 Linux VPS 一键工具箱（首
 推荐安装命令：
 
 ```bash
-bash <(curl -fsSL https://z.luopo.top)
+bash <(curl -fsSL https://z.evzzz.com)
+```
+
+安装完成后会自动进入主菜单。若只想安装不自动进入，可使用：
+
+```bash
+AUTO_LAUNCH=0 bash <(curl -fsSL https://z.evzzz.com)
 ```
 
 如果你是本地仓库开发环境，也可以：
@@ -44,6 +50,7 @@ z en
 - `4` 一键脚本：脚本白名单选择、下载、哈希校验、确认执行
 - `5` Docker 管理：Docker 安装与常用运维
 - `00` 脚本更新：拉取最新代码并自动更新（失败自动回滚）
+- `88` 卸载脚本：完全清理 Toolkit 安装与启动命令
 - `0` 退出脚本
 
 ## 一键脚本（菜单 4）
@@ -82,10 +89,9 @@ z en
 
 ## 更新与回滚（菜单 00）
 
-- 自动检查远端更新
-- 更新前记录当前 commit
-- 更新失败自动回滚到更新前版本
-- 若检测到本地未提交改动，会中止更新避免覆盖
+- Git 安装模式：自动检查远端更新，失败自动回滚到更新前 commit
+- 非 Git 安装模式：自动切换到远程更新（`bash <(curl -fsSL https://z.evzzz.com)`）
+- 若检测到 Git 本地未提交改动，会中止更新避免覆盖
 
 ## 日志与目录
 
@@ -95,6 +101,8 @@ z en
 - 错误日志：`logs/error.log`
 
 ## 卸载
+
+菜单中可直接选择 `88` 一键卸载，或手动执行：
 
 ```bash
 rm -rf /opt/luopo-toolkit

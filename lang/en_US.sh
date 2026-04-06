@@ -9,6 +9,7 @@ declare -A I18N=(
   [menu_4]="4. One-click scripts"
   [menu_5]="5. Docker management"
   [menu_00]="00. Script self-update"
+  [menu_88]="88. Uninstall toolkit"
   [menu_0]="0. Exit"
   [prompt_select]="Select an option: "
   [prompt_press_enter]="Press Enter to continue..."
