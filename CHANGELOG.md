@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2
+- Auto release: v0.1.2
+- style: refine system info layout and silent auto-launch install (e161299)
+
 ## 0.1.1
 - Auto release: v0.1.1
 - ci: add automatic release workflow with version bump (a3b2415)
