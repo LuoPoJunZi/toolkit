@@ -16,8 +16,8 @@ render_banner() {
   local version
   version="$(get_toolkit_version)"
   cat <<EOF
-LuoPoJunZi VPS Toolkit v${version}
-命令行输入luo可快速启动脚本
+LuoPo VPS Toolkit v${version}
+命令行输入z可快速启动脚本
 EOF
 }
 

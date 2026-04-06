@@ -3,7 +3,7 @@ set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INSTALL_DIR="${INSTALL_DIR:-/opt/luopo-toolkit}"
-BIN_PATH="/usr/local/bin/luo"
+BIN_PATH="/usr/local/bin/z"
 
 require_root() {
   if [[ "${EUID:-$(id -u)}" -ne 0 ]]; then
@@ -51,7 +51,7 @@ main() {
   echo "安装完成"
   echo "项目目录: $INSTALL_DIR"
   echo "快捷命令: $BIN_PATH"
-  echo "现在可直接运行: luo"
+  echo "现在可直接运行: z"
 }
 
 main "$@"
