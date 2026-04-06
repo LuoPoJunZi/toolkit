@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3
+- Auto release: v0.1.3
+- feat: polish toolkit UI, script hub grouping, and update UX (6a75b4a)
+
 ## 0.1.2
 - Auto release: v0.1.2
 - style: refine system info layout and silent auto-launch install (e161299)
