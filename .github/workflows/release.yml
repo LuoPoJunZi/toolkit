@@ -1,0 +1,42 @@
+name: release
+
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+
+jobs:
+  auto-release:
+    if: ${{ !startsWith(github.event.head_commit.message, 'chore(release):') }}
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Configure git user
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: Auto bump version and changelog
+        run: bash scripts/auto-release.sh
+
+      - name: Push release commit
+        run: git push origin main
+
+      - name: Create and push tag
+        run: |
+          git tag "${NEXT_TAG}"
+          git push origin "${NEXT_TAG}"
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.NEXT_TAG }}
+          name: ${{ env.NEXT_TAG }}
+          body_path: ${{ env.RELEASE_NOTES_FILE }}
