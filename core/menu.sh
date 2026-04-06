@@ -48,13 +48,13 @@ main_menu() {
     color_text 36 "$title"
     echo
     echo "========================================"
-    printf " %-2s %-16s %-2s %-16s\n" "1." "$(msg menu_label_1)" "4." "$(msg menu_label_4)"
-    printf " %-2s %-16s %-2s %-16s\n" "2." "$(msg menu_label_2)" "5." "$(msg menu_label_5)"
-    printf " %-2s %-16s\n" "3." "$(msg menu_label_3)"
+    printf " %-3s %-15s    %-3s %-15s\n" "1." "$(msg menu_label_1)" "4." "$(msg menu_label_4)"
+    printf " %-3s %-15s    %-3s %-15s\n" "2." "$(msg menu_label_2)" "5." "$(msg menu_label_5)"
+    printf " %-3s %-15s\n" "3." "$(msg menu_label_3)"
     echo "----------------------------------------"
-    printf " %-24s %s\n" "$(color_text 36 "99. $(msg menu_label_99)")" "$(color_text 31 "88. $(msg menu_label_88)")"
+    printf " %-3s %-15s    %-3s %-15s\n" "99." "$(msg menu_label_99)" "88." "$(msg menu_label_88)"
     echo "----------------------------------------"
-    printf " %-2s %-16s\n" "0." "$(msg menu_label_0)"
+    printf " %-3s %-15s\n" "0." "$(msg menu_label_0)"
     echo "========================================"
     read -r -p "$(msg prompt_select)" choice
     case "$choice" in
