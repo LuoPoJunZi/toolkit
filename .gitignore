@@ -1,0 +1,8 @@
+# Local working memory between user and Codex (do not commit)
+LOCAL_SESSION_MEMORY.md
+
+# Runtime data (generated on target VPS/local testing)
+data/state/
+data/backups/
+data/cache/
+logs/

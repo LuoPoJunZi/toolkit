@@ -1,0 +1,71 @@
+{
+  "version": "1.0.0",
+  "scripts": [
+    {
+      "id": "luopojunzi-hysteria2-luopo",
+      "name": "LuoPoJunZi Hysteria2 脚本",
+      "source": "https://raw.githubusercontent.com/LuoPoJunZi/hysteria2-luopo/main/install.sh",
+      "homepage": "https://github.com/LuoPoJunZi/hysteria2-luopo",
+      "pinned_version": "main-install-sh",
+      "sha256": "b2c7253856fc4b523ba6e3bdde37121d1a1d1e3a492ee27ac994277d70d84da1",
+      "manual_confirm": true,
+      "enabled": true,
+      "tags": ["self-project", "hysteria2", "luopojunzi"]
+    },
+    {
+      "id": "luopojunzi-sing-box-ev",
+      "name": "LuoPoJunZi Sing-box EV 脚本",
+      "source": "https://raw.githubusercontent.com/LuoPoJunZi/sing-box-ev/main/install.sh",
+      "homepage": "https://github.com/LuoPoJunZi/sing-box-ev",
+      "pinned_version": "main-install-sh",
+      "sha256": "2f1198ea3d41c0b402ca0ffb977b982d5f8d23b290dac722e909d7583968b137",
+      "manual_confirm": true,
+      "enabled": true,
+      "tags": ["self-project", "sing-box", "luopojunzi"]
+    },
+    {
+      "id": "fscarmen-sing-box",
+      "name": "F佬 Sing-box 一键脚本",
+      "source": "https://raw.githubusercontent.com/fscarmen/sing-box/main/sing-box.sh",
+      "homepage": "https://github.com/fscarmen/sing-box",
+      "pinned_version": "blog-oneclickscript-ref",
+      "sha256": "331eddbf729a040c27fcfc4384dcf1c2e87e58628531031f4af339c03abcd48c",
+      "manual_confirm": true,
+      "enabled": true,
+      "tags": ["sing-box", "blog.luopojunzi.com", "reference"]
+    },
+    {
+      "id": "eooce-sing-box",
+      "name": "老王 Sing-box 四合一",
+      "source": "https://raw.githubusercontent.com/eooce/sing-box/main/sing-box.sh",
+      "homepage": "https://github.com/eooce/sing-box",
+      "pinned_version": "blog-oneclickscript-ref",
+      "sha256": "61efb3638baf18a11aecc0fa679480376ff631397d95526d05b16d6612284ad6",
+      "manual_confirm": true,
+      "enabled": true,
+      "tags": ["sing-box", "blog.luopojunzi.com", "reference"]
+    },
+    {
+      "id": "yonggekkk-sing-box-yg",
+      "name": "勇哥 Sing-box 四合一",
+      "source": "https://raw.githubusercontent.com/yonggekkk/sing-box-yg/main/sb.sh",
+      "homepage": "https://github.com/yonggekkk/sing-box-yg",
+      "pinned_version": "blog-oneclickscript-ref",
+      "sha256": "d492a35c2c0be1a8e4f6c39e85f519303b8c0a1ea3026a183ec5debf762486cf",
+      "manual_confirm": true,
+      "enabled": true,
+      "tags": ["sing-box", "blog.luopojunzi.com", "reference"]
+    },
+    {
+      "id": "233boy-sing-box",
+      "name": "233boy Sing-box 一键脚本",
+      "source": "https://raw.githubusercontent.com/233boy/sing-box/main/install.sh",
+      "homepage": "https://github.com/233boy/sing-box",
+      "pinned_version": "blog-oneclickscript-ref",
+      "sha256": "bde88b99ee45c91aee03d51a3ebf7dac403e36e7d8714531121eb791a16e8bb5",
+      "manual_confirm": true,
+      "enabled": true,
+      "tags": ["sing-box", "blog.luopojunzi.com", "reference"]
+    }
+  ]
+}
