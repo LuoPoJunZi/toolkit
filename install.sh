@@ -49,13 +49,7 @@ main() {
   sync_project_files
   install_launcher
 
-  echo "安装完成"
-  echo "项目目录: $INSTALL_DIR"
-  echo "快捷命令: $BIN_PATH"
-  echo "现在可直接运行: z"
-
   if [[ "$AUTO_LAUNCH" == "1" && -e /dev/tty ]]; then
-    echo "正在进入 LuoPo VPS Toolkit 主菜单..."
     bash "$INSTALL_DIR/toolkit.sh" </dev/tty >/dev/tty 2>/dev/tty
   fi
 }

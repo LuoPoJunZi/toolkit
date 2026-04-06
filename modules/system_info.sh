@@ -4,16 +4,71 @@ set -euo pipefail
 print_kv() {
   local key="$1"
   local value="${2:-N/A}"
-  printf '%-14s %s\n' "${key}:" "$value"
+  printf '  %-12s : %s\n' "$key" "$value"
+}
+
+print_sep() {
+  echo "-------------------------------------------------------------------------------"
+}
+
+print_head() {
+  local title="$1"
+  echo "[ $title ]"
+}
+
+print_two_col() {
+  local l_key="$1"
+  local l_val="$2"
+  local r_key="$3"
+  local r_val="$4"
+  local left right
+  left="$(printf '%-8s : %s' "$l_key" "${l_val:-N/A}")"
+  right="$(printf '%-8s : %s' "$r_key" "${r_val:-N/A}")"
+  printf '%-39s%s\n' "$left" "$right"
+}
+
+to_cn_uptime() {
+  local raw="$1"
+  raw="${raw//up /}"
+  raw="${raw//weeks/周}"
+  raw="${raw//week/周}"
+  raw="${raw//days/天}"
+  raw="${raw//day/天}"
+  raw="${raw//hours/小时}"
+  raw="${raw//hour/小时}"
+  raw="${raw//minutes/分钟}"
+  raw="${raw//minute/分钟}"
+  raw="${raw//seconds/秒}"
+  raw="${raw//second/秒}"
+  raw="${raw//, / }"
+  echo "$raw"
+}
+
+space_slash() {
+  local v="$1"
+  echo "${v//\// / }"
 }
 
 human_bytes() {
   local bytes="${1:-0}"
+  local normalized out
+  normalized="$(awk -v b="$bytes" 'BEGIN { if (b=="" || b=="nan") print 0; else printf "%.0f", b+0 }')"
+
   if command -v numfmt >/dev/null 2>&1; then
-    numfmt --to=iec-i --suffix=B "$bytes"
-    return
+    out="$(numfmt --to=iec --suffix=B "$normalized" 2>/dev/null || true)"
+    if [[ -n "$out" ]]; then
+      echo "$out"
+      return
+    fi
   fi
-  echo "${bytes}B"
+
+  awk -v n="$normalized" 'BEGIN {
+    split("B KiB MiB GiB TiB PiB", u, " ");
+    i=1;
+    while (n>=1024 && i<6) { n=n/1024; i++ }
+    if (i==1) printf "%.0f%s\n", n, u[i];
+    else printf "%.2f%s\n", n, u[i];
+  }'
 }
 
 get_os_pretty_name() {
@@ -96,7 +151,7 @@ get_conn_counts() {
 
 get_network_totals() {
   local rx tx
-  read -r rx tx < <(awk -F'[: ]+' 'NR>2 && $1!="lo" {rx+=$3; tx+=$11} END {print rx+0, tx+0}' /proc/net/dev)
+  read -r rx tx < <(awk -F'[: ]+' 'NR>2 && $1!="lo" {rx+=$3; tx+=$11} END {printf "%.0f %.0f\n", rx+0, tx+0}' /proc/net/dev)
   echo "$(human_bytes "$rx")|$(human_bytes "$tx")"
 }
 
@@ -135,7 +190,8 @@ show_system_info() {
   local hostname os_name kernel cpu_arch cpu_model cpu_cores cpu_freq cpu_usage loadavg conns
   local mem_swap mem_info swap_info disk_info net_totals rx_total tx_total
   local algo ips ipv4 ipv6 dns geo isp location
-  local now_str up_human
+  local now_str up_human up_cn tcp_count udp_count dns_pretty
+  local mem_pretty swap_pretty disk_pretty cpu_line flow_line
 
   hostname="$(hostname 2>/dev/null || echo "N/A")"
   os_name="$(get_os_pretty_name)"
@@ -156,6 +212,8 @@ show_system_info() {
   net_totals="$(get_network_totals)"
   rx_total="${net_totals%%|*}"
   tx_total="${net_totals##*|}"
+  rx_total="${rx_total:-N/A}"
+  tx_total="${tx_total:-N/A}"
 
   algo="$(get_cc_algo)"
   ips="$(get_public_ips)"
@@ -169,39 +227,32 @@ show_system_info() {
 
   now_str="$(date '+%Y-%m-%d %H:%M:%S %Z' 2>/dev/null || echo "N/A")"
   up_human="$(uptime -p 2>/dev/null | sed 's/^up //' || echo "N/A")"
+  up_cn="$(to_cn_uptime "up $up_human")"
+  tcp_count="${conns%%|*}"
+  udp_count="${conns##*|}"
+  dns_pretty="$(echo "${dns:-N/A}" | sed 's/ /, /g')"
+  mem_pretty="$(space_slash "$mem_info")"
+  swap_pretty="$(space_slash "$swap_info")"
+  disk_pretty="$(space_slash "$disk_info")"
+  cpu_line="${cpu_model} (${cpu_cores}核心 @ ${cpu_freq})"
+  flow_line="接收: ${rx_total} | 发送: ${tx_total}"
 
-  echo "正在查询系统信息……"
-  echo "系统信息查询"
-  echo "-------------"
-  print_kv "主机名" "$hostname"
-  print_kv "系统版本" "$os_name"
-  print_kv "Linux版本" "$kernel"
-  echo "-------------"
-  print_kv "CPU架构" "$cpu_arch"
-  print_kv "CPU型号" "$cpu_model"
-  print_kv "CPU核心数" "$cpu_cores"
-  print_kv "CPU频率" "$cpu_freq"
-  echo "-------------"
-  print_kv "CPU占用" "$cpu_usage"
-  print_kv "系统负载" "$loadavg"
-  print_kv "TCP|UDP连接数" "$conns"
-  print_kv "物理内存" "$mem_info"
-  print_kv "虚拟内存" "$swap_info"
-  print_kv "硬盘占用" "$disk_info"
-  echo "-------------"
-  print_kv "总接收" "$rx_total"
-  print_kv "总发送" "$tx_total"
-  echo "-------------"
-  print_kv "网络算法" "$algo"
-  echo "-------------"
-  print_kv "运营商" "$isp"
-  print_kv "IPv4地址" "$ipv4"
-  print_kv "IPv6地址" "$ipv6"
-  print_kv "DNS地址" "${dns:-N/A}"
-  print_kv "地理位置" "${location:-N/A}"
-  print_kv "系统时间" "$now_str"
-  echo "-------------"
-  print_kv "运行时长" "$up_human"
-  echo
-  echo "操作完成"
+  print_sep
+  print_head "系统信息"
+  print_two_col "主机名称" "$hostname" "系统版本" "$os_name"
+  print_two_col "内核版本" "$kernel" "运行时长" "$up_cn"
+  print_two_col "系统时间" "$now_str" "系统架构" "$cpu_arch"
+  print_sep
+  print_head "硬件与资源"
+  echo "处理器型 : $cpu_line"
+  print_two_col "系统负载" "$loadavg" "CPU 占用" "$cpu_usage"
+  print_two_col "物理内存" "$mem_pretty" "虚拟内存" "$swap_pretty"
+  echo "硬盘占用 : $disk_pretty"
+  print_sep
+  print_head "网络与位置"
+  print_two_col "IPv4地址" "$ipv4" "网络运营" "$isp"
+  print_two_col "IPv6地址" "$ipv6" "地理位置" "$location"
+  print_two_col "网络连接" "TCP: ${tcp_count} | UDP: ${udp_count}" "网络流量" "$flow_line"
+  print_two_col "网络算法" "$algo" "DNS 地址" "${dns_pretty:-N/A}"
+  print_sep
 }
