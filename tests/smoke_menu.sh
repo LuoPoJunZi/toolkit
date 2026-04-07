@@ -4,7 +4,6 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MENU_FILE="$ROOT_DIR/core/menu.sh"
 LOAD_FILE="$ROOT_DIR/modules/menus/load.sh"
-trap 'echo "::error title=smoke_menu::ERR line ${LINENO}: ${BASH_COMMAND}"' ERR
 
 fail() {
   echo "::error title=smoke_menu::$*"
@@ -13,62 +12,51 @@ fail() {
 }
 
 assert_file() {
-  local file="$1"
+  file="$1"
   [[ -f "$file" ]] || fail "missing file: $file"
 }
 
 assert_contains_fixed() {
-  local file="$1"
-  local text="$2"
-  local desc="$3"
+  file="$1"
+  text="$2"
+  desc="$3"
   grep -Fq "$text" "$file" || fail "$desc (missing: $text)"
 }
 
 assert_contains_regex() {
-  local file="$1"
-  local pattern="$2"
-  local desc="$3"
+  file="$1"
+  pattern="$2"
+  desc="$3"
   grep -Eq "$pattern" "$file" || fail "$desc (pattern: $pattern)"
 }
 
 assert_func_defined_in_menus() {
-  local fn="$1"
+  fn="$1"
   grep -Rqs "^${fn}() {" "$ROOT_DIR/modules/menus" || fail "missing function: ${fn}()"
 }
 
 assert_not_contains_regex_in_menus() {
-  local pattern="$1"
-  local desc="$2"
+  pattern="$1"
+  desc="$2"
   if grep -RqsE "$pattern" "$ROOT_DIR/modules/menus"; then
     fail "$desc (pattern: $pattern)"
   fi
 }
 
 assert_menu_items_have_case_labels() {
-  local file="$1"
-  local -a menu_nums case_nums missing
-  local n
-
-  mapfile -t menu_nums < <(
-    grep -oE 'menu_item "[0-9]+"' "$file" | grep -oE '[0-9]+' | sort -n -u
-  )
-
-  mapfile -t case_nums < <(
-    grep -oE '^[[:space:]]*[0-9]+(\|[0-9]+)*\)' "$file" \
-      | sed -E 's/[[:space:]]//g; s/\)//g' \
+  file="$1"
+  menu_nums="$(grep -oE 'menu_item "[0-9]+"' "$file" | grep -oE '[0-9]+' | sort -n -u || true)"
+  case_nums="$(
+    grep -oE '^[[:space:]]*[0-9]+([[:space:]]*\\|[[:space:]]*[0-9]+)*\)' "$file" \
+      | tr -d '[:space:]' \
+      | sed 's/)$//' \
       | tr '|' '\n' \
-      | sort -n -u
-  )
+      | sort -n -u || true
+  )"
 
-  for n in "${menu_nums[@]}"; do
-    if ! printf '%s\n' "${case_nums[@]}" | grep -qx "$n"; then
-      missing+=("$n")
-    fi
+  for n in $menu_nums; do
+    echo "$case_nums" | grep -qx "$n" || fail "menu item missing case label in $(basename "$file"): $n"
   done
-
-  if (( ${#missing[@]} > 0 )); then
-    fail "menu item missing case labels in $(basename "$file"): ${missing[*]}"
-  fi
 }
 
 main() {
@@ -104,10 +92,7 @@ main() {
     assert_contains_fixed "$LOAD_FILE" "source \"\$MODULES_DIR/${m}.sh\"" "missing loader for ${m}.sh"
   done
 
-  for fn in \
-    network_accel_menu network_test_menu security_menu ldnmp_menu \
-    app_market_menu workspace_menu system_tools_menu backup_menu \
-    cron_center_menu cluster_menu oracle_cloud_menu game_server_menu ai_workspace_menu; do
+  for fn in network_accel_menu network_test_menu security_menu ldnmp_menu app_market_menu workspace_menu system_tools_menu backup_menu cron_center_menu cluster_menu oracle_cloud_menu game_server_menu ai_workspace_menu; do
     assert_func_defined_in_menus "$fn"
   done
 
