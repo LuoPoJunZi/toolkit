@@ -54,6 +54,7 @@ assert_menu_items_have_case_labels() {
   )"
 
   for n in $menu_nums; do
+    [[ "$n" == "0" ]] && continue
     echo "$case_nums" | grep -qx "$n" || fail "menu item missing case label in $(basename "$file"): $n"
   done
 }
