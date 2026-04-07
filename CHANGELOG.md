@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.1
+- Auto release: v0.3.1
+- fix: avoid silent no-op for remote script actions (33be5f1)
+
 ## 0.3.0
 - Auto release: v0.3.0
 - refactor: modularize submenus and harden menu action reliability (22e36dd)
