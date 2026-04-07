@@ -48,8 +48,7 @@ assert_menu_items_have_case_labels() {
   menu_nums="$(grep -oE 'menu_item "[0-9]+"' "$file" | grep -oE '[0-9]+' | sort -n -u || true)"
   case_nums="$(
     grep -oE '^[[:space:]]*[0-9]+([[:space:]]*\\|[[:space:]]*[0-9]+)*[[:space:]]*\)' "$file" \
-      | tr -d '[:space:]' \
-      | sed 's/)$//' \
+      | sed -E 's/[[:space:]]//g; s/)$//' \
       | tr '|' '\n' \
       | sort -n -u || true
   )"
