@@ -6,6 +6,7 @@ MENU_FILE="$ROOT_DIR/core/menu.sh"
 LOAD_FILE="$ROOT_DIR/modules/menus/load.sh"
 
 fail() {
+  echo "::error title=smoke_menu::$*"
   echo "[FAIL] $*"
   exit 1
 }
