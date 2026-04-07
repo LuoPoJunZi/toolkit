@@ -33,10 +33,8 @@ ai_workspace_menu() {
         menu_wait
         ;;
       2)
-        if curl -fsSL https://ollama.com/install.sh | bash; then
+        if run_remote_bash_script "https://ollama.com/install.sh" "Ollama 安装"; then
           say_ok "Ollama 安装完成"
-        else
-          say_action_failed "Ollama 安装" "$(i18n_get msg_reason_exec_failed 'execution failed')"
         fi
         menu_wait
         ;;

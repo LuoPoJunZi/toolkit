@@ -47,10 +47,8 @@ EOF
           menu_wait
           continue
         fi
-        if bash <(curl -fsSL https://gitlab.com/fscarmen/warp/-/raw/main/menu.sh); then
+        if run_remote_bash_script "https://gitlab.com/fscarmen/warp/-/raw/main/menu.sh" "WARP 安装"; then
           say_ok "WARP 管理脚本执行完成"
-        else
-          say_action_failed "WARP 安装" "$(i18n_get msg_reason_exec_failed 'execution failed')"
         fi
         menu_wait
         ;;

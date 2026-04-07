@@ -5,15 +5,31 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 BOOTSTRAP_URL="${LUOPO_BOOTSTRAP_URL:-https://z.evzzz.com}"
 
 run_bootstrap_update() {
+  local tmp_file
   if ! command -v curl >/dev/null 2>&1; then
     echo "缺少 curl，无法执行远程更新"
     return 1
   fi
 
-  bash <(curl -fsSL "$BOOTSTRAP_URL") || {
+  tmp_file="$(mktemp)"
+  if ! curl -fsSL "$BOOTSTRAP_URL" -o "$tmp_file"; then
+    rm -f "$tmp_file"
     echo "远程更新失败，请稍后重试"
     return 1
-  }
+  fi
+
+  if [[ ! -s "$tmp_file" ]]; then
+    rm -f "$tmp_file"
+    echo "远程更新失败，请稍后重试"
+    return 1
+  fi
+
+  if ! bash "$tmp_file"; then
+    rm -f "$tmp_file"
+    echo "远程更新失败，请稍后重试"
+    return 1
+  fi
+  rm -f "$tmp_file"
   return 0
 }
 

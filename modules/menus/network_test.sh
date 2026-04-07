@@ -83,14 +83,16 @@ network_test_menu() {
         menu_wait
         ;;
       31)
-        if ! bash <(curl -Lso- https://bench.im/hyperspeed); then
-          say_action_failed "hyperspeed 测速脚本" "$(i18n_get msg_reason_exec_failed 'execution failed')"
+        say_warn "正在执行 hyperspeed 测速脚本..."
+        if run_remote_bash_script "https://bench.im/hyperspeed" "hyperspeed 测速脚本"; then
+          say_ok "hyperspeed 测速脚本执行完成"
         fi
         menu_wait
         ;;
       32)
-        if ! bash <(curl -Ls https://raw.githubusercontent.com/nxtrace/NTrace-core/main/nt_install.sh); then
-          say_action_failed "nexttrace 回程测试脚本" "$(i18n_get msg_reason_exec_failed 'execution failed')"
+        say_warn "正在执行 nexttrace 回程测试脚本..."
+        if run_remote_bash_script "https://raw.githubusercontent.com/nxtrace/NTrace-core/main/nt_install.sh" "nexttrace 回程测试脚本"; then
+          say_ok "nexttrace 回程测试脚本执行完成"
         fi
         menu_wait
         ;;

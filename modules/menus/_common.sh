@@ -102,6 +102,40 @@ run_or_report() {
   return 1
 }
 
+run_remote_bash_script() {
+  local url="$1"
+  local action_name="$2"
+  local tmp_file
+
+  if ! command -v curl >/dev/null 2>&1; then
+    say_action_failed "$action_name" "$(i18n_get msg_reason_dep_missing 'dependency missing'): curl"
+    return 1
+  fi
+
+  tmp_file="$(mktemp)"
+  if ! curl -fsSL "$url" -o "$tmp_file"; then
+    rm -f "$tmp_file"
+    say_action_failed "$action_name" "$(i18n_get msg_reason_exec_failed 'execution failed')"
+    return 1
+  fi
+
+  if [[ ! -s "$tmp_file" ]]; then
+    rm -f "$tmp_file"
+    say_action_failed "$action_name" "$(i18n_get msg_reason_exec_failed 'execution failed')"
+    return 1
+  fi
+
+  chmod +x "$tmp_file"
+  if ! bash "$tmp_file"; then
+    rm -f "$tmp_file"
+    say_action_failed "$action_name" "$(i18n_get msg_reason_exec_failed 'execution failed')"
+    return 1
+  fi
+
+  rm -f "$tmp_file"
+  return 0
+}
+
 docker_ensure_container() {
   local name="$1"
   local success_msg="$2"
