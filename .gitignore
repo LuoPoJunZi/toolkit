@@ -6,3 +6,32 @@ data/state/
 data/backups/
 data/cache/
 logs/
+
+# IDE / Editor
+.vscode/
+.idea/
+*.code-workspace
+
+# OS generated files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Common temporary / backup files
+*.tmp
+*.temp
+*.bak
+*.swp
+*.swo
+*~
+
+# Local env / override files
+.env
+.env.*
+!.env.example
+
+# Archives often generated during manual packaging
+*.zip
+*.tar
+*.tar.gz
+*.tgz
