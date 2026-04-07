@@ -4,6 +4,7 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MENU_FILE="$ROOT_DIR/core/menu.sh"
 LOAD_FILE="$ROOT_DIR/modules/menus/load.sh"
+trap 'echo "::error title=smoke_menu::ERR line ${LINENO}: ${BASH_COMMAND}"' ERR
 
 fail() {
   echo "::error title=smoke_menu::$*"
