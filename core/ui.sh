@@ -53,8 +53,30 @@ press_enter() {
   read -r -p "$(msg prompt_press_enter)" _
 }
 
+read_menu_choice() {
+  local __var_name="$1"
+  local __prompt="${2:-$(msg prompt_select)}"
+  local __input
+  read -r -p "$__prompt" __input
+  printf -v "$__var_name" '%s' "$__input"
+}
+
+is_yes() {
+  local ans="${1:-}"
+  [[ "$ans" == "y" || "$ans" == "Y" ]]
+}
+
 confirm() {
   local prompt_key="$1"
   read -r -p "$(msg "$prompt_key")" ans
-  [[ "$ans" == "y" || "$ans" == "Y" ]]
+  is_yes "$ans"
+}
+
+# Unified single-column menu item renderer.
+# Ensures the first character after "." is vertically aligned.
+menu_item() {
+  local number="$1"
+  shift
+  local text="$*"
+  printf " %-3s %s\n" "${number}." "$text"
 }

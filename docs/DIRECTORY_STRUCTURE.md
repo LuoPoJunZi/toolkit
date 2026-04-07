@@ -44,7 +44,24 @@ toolkit/
 │  ├─ system_cleanup.sh            # 3. system cleanup
 │  ├─ scripts_hub.sh               # 4. one-click script integrations
 │  ├─ docker_manager.sh            # 6. Docker management
-│  └─ singbox.sh                   # self-developed sing-box toolkit
+│  ├─ singbox.sh                   # self-developed sing-box toolkit
+│  ├─ extended_menus.sh            # compatibility loader (legacy source path)
+│  └─ menus/
+│     ├─ load.sh                   # unified loader for menu group modules
+│     ├─ _common.sh                # shared helper funcs for menus
+│     ├─ network_accel.sh          # 6. network acceleration menu
+│     ├─ network_test.sh           # 7. network test menu
+│     ├─ security.sh               # 8. security menu
+│     ├─ ldnmp.sh                  # 9. LDNMP menu
+│     ├─ app_market.sh             # 10. app market menu
+│     ├─ workspace.sh              # 11. background workspace menu
+│     ├─ system_tools.sh           # 12. system tools menu
+│     ├─ backup.sh                 # 13. backup/restore/migrate menu
+│     ├─ cron_center.sh            # 14. cron center menu
+│     ├─ cluster.sh                # 15. cluster control menu
+│     ├─ oracle_cloud.sh           # 16. oracle tools menu
+│     ├─ game_server.sh            # 17. game server menu
+│     └─ ai_workspace.sh           # 18. AI workspace menu
 ├─ integrations/
 │  ├─ index.json                   # approved third-party scripts index
 │  ├─ fetcher.sh                   # download/cache wrapper

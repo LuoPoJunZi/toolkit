@@ -81,30 +81,28 @@ scripts_hub() {
   fi
 
   echo "========================================"
-  echo "一键脚本"
+  echo "一键脚本中心"
   echo "========================================"
 
   i=1
   if [[ "${#self_entries[@]}" -gt 0 ]]; then
-    echo "[落魄的脚本]"
     for entry in "${self_entries[@]}"; do
       selected_ids+=("$(awk -F$'\t' '{print $1}' <<<"$entry")")
-      printf " %d. %s\n" "$i" "$(awk -F$'\t' '{print $2}' <<<"$entry")"
+      printf " %-3s %s\n" "${i}." "【落魄】$(awk -F$'\t' '{print $2}' <<<"$entry")"
       ((i++))
     done
   fi
 
   if [[ "${#third_entries[@]}" -gt 0 ]]; then
-    echo "[第三方脚本]"
     for entry in "${third_entries[@]}"; do
       selected_ids+=("$(awk -F$'\t' '{print $1}' <<<"$entry")")
-      printf " %d. %s\n" "$i" "$(awk -F$'\t' '{print $2}' <<<"$entry")"
+      printf " %-3s %s\n" "${i}." "【第三方】$(awk -F$'\t' '{print $2}' <<<"$entry")"
       ((i++))
     done
   fi
 
   echo "----------------------------------------"
-  echo " 0. 返回上级菜单"
+  menu_item "0" "返回上级菜单"
   echo "========================================"
 
   read -r -p "请输入脚本编号: " choice

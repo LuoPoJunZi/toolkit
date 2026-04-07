@@ -13,10 +13,6 @@
 
 [![简体中文](https://img.shields.io/badge/简体中文-2f4858?style=for-the-badge)](README.md)
 [![ENGLISH](https://img.shields.io/badge/ENGLISH-2f4858?style=for-the-badge)](README_en.md)
-[![繁體中文](https://img.shields.io/badge/繁體中文-455a64?style=for-the-badge)](README_zh-TW.md)
-[![日本語](https://img.shields.io/badge/日本語-455a64?style=for-the-badge)](README_ja.md)
-[![한국어](https://img.shields.io/badge/한국어-455a64?style=for-the-badge)](README_ko.md)
-[![РУССКИЙ](https://img.shields.io/badge/РУССКИЙ-455a64?style=for-the-badge)](README_ru.md)
 
 </div>
 

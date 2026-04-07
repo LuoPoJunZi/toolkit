@@ -63,6 +63,14 @@ docker_cleanup() {
   docker system prune -f
 }
 
+docker_check_ready() {
+  if docker_installed; then
+    return 0
+  fi
+  echo "Docker 未安装"
+  return 1
+}
+
 docker_manager() {
   local choice
   while true; do
@@ -70,12 +78,20 @@ docker_manager() {
     echo "========================================"
     echo "Docker 管理"
     echo "========================================"
-    printf " %-2s %-16s %-2s %-16s\n" "1." "安装 Docker" "5." "Docker 状态"
-    printf " %-2s %-16s %-2s %-16s\n" "2." "启动 Docker" "6." "查看容器列表"
-    printf " %-2s %-16s %-2s %-16s\n" "3." "停止 Docker" "7." "查看镜像列表"
-    printf " %-2s %-16s %-2s %-16s\n" "4." "重启 Docker" "8." "清理无用资源"
+    menu_item "1" "安装 Docker"
+    menu_item "2" "启动 Docker"
+    menu_item "3" "停止 Docker"
+    menu_item "4" "重启 Docker"
+    menu_item "5" "Docker 状态"
+    menu_item "6" "查看容器列表"
+    menu_item "7" "查看镜像列表"
+    menu_item "8" "查看网络列表"
+    menu_item "9" "查看卷列表"
+    menu_item "10" "查看指定容器日志"
+    menu_item "11" "进入指定容器 Shell"
+    menu_item "12" "清理无用资源"
     echo "----------------------------------------"
-    printf " %-2s %-16s\n" "0." "返回上级"
+    menu_item "0" "返回上级菜单"
     echo "========================================"
     read -r -p "请输入选择: " choice
 
@@ -84,37 +100,43 @@ docker_manager() {
         docker_install
         ;;
       2)
-        docker_service_action start
+        docker_service_action start || true
         ;;
       3)
-        docker_service_action stop
+        docker_service_action stop || true
         ;;
       4)
-        docker_service_action restart
+        docker_service_action restart || true
         ;;
       5)
-        docker_status
+        docker_status || true
         ;;
       6)
-        if docker_installed; then
-          docker ps -a
-        else
-          echo "Docker 未安装"
-        fi
+        docker_check_ready && docker ps -a || true
         ;;
       7)
-        if docker_installed; then
-          docker images
-        else
-          echo "Docker 未安装"
-        fi
+        docker_check_ready && docker images || true
         ;;
       8)
-        if docker_installed; then
-          docker_cleanup
-        else
-          echo "Docker 未安装"
+        docker_check_ready && docker network ls || true
+        ;;
+      9)
+        docker_check_ready && docker volume ls || true
+        ;;
+      10)
+        if docker_check_ready; then
+          read -r -p "输入容器名/容器ID: " cid
+          docker logs --tail 100 "$cid" || true
         fi
+        ;;
+      11)
+        if docker_check_ready; then
+          read -r -p "输入容器名/容器ID: " cid
+          docker exec -it "$cid" sh || docker exec -it "$cid" bash || true
+        fi
+        ;;
+      12)
+        docker_check_ready && docker_cleanup
         ;;
       0)
         return 0
