@@ -77,7 +77,7 @@ main() {
   for label in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 88 0; do
     assert_contains_regex "$MENU_FILE" "^[[:space:]]*${label}\\)" "missing case label ${label}"
   done
-  assert_contains_fixed "$MENU_FILE" "99|00)" "missing case label 99|00"
+  assert_contains_regex "$MENU_FILE" "^[[:space:]]*99[[:space:]]*\\|[[:space:]]*00\\)" "missing case label 99|00"
 
   assert_contains_fixed "$MENU_FILE" 'run_action "system_info" show_system_info' "route 1 mismatch"
   assert_contains_fixed "$MENU_FILE" 'run_action "system_update" system_update' "route 2 mismatch"
