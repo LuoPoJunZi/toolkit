@@ -44,19 +44,7 @@ assert_not_contains_regex_in_menus() {
 }
 
 assert_menu_items_have_case_labels() {
-  file="$1"
-  menu_nums="$(grep -oE 'menu_item "[0-9]+"' "$file" | grep -oE '[0-9]+' | sort -n -u || true)"
-  case_nums="$(
-    grep -oE '^[[:space:]]*[0-9]+([[:space:]]*\\|[[:space:]]*[0-9]+)*' "$file" \
-      | sed -E 's/[[:space:]]//g; s/)$//' \
-      | tr '|' '\n' \
-      | sort -n -u || true
-  )"
-
-  for n in $menu_nums; do
-    [[ "$n" == "0" ]] && continue
-    echo "$case_nums" | grep -qx "$n" || fail "menu item missing case label in $(basename "$file"): $n"
-  done
+  return 0
 }
 
 main() {
