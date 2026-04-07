@@ -31,7 +31,7 @@ assert_contains_regex() {
 
 assert_func_defined_in_menus() {
   local fn="$1"
-  grep -Rqs "^${fn}\\(\\) \\{" "$ROOT_DIR/modules/menus" || fail "missing function: ${fn}()"
+  grep -Rqs "^${fn}() {" "$ROOT_DIR/modules/menus" || fail "missing function: ${fn}()"
 }
 
 assert_not_contains_regex_in_menus() {
@@ -44,30 +44,28 @@ assert_not_contains_regex_in_menus() {
 
 assert_menu_items_have_case_labels() {
   local file="$1"
-  local missing
-  missing="$(
-    awk '
-      match($0, /menu_item "[0-9]+"/) {
-        v=substr($0, RSTART, RLENGTH)
-        gsub(/menu_item "|"/, "", v)
-        items[v]=1
-      }
-      match($0, /^[[:space:]]*[0-9]+(\|[0-9]+)*\)/) {
-        v=substr($0, RSTART, RLENGTH)
-        gsub(/[[:space:]\)]/, "", v)
-        n=split(v, arr, /\|/)
-        for (i=1; i<=n; i++) cases[arr[i]]=1
-      }
-      END {
-        for (k in items) {
-          if (!(k in cases)) print k
-        }
-      }
-    ' "$file" | sort -n | tr '\n' ' '
-  )"
+  local -a menu_nums case_nums missing
+  local n
 
-  if [[ -n "${missing// }" ]]; then
-    fail "menu item missing case labels in $(basename "$file"): ${missing}"
+  mapfile -t menu_nums < <(
+    grep -oE 'menu_item "[0-9]+"' "$file" | grep -oE '[0-9]+' | sort -n -u
+  )
+
+  mapfile -t case_nums < <(
+    grep -oE '^[[:space:]]*[0-9]+(\|[0-9]+)*\)' "$file" \
+      | sed -E 's/[[:space:]]//g; s/\)//g' \
+      | tr '|' '\n' \
+      | sort -n -u
+  )
+
+  for n in "${menu_nums[@]}"; do
+    if ! printf '%s\n' "${case_nums[@]}" | grep -qx "$n"; then
+      missing+=("$n")
+    fi
+  done
+
+  if (( ${#missing[@]} > 0 )); then
+    fail "menu item missing case labels in $(basename "$file"): ${missing[*]}"
   fi
 }
 
@@ -75,13 +73,11 @@ main() {
   assert_file "$MENU_FILE"
   assert_file "$LOAD_FILE"
 
-  # Main menu case labels should include 1~18 and management entries.
   for label in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 88 0; do
     assert_contains_regex "$MENU_FILE" "^[[:space:]]*${label}\\)" "missing case label ${label}"
   done
   assert_contains_fixed "$MENU_FILE" "99|00)" "missing case label 99|00"
 
-  # Ensure each major route remains wired.
   assert_contains_fixed "$MENU_FILE" 'run_action "system_info" show_system_info' "route 1 mismatch"
   assert_contains_fixed "$MENU_FILE" 'run_action "system_update" system_update' "route 2 mismatch"
   assert_contains_fixed "$MENU_FILE" 'run_action "system_cleanup" system_cleanup' "route 3 mismatch"
@@ -101,13 +97,11 @@ main() {
   assert_contains_fixed "$MENU_FILE" 'run_action "game_server_menu" game_server_menu' "route 17 mismatch"
   assert_contains_fixed "$MENU_FILE" 'run_action "ai_workspace_menu" ai_workspace_menu' "route 18 mismatch"
 
-  # Ensure loader includes split submenu modules.
   assert_contains_fixed "$LOAD_FILE" 'source "$MODULES_DIR/_common.sh"' "missing _common loader"
   for m in network_accel network_test security ldnmp app_market workspace system_tools backup cron_center cluster oracle_cloud game_server ai_workspace; do
     assert_contains_fixed "$LOAD_FILE" "source \"\$MODULES_DIR/${m}.sh\"" "missing loader for ${m}.sh"
   done
 
-  # Ensure functions exist in modules/menus.
   for fn in \
     network_accel_menu network_test_menu security_menu ldnmp_menu \
     app_market_menu workspace_menu system_tools_menu backup_menu \
@@ -115,13 +109,11 @@ main() {
     assert_func_defined_in_menus "$fn"
   done
 
-  # Guard against placeholder-style menu actions.
   assert_not_contains_regex_in_menus 'echo \"bash <\\(' "placeholder command hint found"
   assert_not_contains_regex_in_menus 'WARP 安装命令指引' "placeholder label found"
   assert_not_contains_regex_in_menus 'placeholder|占位|待实现|TODO' "placeholder marker found"
   assert_not_contains_regex_in_menus '命令参考|示例命令|仅供参考|暂不支持|未实现' "placeholder-like guidance text found"
 
-  # Each submenu menu_item should have a corresponding case label.
   for f in "$ROOT_DIR"/modules/menus/*.sh; do
     case "$(basename "$f")" in
       _common.sh|load.sh) continue ;;

@@ -2,13 +2,27 @@
 set -euo pipefail
 
 if command -v shellcheck >/dev/null 2>&1; then
-  shellcheck toolkit.sh core/*.sh modules/*.sh integrations/*.sh scripts/*.sh || true
+  shellcheck \
+    toolkit.sh \
+    core/*.sh \
+    modules/*.sh \
+    modules/menus/*.sh \
+    integrations/*.sh \
+    scripts/*.sh \
+    tests/smoke_menu.sh || true
 else
   echo "shellcheck not found, skip"
 fi
 
 if command -v shfmt >/dev/null 2>&1; then
-  shfmt -w toolkit.sh core/*.sh modules/*.sh integrations/*.sh scripts/*.sh
+  shfmt -w \
+    toolkit.sh \
+    core/*.sh \
+    modules/*.sh \
+    modules/menus/*.sh \
+    integrations/*.sh \
+    scripts/*.sh \
+    tests/smoke_menu.sh
 else
   echo "shfmt not found, skip"
 fi
