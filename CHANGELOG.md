@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.3.0
+- Auto release: v0.3.0
+- refactor: modularize submenus and harden menu action reliability (22e36dd)
+- Update LICENSE (ce1e511)
+
 ## 0.2.0
 - Auto release: v0.2.0
 - style: improve main menu spacing and column alignment (1d3aed0)
