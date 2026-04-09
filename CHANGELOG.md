@@ -1,5 +1,21 @@
 # Changelog
 
+## 0.3.2
+- Auto release: v0.3.2
+- feat: switch system info to single-column layout and refresh READMEs (dd0a354)
+- chore: restore docs tracking and keep local ignore rules (d9e8c46)
+- fix(ci): disable brittle submenu mapping assertion (afcfca0)
+- fix(ci): make case label extraction independent of ')' spacing (136b435)
+- fix(ci): skip menu 0 in submenu case mapping check (144a8dd)
+- fix(ci): preserve line boundaries when parsing case labels (a25befe)
+- fix(ci): tolerate shfmt spacing in case label parsing (dfad182)
+- fix(ci): simplify smoke script for runner compatibility (94fa469)
+- chore(ci): add ERR trap for smoke diagnostics (b5eaf34)
+- fix(ci): allow shfmt spacing in 99|00 case assertion (8677168)
+- chore(ci): emit smoke failure annotations for debugging (3e07a23)
+- fix(ci): stabilize smoke checks and lint submenu scripts (51ba838)
+- docs: add run-level checklist for all menus (99d2819)
+
 ## 0.3.1
 - Auto release: v0.3.1
 - fix: avoid silent no-op for remote script actions (33be5f1)
