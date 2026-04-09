@@ -79,7 +79,7 @@ z en
 | Menu | Highlights |
 | --- | --- |
 | 4. One-click script hub | Curated scripts with cached download + SHA256 verification before execution |
-| 5. Docker management | Install Docker, service control, container/image/network/volume view, logs, cleanup |
+| 5. Docker management | Install/upgrade, global status, container/image/network/volume management, mirror switch, daemon config, IPv6 toggle, backup/migrate/restore, and uninstall |
 | 6. Network acceleration | BBR/FQ, WARP, TCP Fast Open, egress checks, connection stats |
 | 7. Network test tools | Ping/Traceroute/MTR/DNS, TLS checks, port checks, speed test scripts |
 | 8. Security and protection | SSH/firewall checks, Fail2ban, root policy checks, auth logs, hardening helpers |
