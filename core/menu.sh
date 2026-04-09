@@ -93,12 +93,10 @@ main_menu() {
       4)
         log_action "menu:scripts_hub"
         run_action "scripts_hub" scripts_hub
-        press_enter
         ;;
       5)
         log_action "menu:docker_manager"
         run_action "docker_manager" docker_manager
-        press_enter
         ;;
       6)
         log_action "menu:network_accel"

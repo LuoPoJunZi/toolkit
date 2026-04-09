@@ -812,15 +812,19 @@ docker_manager() {
         ;;
       3)
         container_manager_menu
+        continue
         ;;
       4)
         image_manager_menu
+        continue
         ;;
       5)
         network_manager_menu
+        continue
         ;;
       6)
         volume_manager_menu
+        continue
         ;;
       7)
         docker_cleanup_all
@@ -839,6 +843,7 @@ docker_manager() {
         ;;
       19)
         backup_migrate_restore_menu
+        continue
         ;;
       20)
         uninstall_docker_env
