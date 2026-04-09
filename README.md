@@ -18,57 +18,25 @@
 
 ---
 
-## 简体中文说明
+## 简介
 
-`LuoPo VPS Toolkit` 是一个面向 Linux 新手站长的极简 VPS 一键工具箱，支持 Ubuntu / Debian，集成系统运维、Docker 管理与精选脚本。
+`LuoPo VPS Toolkit` 是一个纯 Bash 的 VPS 菜单工具箱，聚焦 Ubuntu / Debian 场景，面向新手站长提供“可视化菜单 + 一键操作”的运维体验。
 
-## 1. 这是什么？适合谁用？
+## 快速开始
 
-`LuoPo VPS Toolkit` 是一个纯 Bash 的 VPS 菜单工具，聚焦日常高频操作：
-
-- 系统信息查询
-- 系统更新与清理
-- 第三方优秀脚本一键集成
-- Docker 管理
-- 脚本更新与卸载
-
-适合：
-
-- 新手站长：希望“命令少、可视化菜单多”
-- 运维用户：希望快速执行标准操作
-- 脚本维护者：希望在菜单框架上扩展更多功能
-
----
-
-## 2. 项目能力总览
-
-- 主菜单紧凑双列布局（更清晰）
-- 系统信息面板：分区展示，含资源/网络/位置
-- 一键脚本中心：分组展示（落魄的脚本 / 第三方脚本）
-- 第三方脚本执行安全链路：下载 + SHA256 校验
-- Docker 常见运维菜单化
-- 更新机制：
-  - Git 安装：Git 更新 + 失败回滚
-  - 非 Git 安装：自动切换远程更新
-- 一键卸载（`88`）彻底清理安装痕迹
-
----
-
-## 3. 快速开始
-
-### 3.1 一键安装（推荐）
+### 1) 一键安装（推荐）
 
 ```bash
 bash <(curl -fsSL https://z.evzzz.com)
 ```
 
-### 3.2 备用安装（GitHub Raw）
+### 2) 备用安装（GitHub Raw）
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/LuoPoJunZi/toolkit/main/install.sh)
 ```
 
-### 3.3 启动命令
+### 3) 启动命令
 
 ```bash
 z
@@ -80,139 +48,109 @@ z
 z en
 ```
 
-### 3.4 快速链接
-
-- 域名安装：`bash <(curl -fsSL https://z.evzzz.com)`
-- GitHub 备用安装：`bash <(curl -fsSL https://raw.githubusercontent.com/LuoPoJunZi/toolkit/main/install.sh)`
-- 启动工具箱：`z`
-- 英文界面：`z en`
-
----
-
-## 4. 主菜单预览
+## 主菜单（当前实现）
 
 ```text
-========================================
-LuoPo VPS Toolkit v0.1.2 (快捷启动: z)
-========================================
- 1. 系统信息查询       4. 一键脚本
- 2. 系统全面更新       5. Docker 管理
- 3. 系统垃圾清理
-----------------------------------------
- 99. 更新脚本          88. 卸载脚本
-----------------------------------------
- 0. 退出
-========================================
-请输入选择:
+1. 系统信息查询
+2. 系统全面更新
+3. 系统垃圾清理
+4. 一键脚本中心
+5. Docker管理
+6. 网络加速管理
+7. 网络测试工具
+8. 安全与防护
+9. LDNMP 建站
+10. 应用市场
+11. 后台工作区
+12. 系统工具
+13. 备份/恢复/迁移
+14. 定时任务中心
+15. 服务器集群控制
+16. Oracle Cloud 工具集
+17. 游戏开服脚本合集
+18. AI工作区(可选)
+99. 更新脚本
+88. 卸载脚本
+0. 退出脚本
 ```
 
----
+## 子菜单能力概览
 
-## 5. 一键脚本（菜单 4）
+| 菜单 | 主要能力 |
+| --- | --- |
+| 4. 一键脚本中心 | 集成自研与第三方脚本，下载缓存 + SHA256 校验后执行 |
+| 5. Docker管理 | Docker 安装、服务控制、容器/镜像/网络/卷查看、日志与清理 |
+| 6. 网络加速管理 | BBR/FQ、WARP、Fast Open、出口检测、连接统计 |
+| 7. 网络测试工具 | Ping/Traceroute/MTR/DNS、TLS 检测、端口连通、测速脚本 |
+| 8. 安全与防护 | SSH 与防火墙检查、Fail2ban、Root 策略、认证日志、安全巡检 |
+| 9. LDNMP 建站 | LDNMP、WordPress、Nginx 代理/重定向、站点备份恢复与优化 |
+| 10. 应用市场 | Portainer、Uptime Kuma、NPM、AList、Gitea、Minio、Redis 等 |
+| 11. 后台工作区 | Screen/Tmux、开机自启、日志查看、进程与 failed 服务检查 |
+| 12. 系统工具 | 时区/主机名/Swap/端口/DNS/磁盘/网卡/用户/时间同步 |
+| 13. 备份/恢复/迁移 | 目录备份恢复、rsync 迁移、数据库备份恢复、GPG 加解密 |
+| 14. 定时任务中心 | crontab 查看编辑、模板任务、日志检查、关键字删除 |
+| 15. 服务器集群控制 | 节点管理、批量执行、批量更新重启、SCP 分发、列表导出 |
+| 16. Oracle Cloud 工具集 | OCI 诊断、路由端口检查、metadata 检查、安全组建议 |
+| 17. 游戏开服脚本合集 | Minecraft、Palworld、Rust 等容器化部署与运维 |
+| 18. AI工作区(可选) | OpenWebUI、Ollama、AnythingLLM、One-API、Dify |
 
-```text
-========================================
-一键脚本
-========================================
-[落魄的脚本]
- 1. 落魄 Hysteria2 一键脚本
- 2. 落魄 Sing-box 一键脚本
-[第三方脚本]
- 3. 3X-UI 一键安装脚本
- 4. F佬 Sing-box 一键脚本
- 5. 老王 Sing-box 四合一
- 6. 勇哥 Sing-box 四合一
- 7. 233boy Sing-box 一键脚本
-----------------------------------------
- 0. 返回上级菜单
-========================================
-请输入脚本编号:
-```
+## 一键脚本清单（菜单 4）
 
-脚本索引文件：
+1. 落魄 Hysteria2 一键脚本
+2. 落魄 Sing-box 一键脚本
+3. 3X-UI 一键安装脚本
+4. F佬 Sing-box 一键脚本
+5. 老王 Sing-box 四合一
+6. 勇哥 Sing-box 四合一
+7. 233boy Sing-box 一键脚本
 
-`integrations/index.json`
+脚本索引：`integrations/index.json`
 
----
+## 更新与回滚
 
-## 6. Docker 管理（菜单 5）
+- 选择 `99` 可执行脚本更新。
+- Git 安装场景：`fetch + ff-only merge`，失败自动回滚。
+- 非 Git 安装场景：自动走远程引导更新（`https://z.evzzz.com`）。
 
-```text
-========================================
-Docker 管理
-========================================
- 1. 安装 Docker         5. Docker 状态
- 2. 启动 Docker         6. 查看容器列表
- 3. 停止 Docker         7. 查看镜像列表
- 4. 重启 Docker         8. 清理无用资源
-----------------------------------------
- 0. 返回上级
-========================================
-请输入选择:
-```
+## 卸载
 
----
-
-## 7. 更新与回滚
-
-菜单 `99` 更新逻辑：
-
-- Git 安装：`fetch/merge`，失败自动回滚到更新前 commit
-- 非 Git 安装：自动执行远程更新（`https://z.evzzz.com`）
-
----
-
-## 8. 卸载
-
-菜单 `88` 可一键卸载；也可手动执行：
+- 菜单 `88`：一键卸载。
+- 手动卸载：
 
 ```bash
 rm -rf /opt/luopo-toolkit
 rm -f /usr/local/bin/z
 ```
 
----
-
-## 9. 目录与日志
+## 目录与日志
 
 - 安装目录：`/opt/luopo-toolkit`
 - 启动命令：`/usr/local/bin/z`
+- 缓存目录：`data/cache/`
 - 操作日志：`logs/action.log`
 - 错误日志：`logs/error.log`
 
----
+## 开发与维护
 
-## 10. 开发与维护
-
-### 10.1 本地运行
+本地运行：
 
 ```bash
 bash toolkit.sh
 ```
 
-### 10.2 代码质量检查
+代码检查：
 
 ```bash
 bash scripts/lint.sh
+bash tests/smoke_menu.sh
 ```
 
-### 10.3 自动发布
+版本与发布：
 
-已内置 GitHub Actions 自动发布流程：
+- `VERSION` + `CHANGELOG.md` 管理版本历史。
+- GitHub Actions 执行 `ci` 与 `release` 工作流。
+- Release 页面：<https://github.com/LuoPoJunZi/toolkit/releases>
 
-- 仅核心代码改动时触发版本发布
-- 大改动（如主界面/核心重构）升级次版本（例如 `0.1.3 -> 0.2.0`）
-- 小改动（功能增量）升级补丁版本（例如 `0.1.3 -> 0.1.4`）
-- 自动更新 `VERSION` / `CHANGELOG`
-- 自动打 Tag
-- 自动创建 GitHub Release
-
-工作流文件：
-
-`/.github/workflows/release.yml`
-
----
-
-## 11. 开源协议
+## 开源协议
 
 本项目基于 [MIT License](LICENSE) 开源。

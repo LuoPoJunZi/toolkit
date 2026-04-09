@@ -36,7 +36,7 @@ print_two_col() {
 print_single_col() {
   local key="$1"
   local value="$2"
-  printf '%-8s : %s\n' "$key" "${value:-N/A}"
+  printf '%-10s : %s\n' "$key" "${value:-N/A}"
 }
 
 compact_dns() {
@@ -270,20 +270,29 @@ show_system_info() {
 
   print_sep
   print_head "系统信息"
-  print_two_col "主机名称" "$hostname" "系统版本" "$os_name"
-  print_two_col "内核版本" "$kernel" "运行时长" "$up_cn"
-  print_two_col "系统时间" "$now_str" "系统架构" "$cpu_arch"
+  print_single_col "主机名称" "$hostname"
+  print_single_col "系统版本" "$os_name"
+  print_single_col "内核版本" "$kernel"
+  print_single_col "运行时长" "$up_cn"
+  print_single_col "系统时间" "$now_str"
+  print_single_col "系统架构" "$cpu_arch"
   print_sep
   print_head "硬件与资源"
   print_single_col "处理器型" "$cpu_line"
-  print_two_col "系统负载" "$loadavg" "CPU 占用" "$cpu_usage"
-  print_two_col "物理内存" "$mem_pretty" "虚拟内存" "$swap_pretty"
+  print_single_col "系统负载" "$loadavg"
+  print_single_col "CPU 占用" "$cpu_usage"
+  print_single_col "物理内存" "$mem_pretty"
+  print_single_col "虚拟内存" "$swap_pretty"
   print_single_col "硬盘占用" "$disk_pretty"
   print_sep
   print_head "网络与位置"
-  print_two_col "IPv4地址" "$ipv4" "网络运营" "$isp"
-  print_two_col "IPv6地址" "$ipv6" "地理位置" "$location"
-  print_two_col "网络连接" "TCP: ${tcp_count} | UDP: ${udp_count}" "网络流量" "$flow_line"
-  print_two_col "网络算法" "$algo" "DNS地址" "${dns_compact:-N/A}"
+  print_single_col "IPv4地址" "$ipv4"
+  print_single_col "IPv6地址" "$ipv6"
+  print_single_col "网络运营" "$isp"
+  print_single_col "地理位置" "$location"
+  print_single_col "网络连接" "TCP: ${tcp_count} | UDP: ${udp_count}"
+  print_single_col "网络流量" "$flow_line"
+  print_single_col "网络算法" "$algo"
+  print_single_col "DNS地址" "${dns_compact:-N/A}"
   print_sep
 }

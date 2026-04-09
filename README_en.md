@@ -1,4 +1,4 @@
-﻿<h1 align="center">⚙️ LuoPo VPS Toolkit</h1>
+<h1 align="center">⚙️ LuoPo VPS Toolkit</h1>
 <div align="center">
 
 A terminal toolkit for VPS beginners.<br>
@@ -18,57 +18,25 @@ Goal: **ready to use after install, clean menus, and low-friction daily operatio
 
 ---
 
-## English Description
+## Introduction
 
-`LuoPo VPS Toolkit` is a minimalist VPS one-click toolbox for Linux beginners, supporting Ubuntu / Debian with system operations, Docker management, and curated script integrations.
+`LuoPo VPS Toolkit` is a pure Bash menu-driven toolbox for Ubuntu / Debian VPS operations. It is designed for beginner webmasters who want visual menus and one-click execution for common server tasks.
 
-## 1. What Is It? Who Is It For?
+## Quick Start
 
-`LuoPo VPS Toolkit` is a pure Bash VPS menu toolkit focused on common high-frequency operations:
-
-- System information query
-- System update and cleanup
-- One-click integration of excellent third-party scripts
-- Docker management
-- Toolkit update and uninstall
-
-Best for:
-
-- Beginner webmasters: fewer commands, more visual menus
-- Ops users: quick execution of standard operations
-- Script maintainers: easy extension on top of menu framework
-
----
-
-## 2. Capability Overview
-
-- Compact dual-column main menu layout
-- Structured system info panel (resource/network/location)
-- Grouped one-click script hub (LuoPo scripts / third-party scripts)
-- Safe third-party execution chain: download + SHA256 verification
-- Menu-based Docker common operations
-- Update mechanism:
-  - Git install: Git update + rollback on failure
-  - Non-git install: auto switch to remote update
-- One-click uninstall (`88`) with full cleanup
-
----
-
-## 3. Quick Start
-
-### 3.1 Install (Recommended)
+### 1) Install (Recommended)
 
 ```bash
 bash <(curl -fsSL https://z.evzzz.com)
 ```
 
-### 3.2 Fallback Install (GitHub Raw)
+### 2) Fallback Install (GitHub Raw)
 
 ```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/LuoPoJunZi/toolkit/main/install.sh)
 ```
 
-### 3.3 Launch Command
+### 3) Launch Command
 
 ```bash
 z
@@ -80,141 +48,109 @@ English UI:
 z en
 ```
 
-### 3.4 Quick Links
-
-- Install via domain: `bash <(curl -fsSL https://z.evzzz.com)`
-- Fallback install via GitHub: `bash <(curl -fsSL https://raw.githubusercontent.com/LuoPoJunZi/toolkit/main/install.sh)`
-- Launch toolkit: `z`
-- Launch in English: `z en`
-
----
-
-## 4. Main Menu Preview
+## Main Menu (Current)
 
 ```text
-========================================
-LuoPo VPS Toolkit v0.1.2 (快捷启动: z)
-========================================
- 1. 系统信息查询       4. 一键脚本
- 2. 系统全面更新       5. Docker 管理
- 3. 系统垃圾清理
-----------------------------------------
- 99. 更新脚本          88. 卸载脚本
-----------------------------------------
- 0. 退出
-========================================
-请输入选择:
+1. System info
+2. Full system update
+3. System cleanup
+4. One-click script hub
+5. Docker management
+6. Network acceleration
+7. Network test tools
+8. Security and protection
+9. LDNMP site builder
+10. App market
+11. Background workspace
+12. System tools
+13. Backup/Restore/Migrate
+14. Cron task center
+15. Server cluster control
+16. Oracle Cloud toolkit
+17. Game server scripts
+18. AI workspace (optional)
+99. Update toolkit
+88. Uninstall toolkit
+0. Exit script
 ```
 
----
+## Submenu Capabilities
 
-## 5. One-Click Scripts (Menu 4)
+| Menu | Highlights |
+| --- | --- |
+| 4. One-click script hub | Curated scripts with cached download + SHA256 verification before execution |
+| 5. Docker management | Install Docker, service control, container/image/network/volume view, logs, cleanup |
+| 6. Network acceleration | BBR/FQ, WARP, TCP Fast Open, egress checks, connection stats |
+| 7. Network test tools | Ping/Traceroute/MTR/DNS, TLS checks, port checks, speed test scripts |
+| 8. Security and protection | SSH/firewall checks, Fail2ban, root policy checks, auth logs, hardening helpers |
+| 9. LDNMP site builder | LDNMP/WordPress, nginx proxy/redirect, site backup/restore/optimization |
+| 10. App market | Portainer, Uptime Kuma, NPM, AList, Gitea, Minio, Redis, and more |
+| 11. Background workspace | Screen/Tmux sessions, startup services, logs, process and failed-service checks |
+| 12. System tools | Timezone/hostname/swap/ports/DNS/disk/NIC/users/time sync |
+| 13. Backup/Restore/Migrate | Directory backup/restore, rsync migration, DB dump/restore, GPG encrypt/decrypt |
+| 14. Cron task center | Crontab view/edit, templates, logs, keyword-based task deletion |
+| 15. Server cluster control | Node management, batch execute/update/reboot, SCP distribution, export list |
+| 16. Oracle Cloud toolkit | OCI diagnostics, routing/port checks, metadata checks, security group hints |
+| 17. Game server scripts | Containerized deployment and management for multiple game servers |
+| 18. AI workspace (optional) | OpenWebUI, Ollama, AnythingLLM, One-API, Dify |
 
-```text
-========================================
-一键脚本
-========================================
-[落魄的脚本]
- 1. 落魄 Hysteria2 一键脚本
- 2. 落魄 Sing-box 一键脚本
-[第三方脚本]
- 3. 3X-UI 一键安装脚本
- 4. F佬 Sing-box 一键脚本
- 5. 老王 Sing-box 四合一
- 6. 勇哥 Sing-box 四合一
- 7. 233boy Sing-box 一键脚本
-----------------------------------------
- 0. 返回上级菜单
-========================================
-请输入脚本编号:
-```
+## One-Click Script List (Menu 4)
 
-Script index file:
+1. LuoPo Hysteria2 install script
+2. LuoPo Sing-box install script
+3. 3X-UI install script
+4. Fscarmen Sing-box script
+5. Eooce Sing-box script
+6. Yongge Sing-box script
+7. 233boy Sing-box script
 
-`integrations/index.json`
+Script index: `integrations/index.json`
 
----
+## Update and Rollback
 
-## 6. Docker Management (Menu 5)
+- Use `99` to update toolkit.
+- Git install mode: `fetch + ff-only merge`, with rollback on failure.
+- Non-git install mode: fallback to remote bootstrap update (`https://z.evzzz.com`).
 
-```text
-========================================
-Docker 管理
-========================================
- 1. 安装 Docker         5. Docker 状态
- 2. 启动 Docker         6. 查看容器列表
- 3. 停止 Docker         7. 查看镜像列表
- 4. 重启 Docker         8. 清理无用资源
-----------------------------------------
- 0. 返回上级
-========================================
-请输入选择:
-```
+## Uninstall
 
----
-
-## 7. Update and Rollback
-
-Menu `99` update logic:
-
-- Git install: `fetch/merge`, rollback to previous commit on failure
-- Non-git install: auto run remote update (`https://z.evzzz.com`)
-
----
-
-## 8. Uninstall
-
-Use menu `88`, or run manually:
+- Use menu `88` for one-click uninstall.
+- Manual uninstall:
 
 ```bash
 rm -rf /opt/luopo-toolkit
 rm -f /usr/local/bin/z
 ```
 
----
-
-## 9. Directories and Logs
+## Directories and Logs
 
 - Install directory: `/opt/luopo-toolkit`
 - Launcher command: `/usr/local/bin/z`
+- Cache directory: `data/cache/`
 - Action log: `logs/action.log`
 - Error log: `logs/error.log`
 
----
+## Development and Maintenance
 
-## 10. Development and Maintenance
-
-### 10.1 Run Locally
+Run locally:
 
 ```bash
 bash toolkit.sh
 ```
 
-### 10.2 Code Quality Checks
+Quality checks:
 
 ```bash
 bash scripts/lint.sh
+bash tests/smoke_menu.sh
 ```
 
-### 10.3 Automatic Release
+Version and release:
 
-Built-in GitHub Actions auto-release workflow:
+- Version history is managed by `VERSION` + `CHANGELOG.md`.
+- GitHub Actions runs `ci` and `release` workflows.
+- Release page: <https://github.com/LuoPoJunZi/toolkit/releases>
 
-- Trigger version release only on core code changes
-- Large changes (main UI/core refactor) bump minor version (e.g. `0.1.3 -> 0.2.0`)
-- Small changes (incremental feature updates) bump patch version (e.g. `0.1.3 -> 0.1.4`)
-- Auto update `VERSION` / `CHANGELOG`
-- Auto create tag
-- Auto create GitHub Release
+## License
 
-Workflow file:
-
-`/.github/workflows/release.yml`
-
----
-
-## 11. License
-
-This project is released under [MIT License](LICENSE).
-
-
+This project is released under the [MIT License](LICENSE).
