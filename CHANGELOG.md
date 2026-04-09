@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.3
+- Auto release: v0.3.3
+- feat: expand docker management suite and add route smoke checks (9cc6233)
+
 ## 0.3.2
 - Auto release: v0.3.2
 - feat: switch system info to single-column layout and refresh READMEs (dd0a354)
