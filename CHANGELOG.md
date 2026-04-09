@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.0
+- Auto release: v0.4.0
+- fix: avoid double-enter on menu return paths (ec443e2)
+
 ## 0.3.3
 - Auto release: v0.3.3
 - feat: expand docker management suite and add route smoke checks (9cc6233)
