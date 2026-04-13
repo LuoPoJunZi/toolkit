@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.5.0
+- Auto release: v0.5.0
+- feat: mirror kejilion menus 4-14 via compatibility layer (c9624a9)
+- Update README_en.md (9362638)
+- Update README.md (cf7a116)
+
 ## 0.4.0
 - Auto release: v0.4.0
 - fix: avoid double-enter on menu return paths (ec443e2)
