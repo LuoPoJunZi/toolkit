@@ -27,7 +27,7 @@
 ### 1) 一键安装（推荐）
 
 ```bash
-bash <(curl -fsSL https://z.evzzz.com)
+bash <(curl -fsSL z.evzzz.com)
 ```
 
 ### 2) 备用安装（GitHub Raw）
