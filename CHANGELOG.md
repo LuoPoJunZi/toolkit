@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.5.1
+- Auto release: v0.5.1
+- fix: support remote bootstrap install via z domain (013120f)
+
 ## 0.5.0
 - Auto release: v0.5.0
 - feat: mirror kejilion menus 4-14 via compatibility layer (c9624a9)
