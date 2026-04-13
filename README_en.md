@@ -27,7 +27,7 @@ Goal: **ready to use after install, clean menus, and low-friction daily operatio
 ### 1) Install (Recommended)
 
 ```bash
-bash <(curl -fsSL https://z.evzzz.com)
+bash <(curl -fsSL z.evzzz.com)
 ```
 
 ### 2) Fallback Install (GitHub Raw)
