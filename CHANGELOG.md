@@ -3,6 +3,9 @@
 ## 0.4.0
 - Auto release: v0.4.0
 - fix: avoid double-enter on menu return paths (ec443e2)
+- feat: replace toolkit menus 5-15 with a kejilion/sh 4-14 compatibility layer
+- feat: vendor upstream `kejilion.sh` in library mode with telemetry/self-install disabled
+- docs: add upstream attribution notes and sync zh/en README to the cloned menu structure
 
 ## 0.3.3
 - Auto release: v0.3.3

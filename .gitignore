@@ -1,5 +1,6 @@
 # Local working memory between user and Codex (do not commit)
 LOCAL_SESSION_MEMORY.md
+kejilion_upstream.sh
 
 # Runtime data (generated on target VPS/local testing)
 data/state/

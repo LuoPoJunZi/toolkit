@@ -7,7 +7,7 @@ Goal: **ready to use after install, clean menus, and low-friction daily operatio
 [![Language](https://img.shields.io/badge/Language-Bash-4EAA25?style=flat-square&logo=gnu-bash)](https://www.gnu.org/software/bash/)
 [![Platform](https://img.shields.io/badge/Platform-Ubuntu%20%7C%20Debian-0A66C2?style=flat-square)](#)
 [![Version](https://img.shields.io/github/v/release/LuoPoJunZi/toolkit?display_name=tag&style=flat-square&label=Version)](https://github.com/LuoPoJunZi/toolkit/releases)
-[![License](https://img.shields.io/badge/License-MIT-blue.svg?style=flat-square)](LICENSE)
+[![License](https://img.shields.io/badge/License-GPL--3.0-blue.svg?style=flat-square)](LICENSE)
 
 <br>
 
@@ -42,6 +42,12 @@ bash <(curl -fsSL https://raw.githubusercontent.com/LuoPoJunZi/toolkit/main/inst
 z
 ```
 
+Compatibility command used by the mirrored `kejilion` feature layer:
+
+```bash
+k
+```
+
 English UI:
 
 ```bash
@@ -55,44 +61,45 @@ z en
 2. Full system update
 3. System cleanup
 4. One-click script hub
-5. Docker management
-6. Network acceleration
-7. Network test tools
-8. Security and protection
-9. LDNMP site builder
-10. App market
-11. Background workspace
-12. System tools
-13. Backup/Restore/Migrate
-14. Cron task center
+5. Basic tools
+6. BBR management
+7. Docker management
+8. WARP management
+9. Test script suite
+10. Oracle Cloud tools
+11. LDNMP site builder
+12. App market
+13. Background workspace
+14. System tools
 15. Server cluster control
-16. Oracle Cloud toolkit
-17. Game server scripts
-18. AI workspace (optional)
 99. Update toolkit
 88. Uninstall toolkit
 0. Exit script
 ```
+
+## Clone Layer Notes
+
+- Main menu `5-15` now mirrors the `4-14` feature set from `kejilion/sh`.
+- This compatibility layer intentionally keeps the upstream menu structure, submenu depth, external-script integrations, and operating style as close as possible for later second-stage customization.
+- Upstream source and local adaptation notes are documented in [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md).
+- Local adaptations currently include disabling upstream telemetry, disabling upstream self-install side effects, and wrapping the upstream script as a safely loadable library under `LuoPo VPS Toolkit`.
 
 ## Submenu Capabilities
 
 | Menu | Highlights |
 | --- | --- |
 | 4. One-click script hub | Curated scripts with cached download + SHA256 verification before execution |
-| 5. Docker management | Install/upgrade, global status, container/image/network/volume management, mirror switch, daemon config, IPv6 toggle, backup/migrate/restore, and uninstall |
-| 6. Network acceleration | BBR/FQ, WARP, TCP Fast Open, egress checks, connection stats |
-| 7. Network test tools | Ping/Traceroute/MTR/DNS, TLS checks, port checks, speed test scripts |
-| 8. Security and protection | SSH/firewall checks, Fail2ban, root policy checks, auth logs, hardening helpers |
-| 9. LDNMP site builder | LDNMP/WordPress, nginx proxy/redirect, site backup/restore/optimization |
-| 10. App market | Portainer, Uptime Kuma, NPM, AList, Gitea, Minio, Redis, and more |
-| 11. Background workspace | Screen/Tmux sessions, startup services, logs, process and failed-service checks |
-| 12. System tools | Timezone/hostname/swap/ports/DNS/disk/NIC/users/time sync |
-| 13. Backup/Restore/Migrate | Directory backup/restore, rsync migration, DB dump/restore, GPG encrypt/decrypt |
-| 14. Cron task center | Crontab view/edit, templates, logs, keyword-based task deletion |
-| 15. Server cluster control | Node management, batch execute/update/reboot, SCP distribution, export list |
-| 16. Oracle Cloud toolkit | OCI diagnostics, routing/port checks, metadata checks, security group hints |
-| 17. Game server scripts | Containerized deployment and management for multiple game servers |
-| 18. AI workspace (optional) | OpenWebUI, Ollama, AnythingLLM, One-API, Dify |
+| 5. Basic tools | Common packages, terminal utilities, editors, small CLI tools, bulk install/remove |
+| 6. BBR management | BBR / BBRv3 management and upstream network-acceleration script integration |
+| 7. Docker management | Install/upgrade, global status, container/image/network/volume management, IPv6, backup/migrate/restore |
+| 8. WARP management | Upstream WARP management script integration |
+| 9. Test script suite | Unlock tests, route tracing, bandwidth tests, hardware benchmarks, all-in-one test suites |
+| 10. Oracle Cloud tools | OCI keepalive helpers, DD reinstall, root login helpers, IPv6 recovery |
+| 11. LDNMP site builder | LDNMP, WordPress, reverse proxy, redirects, full-site backup/restore, security and tuning |
+| 12. App market | Upstream app-market driven deployment for a large catalog of Dockerized apps |
+| 13. Background workspace | Tmux workspaces, persistent SSH mode, custom workspaces, command injection |
+| 14. System tools | SSH, timezone, hostname, ports, swap, users, firewall, logs, environment variables, and more |
+| 15. Server cluster control | Multi-node inventory, batch tasks, bulk system maintenance, and synchronized operations |
 
 ## One-Click Script List (Menu 4)
 
@@ -120,12 +127,14 @@ Script index: `integrations/index.json`
 ```bash
 rm -rf /opt/luopo-toolkit
 rm -f /usr/local/bin/z
+rm -f /usr/local/bin/k
 ```
 
 ## Directories and Logs
 
 - Install directory: `/opt/luopo-toolkit`
 - Launcher command: `/usr/local/bin/z`
+- Compatibility launcher: `/usr/local/bin/k`
 - Cache directory: `data/cache/`
 - Action log: `logs/action.log`
 - Error log: `logs/error.log`
@@ -153,4 +162,5 @@ Version and release:
 
 ## License
 
-This project is released under the [MIT License](LICENSE).
+- This project is released under the [GPL-3.0 License](LICENSE).
+- The mirrored `5-15` compatibility layer includes Apache-2.0 licensed upstream code from `kejilion/sh` plus local adaptations. See [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md).
