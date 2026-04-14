@@ -5,7 +5,7 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 
 export KEJILION_LIBRARY_MODE=1
 # shellcheck disable=SC1091
-source "$ROOT_DIR/vendor/kejilion.sh"
+source "$ROOT_DIR/vendor/luopo.sh"
 export ENABLE_STATS="false"
 set +e +u
 

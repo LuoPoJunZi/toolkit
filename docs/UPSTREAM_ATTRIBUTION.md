@@ -10,7 +10,7 @@ This repository now includes a compatibility layer derived from the following up
 
 ## Local Adaptations
 
-The vendored compatibility layer in [`vendor/kejilion.sh`](../vendor/kejilion.sh) is not a byte-for-byte copy. It includes local changes required to make the code safely usable inside `LuoPo VPS Toolkit`:
+The vendored compatibility layer in [`vendor/luopo.sh`](../vendor/luopo.sh) is not a byte-for-byte copy. It includes local changes required to make the code safely usable inside `LuoPo VPS Toolkit`:
 
 - disabled upstream telemetry by forcing `ENABLE_STATS="false"`
 - disabled upstream self-install / launcher-copy side effects when loaded as a library
@@ -19,8 +19,8 @@ The vendored compatibility layer in [`vendor/kejilion.sh`](../vendor/kejilion.sh
 
 ## Integration Layout
 
-- host bridge: [`modules/kejilion_bridge.sh`](../modules/kejilion_bridge.sh)
-- vendored upstream snapshot: [`vendor/kejilion.sh`](../vendor/kejilion.sh)
+- host bridge: [`modules/luopo_bridge.sh`](../modules/luopo_bridge.sh)
+- vendored upstream snapshot: [`vendor/luopo.sh`](../vendor/luopo.sh)
 - LuoPo host menu entry wiring: [`core/menu.sh`](../core/menu.sh)
 
 ## Notes

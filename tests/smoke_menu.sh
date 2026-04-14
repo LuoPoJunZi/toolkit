@@ -3,8 +3,8 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MENU_FILE="$ROOT_DIR/core/menu.sh"
-BRIDGE_FILE="$ROOT_DIR/modules/kejilion_bridge.sh"
-VENDOR_FILE="$ROOT_DIR/vendor/kejilion.sh"
+BRIDGE_FILE="$ROOT_DIR/modules/luopo_bridge.sh"
+VENDOR_FILE="$ROOT_DIR/vendor/luopo.sh"
 K_COMPAT_FILE="$ROOT_DIR/compat/k.sh"
 INSTALL_FILE="$ROOT_DIR/install.sh"
 UNINSTALL_FILE="$ROOT_DIR/core/uninstall.sh"
@@ -67,12 +67,12 @@ main() {
   assert_contains_fixed "$MENU_FILE" 'run_action "cluster_control_suite_menu" cluster_control_suite_menu' "route 15 mismatch"
 
   assert_contains_fixed "$BRIDGE_FILE" 'source "$KEJILION_VENDOR_FILE"' "vendor source missing"
-  for fn in ensure_kejilion_vendor_loaded run_kejilion_menu basic_tools_menu bbr_management_menu docker_management_menu warp_management_menu network_test_suite_menu oracle_cloud_suite_menu ldnmp_site_suite_menu app_marketplace_menu workspace_suite_menu system_tools_suite_menu cluster_control_suite_menu; do
+  for fn in ensure_luopo_vendor_loaded run_luopo_compat_menu basic_tools_menu bbr_management_menu docker_management_menu warp_management_menu network_test_suite_menu oracle_cloud_suite_menu ldnmp_site_suite_menu app_marketplace_menu workspace_suite_menu system_tools_suite_menu cluster_control_suite_menu; do
     assert_contains_regex "$BRIDGE_FILE" "^${fn}\\(\\) \\{" "missing bridge function ${fn}"
   done
 
   assert_contains_fixed "$BRIDGE_FILE" 'bash menu.sh [option] [lisence/url/token]' "warp bridge command mismatch"
-  assert_contains_fixed "$K_COMPAT_FILE" 'source "$ROOT_DIR/vendor/kejilion.sh"' "k compat should source vendor layer"
+  assert_contains_fixed "$K_COMPAT_FILE" 'source "$ROOT_DIR/vendor/luopo.sh"' "k compat should source vendor layer"
   assert_contains_fixed "$INSTALL_FILE" 'K_COMPAT_PATH="/usr/local/bin/k"' "install should create k compatibility launcher"
   assert_contains_fixed "$INSTALL_FILE" 'REPO_ARCHIVE_URL="${LUOPO_REPO_ARCHIVE_URL:-https://codeload.github.com/LuoPoJunZi/toolkit/tar.gz/refs/heads/main}"' "install should support remote bootstrap archive"
   assert_contains_fixed "$INSTALL_FILE" 'bootstrap_source_tree() {' "install bootstrap function missing"

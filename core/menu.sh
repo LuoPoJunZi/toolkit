@@ -22,7 +22,7 @@ source "$ROOT_DIR/modules/system_cleanup.sh"
 # shellcheck disable=SC1091
 source "$ROOT_DIR/modules/scripts_hub.sh"
 # shellcheck disable=SC1091
-source "$ROOT_DIR/modules/kejilion_bridge.sh"
+source "$ROOT_DIR/modules/luopo_bridge.sh"
 run_action() {
   local action_name="$1"
   shift
