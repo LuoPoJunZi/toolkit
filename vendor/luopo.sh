@@ -132,7 +132,7 @@ UserLicenseAgreement() {
 	clear
 	echo -e "${gl_kjlan}欢迎使用LuoPo VPS Toolkit${gl_bai}"
 	echo "首次使用脚本，请先阅读并同意用户许可协议。"
-	echo "用户许可协议: https://blog.kejilion.pro/user-license-agreement/"
+	echo "用户许可协议: https://github.com/LuoPoJunZi/toolkit/blob/main/LICENSE"
 	echo -e "----------------------"
 	read -e -p "是否同意以上条款？(y/n): " user_input
 
@@ -5143,7 +5143,7 @@ sshkey_panel() {
 	  	  IS_KEY_ENABLED="${gl_hui}未启用${gl_bai}"
 	  fi
   	  echo -e "用户密钥登录模式 ${IS_KEY_ENABLED}"
-  	  echo "进阶玩法: https://blog.kejilion.pro/ssh-key"
+	  echo "进阶玩法: https://github.com/LuoPoJunZi/toolkit"
   	  echo "------------------------------------------------"
   	  echo "将会生成密钥对，更安全的方式SSH登录"
 	  echo "------------------------"
@@ -10051,8 +10051,8 @@ moltbot_menu() {
 		local update_message=$(check_openclaw_update)
 
 		echo "======================================="
-		echo -e "🦞 OPENCLAW 管理工具 by KEJILION 🦞"
-		echo -e "💡 终端执行 \033[1;33mk claw\033[0m 快速进入菜单"
+		echo -e "🦞 OPENCLAW 管理工具 by LuoPo 🦞"
+		echo -e "💡 终端执行 \033[1;33mz claw\033[0m 快速进入菜单"
 		echo -e "$install_status $running_status $update_message"
 		echo "======================================="
 		echo "1.  安装"
@@ -21557,13 +21557,12 @@ echo -e "${gl_lan}GNAME 8.8刀首年COM域名 6.68刀首年CC域名${gl_bai}"
 echo -e "${gl_bai}网址: https://www.gname.com/register?tt=86836&ttcode=KEJILION86836&ttbj=sh${gl_bai}"
 echo "------------------------"
 echo ""
-echo -e "科技lion周边"
+echo -e "LuoPo 项目入口"
 echo "------------------------"
-echo -e "${gl_kjlan}B站: ${gl_bai}https://b23.tv/2mqnQyh              ${gl_kjlan}油管: ${gl_bai}https://www.youtube.com/@kejilion${gl_bai}"
-echo -e "${gl_kjlan}官网: ${gl_bai}https://kejilion.pro/              ${gl_kjlan}导航: ${gl_bai}https://dh.kejilion.pro/${gl_bai}"
-echo -e "${gl_kjlan}博客: ${gl_bai}https://blog.kejilion.pro/         ${gl_kjlan}软件中心: ${gl_bai}https://app.kejilion.pro/${gl_bai}"
+echo -e "${gl_kjlan}GitHub: ${gl_bai}https://github.com/LuoPoJunZi/toolkit${gl_bai}"
+echo -e "${gl_kjlan}备用安装: ${gl_bai}https://raw.githubusercontent.com/LuoPoJunZi/toolkit/main/install.sh${gl_bai}"
 echo "------------------------"
-echo -e "${gl_kjlan}脚本官网: ${gl_bai}https://kejilion.sh            ${gl_kjlan}GitHub地址: ${gl_bai}${gh_https_url}github.com/kejilion/sh${gl_bai}"
+echo -e "${gl_kjlan}快捷启动: ${gl_bai}https://z.evzzz.com            ${gl_kjlan}版本仓库: ${gl_bai}https://github.com/LuoPoJunZi/toolkit${gl_bai}"
 echo "------------------------"
 echo ""
 }
@@ -21770,11 +21769,11 @@ kejilion_sh() {
 while true; do
 clear
 echo -e "${gl_kjlan}"
-echo "╦╔═╔═╗ ╦╦╦  ╦╔═╗╔╗╔ ╔═╗╦ ╦"
-echo "╠╩╗║╣  ║║║  ║║ ║║║║ ╚═╗╠═╣"
-echo "╩ ╩╚═╝╚╝╩╩═╝╩╚═╝╝╚╝o╚═╝╩ ╩"
-echo -e "科技lion脚本工具箱 v$sh_v"
-echo -e "命令行输入${gl_huang}k${gl_kjlan}可快速启动脚本${gl_bai}"
+echo "╦  ╦ ╦╔═╗╔═╗╔═╗ ╦ ╦╔═╗"
+echo "║  ║ ║║ ║╠═╝║ ║ ╚╦╝╠═╝"
+echo "╩═╝╚═╝╚═╝╩  ╚═╝  ╩ ╩"
+echo -e "LuoPo VPS Toolkit v$sh_v"
+echo -e "命令行输入${gl_huang}z${gl_kjlan}可快速启动脚本${gl_bai}"
 echo -e "${gl_kjlan}------------------------${gl_bai}"
 echo -e "${gl_kjlan}1.   ${gl_bai}系统信息查询"
 echo -e "${gl_kjlan}2.   ${gl_bai}系统更新"
