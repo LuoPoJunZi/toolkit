@@ -50,7 +50,7 @@ run_command() {
 
 
 canshu_v6() {
-	if grep -q '^canshu="V6"' /usr/local/bin/k > /dev/null 2>&1; then
+	if grep -q '^canshu="V6"' /usr/local/bin/z > /dev/null 2>&1; then
 		sed -i 's/^canshu="default"/canshu="V6"/' ~/kejilion.sh
 	elif grep -q '^canshu="V6"' ~/kejilion.sh.bak > /dev/null 2>&1; then
 		sed -i 's/^canshu="default"/canshu="V6"/' ~/kejilion.sh
@@ -59,7 +59,7 @@ canshu_v6() {
 
 
 CheckFirstRun_true() {
-	if grep -q '^permission_granted="true"' /usr/local/bin/k > /dev/null 2>&1; then
+	if grep -q '^permission_granted="true"' /usr/local/bin/z > /dev/null 2>&1; then
 		sed -i 's/^permission_granted="false"/permission_granted="true"/' ~/kejilion.sh
 	elif grep -q '^permission_granted="true"' ~/kejilion.sh.bak > /dev/null 2>&1; then
 		sed -i 's/^permission_granted="false"/permission_granted="true"/' ~/kejilion.sh
@@ -95,7 +95,7 @@ send_stats() {
 
 yinsiyuanquan2() {
 
-if grep -q '^ENABLE_STATS="false"' /usr/local/bin/k > /dev/null 2>&1; then
+if grep -q '^ENABLE_STATS="false"' /usr/local/bin/z > /dev/null 2>&1; then
 	sed -i 's/^ENABLE_STATS="false"/ENABLE_STATS="false"/' ~/kejilion.sh
 elif grep -q '^ENABLE_STATS="false"' ~/kejilion.sh.bak > /dev/null 2>&1; then
 	sed -i 's/^ENABLE_STATS="false"/ENABLE_STATS="false"/' ~/kejilion.sh
@@ -115,14 +115,14 @@ sed -i '/^alias k=/d' ~/.bashrc > /dev/null 2>&1
 sed -i '/^alias k=/d' ~/.profile > /dev/null 2>&1
 sed -i '/^alias k=/d' ~/.bash_profile > /dev/null 2>&1
 cp -f ./kejilion.sh ~/kejilion.sh > /dev/null 2>&1
-cp -f ~/kejilion.sh /usr/local/bin/k > /dev/null 2>&1
-ln -sf /usr/local/bin/k /usr/bin/k > /dev/null 2>&1
+cp -f ~/kejilion.sh /usr/local/bin/z > /dev/null 2>&1
+ln -sf /usr/local/bin/z /usr/bin/z > /dev/null 2>&1
 fi
 
 
 
 CheckFirstRun_false() {
-	if grep -q '^permission_granted="false"' /usr/local/bin/k > /dev/null 2>&1; then
+	if grep -q '^permission_granted="false"' /usr/local/bin/z > /dev/null 2>&1; then
 		UserLicenseAgreement
 	fi
 }
@@ -140,7 +140,7 @@ UserLicenseAgreement() {
 	if [ "$user_input" = "y" ] || [ "$user_input" = "Y" ]; then
 		send_stats "许可同意"
 		sed -i 's/^permission_granted="false"/permission_granted="true"/' ~/kejilion.sh
-		sed -i 's/^permission_granted="false"/permission_granted="true"/' /usr/local/bin/k
+		sed -i 's/^permission_granted="false"/permission_granted="true"/' /usr/local/bin/z
 	else
 		send_stats "许可拒绝"
 		clear
@@ -21134,13 +21134,13 @@ EOF
 			  send_stats "卸载LuoPo VPS Toolkit"
 			  echo "卸载LuoPo VPS Toolkit"
 			  echo "------------------------------------------------"
-			  echo "将彻底卸载LuoPo VPS Toolkit 以及 z/k 启动命令"
+			  echo "将彻底卸载LuoPo VPS Toolkit 以及 z 启动命令"
 			  read -e -p "确定继续吗？(Y/N): " choice
 
 			  case "$choice" in
 				[Yy])
 				  clear
-				  rm -f /usr/local/bin/k /usr/local/bin/z
+				  rm -f /usr/local/bin/k /usr/bin/k /usr/local/bin/z /usr/bin/z
 				  rm -rf /opt/luopo-toolkit
 				  echo "脚本已卸载，再见！"
 				  break_end
@@ -21694,8 +21694,8 @@ while true; do
 				canshu_v6
 				CheckFirstRun_true
 				yinsiyuanquan2
-				cp -f ~/kejilion.sh /usr/local/bin/k > /dev/null 2>&1
-				ln -sf /usr/local/bin/k /usr/bin/k > /dev/null 2>&1
+				cp -f ~/kejilion.sh /usr/local/bin/z > /dev/null 2>&1
+				ln -sf /usr/local/bin/z /usr/bin/z > /dev/null 2>&1
 				echo -e "${gl_lv}脚本已更新到最新版本！${gl_huang}v$sh_v_new${gl_bai}"
 				send_stats "脚本已经最新$sh_v_new"
 			else
@@ -21735,8 +21735,8 @@ while true; do
 			fi
 			# 从旧脚本恢复 permission_granted 和 ENABLE_STATS 设置
 			SH_Update_task="$SH_Update_task && grep -q 'permission_granted=\"true\"' ~/kejilion.sh.bak 2>/dev/null && sed -i 's/permission_granted=\"false\"/permission_granted=\"true\"/' ~/kejilion.sh; grep -q 'ENABLE_STATS=\"false\"' ~/kejilion.sh.bak 2>/dev/null && sed -i 's/ENABLE_STATS=\"true\"/ENABLE_STATS=\"false\"/' ~/kejilion.sh"
-			# 部署到 /usr/local/bin/k 和 /usr/bin/k
-			SH_Update_task="$SH_Update_task; cp -f ~/kejilion.sh /usr/local/bin/k 2>/dev/null; ln -sf /usr/local/bin/k /usr/bin/k 2>/dev/null"
+			# 部署到 /usr/local/bin/z 和 /usr/bin/z
+			SH_Update_task="$SH_Update_task; cp -f ~/kejilion.sh /usr/local/bin/z 2>/dev/null; ln -sf /usr/local/bin/z /usr/bin/z 2>/dev/null"
 			# 下载失败时清理临时文件
 			SH_Update_task="$SH_Update_task || rm -f \"\$tmp\" 2>/dev/null"
 
@@ -21880,7 +21880,7 @@ echo "ROOT密钥管理        z sshkey"
 echo "SSH公钥导入(URL)    z sshkey <url>"
 echo "SSH公钥导入(GitHub) z sshkey github <user>"
 echo ""
-echo "兼容说明            k 仍可作为兼容命令使用"
+echo "快捷启动命令        请统一使用 z"
 
 }
 
@@ -22148,10 +22148,10 @@ else
 				* )
 					echo "错误：未知参数 '$1'"
 					echo "用法："
-					echo "  k sshkey                  进入交互菜单"
-					echo "  k sshkey \"<pubkey>\"     直接导入 SSH 公钥"
-					echo "  k sshkey <url>            从 URL 导入 SSH 公钥"
-					echo "  k sshkey github <user>    从 GitHub 导入 SSH 公钥"
+          echo "  z sshkey                  进入交互菜单"
+          echo "  z sshkey \"<pubkey>\"     直接导入 SSH 公钥"
+          echo "  z sshkey <url>            从 URL 导入 SSH 公钥"
+          echo "  z sshkey github <user>    从 GitHub 导入 SSH 公钥"
 					;;
 			esac
 

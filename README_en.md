@@ -42,12 +42,6 @@ bash <(curl -fsSL https://raw.githubusercontent.com/LuoPoJunZi/toolkit/main/inst
 z
 ```
 
-Compatibility command used by the mirrored `kejilion` feature layer:
-
-```bash
-k
-```
-
 English UI:
 
 ```bash
@@ -127,14 +121,12 @@ Script index: `integrations/index.json`
 ```bash
 rm -rf /opt/luopo-toolkit
 rm -f /usr/local/bin/z
-rm -f /usr/local/bin/k
 ```
 
 ## Directories and Logs
 
 - Install directory: `/opt/luopo-toolkit`
 - Launcher command: `/usr/local/bin/z`
-- Compatibility launcher: `/usr/local/bin/k`
 - Cache directory: `data/cache/`
 - Action log: `logs/action.log`
 - Error log: `logs/error.log`

@@ -30,9 +30,15 @@ desktop.ini
 .env
 .env.*
 !.env.example
+.envrc
+.direnv/
 
 # Archives often generated during manual packaging
 *.zip
 *.tar
 *.tar.gz
 *.tgz
+
+# Patch / merge leftovers
+*.orig
+*.rej

@@ -5,7 +5,6 @@ ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MENU_FILE="$ROOT_DIR/core/menu.sh"
 BRIDGE_FILE="$ROOT_DIR/modules/luopo_bridge.sh"
 VENDOR_FILE="$ROOT_DIR/vendor/luopo.sh"
-K_COMPAT_FILE="$ROOT_DIR/compat/k.sh"
 INSTALL_FILE="$ROOT_DIR/install.sh"
 UNINSTALL_FILE="$ROOT_DIR/core/uninstall.sh"
 
@@ -34,11 +33,19 @@ assert_contains_regex() {
   grep -Eq "$pattern" "$file" || fail "$desc (pattern: $pattern)"
 }
 
+assert_not_contains_fixed() {
+  file="$1"
+  text="$2"
+  desc="$3"
+  if grep -Fq "$text" "$file"; then
+    fail "$desc (unexpected: $text)"
+  fi
+}
+
 main() {
   assert_file "$MENU_FILE"
   assert_file "$BRIDGE_FILE"
   assert_file "$VENDOR_FILE"
-  assert_file "$K_COMPAT_FILE"
   assert_file "$INSTALL_FILE"
   assert_file "$UNINSTALL_FILE"
 
@@ -66,18 +73,18 @@ main() {
   assert_contains_fixed "$MENU_FILE" 'run_action "system_tools_suite_menu" system_tools_suite_menu' "route 14 mismatch"
   assert_contains_fixed "$MENU_FILE" 'run_action "cluster_control_suite_menu" cluster_control_suite_menu' "route 15 mismatch"
 
-  assert_contains_fixed "$BRIDGE_FILE" 'source "$KEJILION_VENDOR_FILE"' "vendor source missing"
+  assert_contains_fixed "$BRIDGE_FILE" 'source "$LUOPO_VENDOR_FILE"' "vendor source missing"
   for fn in ensure_luopo_vendor_loaded run_luopo_compat_menu basic_tools_menu bbr_management_menu docker_management_menu warp_management_menu network_test_suite_menu oracle_cloud_suite_menu ldnmp_site_suite_menu app_marketplace_menu workspace_suite_menu system_tools_suite_menu cluster_control_suite_menu; do
     assert_contains_regex "$BRIDGE_FILE" "^${fn}\\(\\) \\{" "missing bridge function ${fn}"
   done
 
   assert_contains_fixed "$BRIDGE_FILE" 'bash menu.sh [option] [lisence/url/token]' "warp bridge command mismatch"
-  assert_contains_fixed "$K_COMPAT_FILE" 'source "$ROOT_DIR/vendor/luopo.sh"' "k compat should source vendor layer"
-  assert_contains_fixed "$INSTALL_FILE" 'K_COMPAT_PATH="/usr/local/bin/k"' "install should create k compatibility launcher"
+  assert_not_contains_fixed "$INSTALL_FILE" 'K_COMPAT_PATH="/usr/local/bin/k"' "install should not define k compatibility launcher"
+  assert_contains_fixed "$INSTALL_FILE" 'rm -f /usr/local/bin/k /usr/bin/k' "install should cleanup legacy k launchers"
   assert_contains_fixed "$INSTALL_FILE" 'REPO_ARCHIVE_URL="${LUOPO_REPO_ARCHIVE_URL:-https://codeload.github.com/LuoPoJunZi/toolkit/tar.gz/refs/heads/main}"' "install should support remote bootstrap archive"
   assert_contains_fixed "$INSTALL_FILE" 'bootstrap_source_tree() {' "install bootstrap function missing"
   assert_contains_fixed "$INSTALL_FILE" 'SOURCE_DIR="$extracted_dir"' "install should switch to downloaded source tree"
-  assert_contains_fixed "$UNINSTALL_FILE" 'K_COMPAT_LAUNCHER="/usr/local/bin/k"' "uninstall should remove k compatibility launcher"
+  assert_contains_fixed "$UNINSTALL_FILE" 'rm -f /usr/local/bin/k /usr/bin/k' "uninstall should cleanup legacy k launchers"
   assert_contains_fixed "$VENDOR_FILE" 'ENABLE_STATS="false"' "vendor telemetry should be disabled"
   assert_contains_fixed "$VENDOR_FILE" 'if [ -z "${KEJILION_LIBRARY_MODE:-}" ]; then' "vendor library guard missing"
   assert_contains_fixed "$VENDOR_FILE" 'if [ -n "${KEJILION_LIBRARY_MODE:-}" ]; then' "vendor main-menu exit bridge missing"
@@ -86,7 +93,7 @@ main() {
   assert_contains_fixed "$VENDOR_FILE" '欢迎使用LuoPo VPS Toolkit' "vendor welcome text should use LuoPo branding"
   assert_contains_fixed "$VENDOR_FILE" 'z命令高级用法' "vendor system tools help label should use z"
   assert_contains_fixed "$VENDOR_FILE" '以下是 z 命令参考用例：' "vendor command help should use z examples"
-  assert_contains_fixed "$VENDOR_FILE" '兼容说明            k 仍可作为兼容命令使用' "vendor command help should mention k compatibility"
+  assert_contains_fixed "$VENDOR_FILE" '快捷启动命令        请统一使用 z' "vendor command help should only mention z"
   assert_contains_fixed "$VENDOR_FILE" 'GitHub Issues: https://github.com/LuoPoJunZi/toolkit/issues' "vendor feedback entry should point to toolkit issues"
   assert_contains_fixed "$VENDOR_FILE" '反馈渠道' "vendor feedback menu label should be adapted"
   assert_contains_fixed "$VENDOR_FILE" '欢迎到仓库提交适配: ${gl_huang}https://github.com/LuoPoJunZi/toolkit${gl_bai}' "vendor app-market contribution hint should be adapted"

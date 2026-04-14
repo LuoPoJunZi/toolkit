@@ -4,7 +4,6 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 INSTALL_DIR="${INSTALL_DIR:-/opt/luopo-toolkit}"
 BIN_PATH="/usr/local/bin/z"
-K_COMPAT_PATH="/usr/local/bin/k"
 AUTO_LAUNCH="${AUTO_LAUNCH:-1}"
 REPO_ARCHIVE_URL="${LUOPO_REPO_ARCHIVE_URL:-https://codeload.github.com/LuoPoJunZi/toolkit/tar.gz/refs/heads/main}"
 SOURCE_DIR="$SCRIPT_DIR"
@@ -88,13 +87,7 @@ set -euo pipefail
 exec bash "$INSTALL_DIR/toolkit.sh" "\$@"
 EOF
   chmod +x "$BIN_PATH"
-
-  cat >"$K_COMPAT_PATH" <<EOF
-#!/usr/bin/env bash
-set -euo pipefail
-exec bash "$INSTALL_DIR/compat/k.sh" "\$@"
-EOF
-  chmod +x "$K_COMPAT_PATH"
+  rm -f /usr/local/bin/k /usr/bin/k
 }
 
 main() {

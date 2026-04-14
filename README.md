@@ -42,12 +42,6 @@ bash <(curl -fsSL https://raw.githubusercontent.com/LuoPoJunZi/toolkit/main/inst
 z
 ```
 
-兼容命令（供复刻的 `kejilion` 菜单能力使用）：
-
-```bash
-k
-```
-
 英文界面：
 
 ```bash
@@ -127,14 +121,12 @@ z en
 ```bash
 rm -rf /opt/luopo-toolkit
 rm -f /usr/local/bin/z
-rm -f /usr/local/bin/k
 ```
 
 ## 目录与日志
 
 - 安装目录：`/opt/luopo-toolkit`
 - 启动命令：`/usr/local/bin/z`
-- 兼容命令：`/usr/local/bin/k`
 - 缓存目录：`data/cache/`
 - 操作日志：`logs/action.log`
 - 错误日志：`logs/error.log`

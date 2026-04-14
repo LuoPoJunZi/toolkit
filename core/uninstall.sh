@@ -4,14 +4,12 @@ set -euo pipefail
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 INSTALL_DIR="/opt/luopo-toolkit"
 LAUNCHER="/usr/local/bin/z"
-K_COMPAT_LAUNCHER="/usr/local/bin/k"
 
 uninstall_toolkit() {
   local ans
   echo "即将完全卸载 LuoPo VPS Toolkit。"
   echo "将删除目录: $INSTALL_DIR"
   echo "将删除命令: $LAUNCHER"
-  echo "将删除兼容命令: $K_COMPAT_LAUNCHER"
   read -r -p "确认继续？此操作不可恢复 (y/N): " ans
   if [[ "$ans" != "y" && "$ans" != "Y" ]]; then
     echo "已取消卸载"
@@ -19,7 +17,7 @@ uninstall_toolkit() {
   fi
 
   rm -f "$LAUNCHER"
-  rm -f "$K_COMPAT_LAUNCHER"
+  rm -f /usr/local/bin/k /usr/bin/k
 
   if [[ -d "$INSTALL_DIR" ]]; then
     rm -rf "$INSTALL_DIR"
@@ -31,7 +29,6 @@ uninstall_toolkit() {
 
   echo "卸载完成"
   echo "已删除: $LAUNCHER"
-  echo "已删除: $K_COMPAT_LAUNCHER"
   echo "已删除: $INSTALL_DIR"
   echo "脚本即将退出"
   exit 0
