@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.6.0
+- Auto release: v0.6.0
+- refactor: rename compatibility layer files to luopo (4cffa0b)
+- style: refresh cloned submenu branding and fix display text (4bf8260)
+
 ## 0.5.1
 - Auto release: v0.5.1
 - fix: support remote bootstrap install via z domain (013120f)
