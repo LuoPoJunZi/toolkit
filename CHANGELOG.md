@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.6.1
+- Auto release: v0.6.1
+- refactor: standardize launcher on z only (595afc8)
+
 ## 0.6.0
 - Auto release: v0.6.0
 - refactor: rename compatibility layer files to luopo (4cffa0b)
