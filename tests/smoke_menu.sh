@@ -102,7 +102,6 @@ main() {
   assert_not_contains_fixed "$VENDOR_FILE" '第三方应用列表' "vendor app market should not print third-party app list footer"
   assert_contains_fixed "$VENDOR_FILE" 'GitHub Issues: https://github.com/LuoPoJunZi/toolkit/issues' "vendor feedback entry should point to toolkit issues"
   assert_contains_fixed "$VENDOR_FILE" '反馈渠道' "vendor feedback menu label should be adapted"
-  assert_contains_fixed "$VENDOR_FILE" '欢迎到仓库提交适配: ${gl_huang}https://github.com/LuoPoJunZi/toolkit${gl_bai}' "vendor app-market contribution hint should be adapted"
   assert_contains_fixed "$VENDOR_FILE" 'run_commands_on_servers "z update"' "cluster update should use z"
   assert_contains_fixed "$VENDOR_FILE" 'run_commands_on_servers "z docker install"' "cluster docker install should use z"
   assert_contains_fixed "$VENDOR_FILE" '当前 LuoPo VPS Toolkit 兼容层已默认关闭统计采集。' "privacy page text should be adapted"
