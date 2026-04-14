@@ -83,6 +83,21 @@ main() {
   assert_contains_fixed "$VENDOR_FILE" 'if [ -n "${KEJILION_LIBRARY_MODE:-}" ]; then' "vendor main-menu exit bridge missing"
   assert_contains_fixed "$VENDOR_FILE" '安装LuoPo脚本' "vendor cluster install label should be adapted"
   assert_contains_fixed "$VENDOR_FILE" '卸载LuoPo脚本' "vendor uninstall label should be adapted"
+  assert_contains_fixed "$VENDOR_FILE" '欢迎使用LuoPo VPS Toolkit' "vendor welcome text should use LuoPo branding"
+  assert_contains_fixed "$VENDOR_FILE" 'z命令高级用法' "vendor system tools help label should use z"
+  assert_contains_fixed "$VENDOR_FILE" '以下是 z 命令参考用例：' "vendor command help should use z examples"
+  assert_contains_fixed "$VENDOR_FILE" '兼容说明            k 仍可作为兼容命令使用' "vendor command help should mention k compatibility"
+  assert_contains_fixed "$VENDOR_FILE" 'GitHub Issues: https://github.com/LuoPoJunZi/toolkit/issues' "vendor feedback entry should point to toolkit issues"
+  assert_contains_fixed "$VENDOR_FILE" '反馈渠道' "vendor feedback menu label should be adapted"
+  assert_contains_fixed "$VENDOR_FILE" '欢迎到仓库提交适配: ${gl_huang}https://github.com/LuoPoJunZi/toolkit${gl_bai}' "vendor app-market contribution hint should be adapted"
+  assert_contains_fixed "$VENDOR_FILE" 'run_commands_on_servers "z update"' "cluster update should use z"
+  assert_contains_fixed "$VENDOR_FILE" 'run_commands_on_servers "z docker install"' "cluster docker install should use z"
+  assert_contains_fixed "$VENDOR_FILE" '当前 LuoPo VPS Toolkit 兼容层已默认关闭统计采集。' "privacy page text should be adapted"
+  assert_contains_fixed "$VENDOR_FILE" '快捷启动命令已设置' "shortcut message should be adapted"
+  assert_contains_fixed "$VENDOR_FILE" '卸载LuoPo VPS Toolkit' "vendor uninstall heading should be adapted"
+  if grep -Fq 'ipv4优先${gl_bai}}' "$VENDOR_FILE"; then
+    fail "vendor contains stale ipv4 display typo"
+  fi
 
   for fn in linux_tools linux_bbr linux_docker linux_test linux_Oracle linux_ldnmp linux_panel linux_work linux_Settings linux_cluster; do
     assert_contains_regex "$VENDOR_FILE" "^${fn}\\(\\) \\{" "missing vendor function ${fn}"

@@ -130,7 +130,7 @@ CheckFirstRun_false() {
 # 提示用户同意条款
 UserLicenseAgreement() {
 	clear
-	echo -e "${gl_kjlan}欢迎使用科技lion脚本工具箱${gl_bai}"
+	echo -e "${gl_kjlan}欢迎使用LuoPo VPS Toolkit${gl_bai}"
 	echo "首次使用脚本，请先阅读并同意用户许可协议。"
 	echo "用户许可协议: https://blog.kejilion.pro/user-license-agreement/"
 	echo -e "----------------------"
@@ -15592,7 +15592,7 @@ while true; do
 	  echo -e "${gl_kjlan}115. ${color115}Hermes机器人管理工具${gl_huang}★${gl_bai}"
 	  echo -e "${gl_kjlan}-------------------------"
 	  echo -e "${gl_kjlan}第三方应用列表"
-  	  echo -e "${gl_kjlan}想要让你的应用出现在这里？查看开发者指南: ${gl_huang}https://dev.kejilion.sh/${gl_bai}"
+  	  echo -e "${gl_kjlan}想要让你的应用出现在这里？欢迎到仓库提交适配: ${gl_huang}https://github.com/LuoPoJunZi/toolkit${gl_bai}"
 
 	  for f in "$HOME"/apps/*.conf; do
 		  [ -e "$f" ] || continue
@@ -20071,9 +20071,9 @@ linux_Settings() {
 	  echo -e "${gl_kjlan}------------------------"
 	  echo -e "${gl_kjlan}41.  ${gl_bai}系统日志管理工具 ${gl_huang}★${gl_bai}                 ${gl_kjlan}42.  ${gl_bai}系统变量管理工具"
 	  echo -e "${gl_kjlan}------------------------"
-	  echo -e "${gl_kjlan}61.  ${gl_bai}留言板                             ${gl_kjlan}66.  ${gl_bai}一条龙系统调优 ${gl_huang}★${gl_bai}"
+	  echo -e "${gl_kjlan}61.  ${gl_bai}反馈渠道                           ${gl_kjlan}66.  ${gl_bai}一条龙系统调优 ${gl_huang}★${gl_bai}"
 	  echo -e "${gl_kjlan}99.  ${gl_bai}重启服务器                         ${gl_kjlan}100. ${gl_bai}隐私与安全"
-	  echo -e "${gl_kjlan}101. ${gl_bai}k命令高级用法 ${gl_huang}★${gl_bai}                    ${gl_kjlan}102. ${gl_bai}卸载LuoPo脚本"
+	  echo -e "${gl_kjlan}101. ${gl_bai}z命令高级用法 ${gl_huang}★${gl_bai}                    ${gl_kjlan}102. ${gl_bai}卸载LuoPo脚本"
 	  echo -e "${gl_kjlan}------------------------"
 	  echo -e "${gl_kjlan}0.   ${gl_bai}返回主菜单"
 	  echo -e "${gl_kjlan}------------------------${gl_bai}"
@@ -20088,13 +20088,13 @@ linux_Settings() {
 					   break_end
 					   linux_Settings
 				  fi
-				  find /usr/local/bin/ -type l -exec bash -c 'test "$(readlink -f {})" = "/usr/local/bin/k" && rm -f {}' \;
-				  if [ "$kuaijiejian" != "k" ]; then
-					  ln -sf /usr/local/bin/k /usr/local/bin/$kuaijiejian
+				  find /usr/local/bin/ -type l -exec bash -c 'test "$(readlink -f {})" = "/usr/local/bin/z" && rm -f {}' \;
+				  if [ "$kuaijiejian" != "z" ]; then
+					  ln -sf /usr/local/bin/z /usr/local/bin/$kuaijiejian
 				  fi
-				  ln -sf /usr/local/bin/k /usr/bin/$kuaijiejian > /dev/null 2>&1
-				  echo "快捷键已设置"
-				  send_stats "脚本快捷键已设置"
+				  ln -sf /usr/local/bin/z /usr/bin/$kuaijiejian > /dev/null 2>&1
+				  echo "快捷启动命令已设置"
+				  send_stats "快捷启动命令已设置"
 				  break_end
 				  linux_Settings
 			  done
@@ -20994,9 +20994,9 @@ EOF
 		  61)
 			clear
 			send_stats "留言板"
-			echo "访问科技lion官方留言板，您对脚本有任何想法欢迎留言交流！"
-			echo "https://board.kejilion.pro"
-			echo "公共密码: kejilion.sh"
+			echo "欢迎反馈 LuoPo VPS Toolkit 的使用建议与问题。"
+			echo "GitHub Issues: https://github.com/LuoPoJunZi/toolkit/issues"
+			echo "GitHub Discussions: https://github.com/LuoPoJunZi/toolkit/discussions"
 			  ;;
 
 		  66)
@@ -21063,7 +21063,7 @@ EOF
 				  echo -e "[${gl_lv}OK${gl_bai}] 9/12. 自动优化DNS地址${gl_huang}${gl_bai}"
 				  echo "------------------------------------------------"
 				  prefer_ipv4
-				  echo -e "[${gl_lv}OK${gl_bai}] 10/12. 设置网络为${gl_huang}ipv4优先${gl_bai}}"
+				  echo -e "[${gl_lv}OK${gl_bai}] 10/12. 设置网络为${gl_huang}ipv4优先${gl_bai}"
 
 				  echo "------------------------------------------------"
 				  install_docker
@@ -21096,40 +21096,26 @@ EOF
 			root_use
 			while true; do
 			  clear
-			  if grep -q '^ENABLE_STATS="false"' /usr/local/bin/k > /dev/null 2>&1; then
-			  	local status_message="${gl_lv}正在采集数据${gl_bai}"
-			  elif grep -q '^ENABLE_STATS="false"' /usr/local/bin/k > /dev/null 2>&1; then
-			  	local status_message="${gl_hui}采集已关闭${gl_bai}"
-			  else
-			  	local status_message="无法确定的状态"
-			  fi
+			  local status_message="${gl_hui}已禁用统计采集${gl_bai}"
 
 			  echo "隐私与安全"
-			  echo "脚本将收集用户使用功能的数据，优化脚本体验，制作更多好玩好用的功能"
-			  echo "将收集脚本版本号，使用的时间，系统版本，CPU架构，机器所属国家和使用的功能的名称，"
+			  echo "当前 LuoPo VPS Toolkit 兼容层已默认关闭统计采集。"
+			  echo "此页面仅保留状态说明，不会向外部开启数据上报。"
 			  echo "------------------------------------------------"
 			  echo -e "当前状态: $status_message"
 			  echo "--------------------"
-			  echo "1. 开启采集"
-			  echo "2. 关闭采集"
+			  echo "1. 查看当前说明"
+			  echo "2. 保持关闭"
 			  echo "--------------------"
 			  echo "0. 返回上一级选单"
 			  echo "--------------------"
 			  read -e -p "请输入你的选择: " sub_choice
 			  case $sub_choice in
 				  1)
-					  cd ~
-					  sed -i 's/^ENABLE_STATS="false"/ENABLE_STATS="false"/' /usr/local/bin/k
-					  sed -i 's/^ENABLE_STATS="false"/ENABLE_STATS="false"/' ~/kejilion.sh
-					  echo "已开启采集"
-					  send_stats "隐私与安全已开启采集"
+					  echo "当前版本默认关闭统计采集，无需额外处理。"
 					  ;;
 				  2)
-					  cd ~
-					  sed -i 's/^ENABLE_STATS="false"/ENABLE_STATS="false"/' /usr/local/bin/k
-					  sed -i 's/^ENABLE_STATS="false"/ENABLE_STATS="false"/' ~/kejilion.sh
-					  echo "已关闭采集"
-					  send_stats "隐私与安全已关闭采集"
+					  echo "统计采集保持关闭。"
 					  ;;
 				  *)
 					  break
@@ -21145,8 +21131,8 @@ EOF
 
 		  102)
 			  clear
-			  send_stats "卸载LuoPo脚本"
-			  echo "卸载LuoPo脚本"
+			  send_stats "卸载LuoPo VPS Toolkit"
+			  echo "卸载LuoPo VPS Toolkit"
 			  echo "------------------------------------------------"
 			  echo "将彻底卸载LuoPo VPS Toolkit 以及 z/k 启动命令"
 			  read -e -p "确定继续吗？(Y/N): " choice
@@ -21495,25 +21481,25 @@ while true; do
 			  run_commands_on_servers "bash <(curl -fsSL https://z.evzzz.com)"
 			  ;;
 		  12)
-			  run_commands_on_servers "k update"
+			  run_commands_on_servers "z update"
 			  ;;
 		  13)
-			  run_commands_on_servers "k clean"
+			  run_commands_on_servers "z clean"
 			  ;;
 		  14)
-			  run_commands_on_servers "k docker install"
+			  run_commands_on_servers "z docker install"
 			  ;;
 		  15)
-			  run_commands_on_servers "k bbr3"
+			  run_commands_on_servers "z bbr3"
 			  ;;
 		  16)
-			  run_commands_on_servers "k swap 1024"
+			  run_commands_on_servers "z swap 1024"
 			  ;;
 		  17)
-			  run_commands_on_servers "k time Asia/Shanghai"
+			  run_commands_on_servers "z time Asia/Shanghai"
 			  ;;
 		  18)
-			  run_commands_on_servers "k iptables_open"
+			  run_commands_on_servers "z iptables_open"
 			  ;;
 
 		  51)
@@ -21842,57 +21828,59 @@ done
 
 
 k_info() {
-send_stats "k命令参考用例"
+send_stats "z命令参考用例"
 echo "-------------------"
 echo "视频介绍: https://www.bilibili.com/video/BV1ib421E7it?t=0.1"
-echo "以下是k命令参考用例："
-echo "启动脚本            k"
-echo "安装软件包          k install nano wget | k add nano wget | k 安装 nano wget"
-echo "卸载软件包          k remove nano wget | k del nano wget | k uninstall nano wget | k 卸载 nano wget"
-echo "更新系统            k update | k 更新"
-echo "清理系统垃圾        k clean | k 清理"
-echo "重装系统面板        k dd | k 重装"
-echo "bbr3控制面板        k bbr3 | k bbrv3"
-echo "内核调优面板        k nhyh | k 内核优化"
-echo "设置虚拟内存        k swap 2048"
-echo "设置虚拟时区        k time Asia/Shanghai | k 时区 Asia/Shanghai"
-echo "系统回收站          k trash | k hsz | k 回收站"
-echo "系统备份功能        k backup | k bf | k 备份"
-echo "ssh远程连接工具     k ssh | k 远程连接"
-echo "rsync远程同步工具   k rsync | k 远程同步"
-echo "硬盘管理工具        k disk | k 硬盘管理"
-echo "内网穿透（服务端）  k frps"
-echo "内网穿透（客户端）  k frpc"
-echo "软件启动            k start sshd | k 启动 sshd "
-echo "软件停止            k stop sshd | k 停止 sshd "
-echo "软件重启            k restart sshd | k 重启 sshd "
-echo "软件状态查看        k status sshd | k 状态 sshd "
-echo "软件开机启动        k enable docker | k autostart docke | k 开机启动 docker "
-echo "域名证书申请        k ssl"
-echo "域名证书到期查询    k ssl ps"
-echo "docker管理平面      k docker"
-echo "docker环境安装      k docker install |k docker 安装"
-echo "docker容器管理      k docker ps |k docker 容器"
-echo "docker镜像管理      k docker img |k docker 镜像"
-echo "LDNMP站点管理       k web"
-echo "LDNMP缓存清理       k web cache"
-echo "安装WordPress       k wp |k wordpress |k wp xxx.com"
-echo "安装反向代理        k fd |k rp |k 反代 |k fd xxx.com"
-echo "安装负载均衡        k loadbalance |k 负载均衡"
-echo "安装L4负载均衡      k stream |k L4负载均衡"
-echo "防火墙面板          k fhq |k 防火墙"
-echo "开放端口            k dkdk 8080 |k 打开端口 8080"
-echo "关闭端口            k gbdk 7800 |k 关闭端口 7800"
-echo "放行IP              k fxip 127.0.0.0/8 |k 放行IP 127.0.0.0/8"
-echo "阻止IP              k zzip 177.5.25.36 |k 阻止IP 177.5.25.36"
-echo "命令收藏夹          k fav | k 命令收藏夹"
-echo "应用市场管理        k app"
-echo "应用编号快捷管理    k app 26 | k app 1panel | k app npm"
-echo "fail2ban管理        k fail2ban | k f2b"
-echo "显示系统信息        k info"
-echo "ROOT密钥管理        k sshkey"
-echo "SSH公钥导入(URL)    k sshkey <url>"
-echo "SSH公钥导入(GitHub) k sshkey github <user> "
+echo "以下是 z 命令参考用例："
+echo "启动脚本            z"
+echo "安装软件包          z install nano wget | z add nano wget | z 安装 nano wget"
+echo "卸载软件包          z remove nano wget | z del nano wget | z uninstall nano wget | z 卸载 nano wget"
+echo "更新系统            z update | z 更新"
+echo "清理系统垃圾        z clean | z 清理"
+echo "重装系统面板        z dd | z 重装"
+echo "bbr3控制面板        z bbr3 | z bbrv3"
+echo "内核调优面板        z nhyh | z 内核优化"
+echo "设置虚拟内存        z swap 2048"
+echo "设置虚拟时区        z time Asia/Shanghai | z 时区 Asia/Shanghai"
+echo "系统回收站          z trash | z hsz | z 回收站"
+echo "系统备份功能        z backup | z bf | z 备份"
+echo "ssh远程连接工具     z ssh | z 远程连接"
+echo "rsync远程同步工具   z rsync | z 远程同步"
+echo "硬盘管理工具        z disk | z 硬盘管理"
+echo "内网穿透（服务端）  z frps"
+echo "内网穿透（客户端）  z frpc"
+echo "软件启动            z start sshd | z 启动 sshd "
+echo "软件停止            z stop sshd | z 停止 sshd "
+echo "软件重启            z restart sshd | z 重启 sshd "
+echo "软件状态查看        z status sshd | z 状态 sshd "
+echo "软件开机启动        z enable docker | z autostart docker | z 开机启动 docker "
+echo "域名证书申请        z ssl"
+echo "域名证书到期查询    z ssl ps"
+echo "docker管理平面      z docker"
+echo "docker环境安装      z docker install | z docker 安装"
+echo "docker容器管理      z docker ps | z docker 容器"
+echo "docker镜像管理      z docker img | z docker 镜像"
+echo "LDNMP站点管理       z web"
+echo "LDNMP缓存清理       z web cache"
+echo "安装WordPress       z wp | z wordpress | z wp xxx.com"
+echo "安装反向代理        z fd | z rp | z 反代 | z fd xxx.com"
+echo "安装负载均衡        z loadbalance | z 负载均衡"
+echo "安装L4负载均衡      z stream | z L4负载均衡"
+echo "防火墙面板          z fhq | z 防火墙"
+echo "开放端口            z dkdk 8080 | z 打开端口 8080"
+echo "关闭端口            z gbdk 7800 | z 关闭端口 7800"
+echo "放行IP              z fxip 127.0.0.0/8 | z 放行IP 127.0.0.0/8"
+echo "阻止IP              z zzip 177.5.25.36 | z 阻止IP 177.5.25.36"
+echo "命令收藏夹          z fav | z 命令收藏夹"
+echo "应用市场管理        z app"
+echo "应用编号快捷管理    z app 26 | z app 1panel | z app npm"
+echo "fail2ban管理        z fail2ban | z f2b"
+echo "显示系统信息        z info"
+echo "ROOT密钥管理        z sshkey"
+echo "SSH公钥导入(URL)    z sshkey <url>"
+echo "SSH公钥导入(GitHub) z sshkey github <user>"
+echo ""
+echo "兼容说明            k 仍可作为兼容命令使用"
 
 }
 
