@@ -99,6 +99,7 @@ main() {
   assert_contains_fixed "$VENDOR_FILE" '🦞 OPENCLAW 管理工具 by LuoPo 🦞' "vendor openclaw header should use LuoPo branding"
   assert_contains_fixed "$VENDOR_FILE" '💡 终端执行 \033[1;33mz claw\033[0m 快速进入菜单' "vendor openclaw quick entry should use z"
   assert_contains_fixed "$VENDOR_FILE" 'LuoPo 项目入口' "vendor affiliate page should point to LuoPo project links"
+  assert_not_contains_fixed "$VENDOR_FILE" '第三方应用列表' "vendor app market should not print third-party app list footer"
   assert_contains_fixed "$VENDOR_FILE" 'GitHub Issues: https://github.com/LuoPoJunZi/toolkit/issues' "vendor feedback entry should point to toolkit issues"
   assert_contains_fixed "$VENDOR_FILE" '反馈渠道' "vendor feedback menu label should be adapted"
   assert_contains_fixed "$VENDOR_FILE" '欢迎到仓库提交适配: ${gl_huang}https://github.com/LuoPoJunZi/toolkit${gl_bai}' "vendor app-market contribution hint should be adapted"
