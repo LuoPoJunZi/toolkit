@@ -24,6 +24,10 @@ LUOPO_WORKSPACE_MENU_FILE="$ROOT_DIR/modules/luopo/workspace/menu.sh"
 LUOPO_WORKSPACE_REGISTRY_FILE="$ROOT_DIR/modules/luopo/workspace/registry.sh"
 LUOPO_WORKSPACE_ACTIONS_FILE="$ROOT_DIR/modules/luopo/workspace/actions.sh"
 LUOPO_WORKSPACE_HELPERS_FILE="$ROOT_DIR/modules/luopo/workspace/helpers.sh"
+LUOPO_CLUSTER_MENU_FILE="$ROOT_DIR/modules/luopo/cluster_control/menu.sh"
+LUOPO_CLUSTER_REGISTRY_FILE="$ROOT_DIR/modules/luopo/cluster_control/registry.sh"
+LUOPO_CLUSTER_ACTIONS_FILE="$ROOT_DIR/modules/luopo/cluster_control/actions.sh"
+LUOPO_CLUSTER_HELPERS_FILE="$ROOT_DIR/modules/luopo/cluster_control/helpers.sh"
 VENDOR_FILE="$ROOT_DIR/vendor/luopo.sh"
 INSTALL_FILE="$ROOT_DIR/install.sh"
 UNINSTALL_FILE="$ROOT_DIR/core/uninstall.sh"
@@ -88,6 +92,10 @@ main() {
   assert_file "$LUOPO_WORKSPACE_REGISTRY_FILE"
   assert_file "$LUOPO_WORKSPACE_ACTIONS_FILE"
   assert_file "$LUOPO_WORKSPACE_HELPERS_FILE"
+  assert_file "$LUOPO_CLUSTER_MENU_FILE"
+  assert_file "$LUOPO_CLUSTER_REGISTRY_FILE"
+  assert_file "$LUOPO_CLUSTER_ACTIONS_FILE"
+  assert_file "$LUOPO_CLUSTER_HELPERS_FILE"
   assert_file "$VENDOR_FILE"
   assert_file "$INSTALL_FILE"
   assert_file "$UNINSTALL_FILE"
@@ -146,6 +154,7 @@ main() {
   assert_contains_regex "$LUOPO_BBR_MENU_FILE" '^luopo_bbr_management_menu\(\) \{' "missing LuoPo bbr menu entry"
   assert_contains_regex "$LUOPO_BBR_ACTIONS_FILE" '^luopo_bbr_enable_alpine\(\) \{' "missing LuoPo bbr action"
   assert_contains_regex "$LUOPO_BBR_HELPERS_FILE" '^luopo_bbr_current_algorithms\(\) \{' "missing LuoPo bbr helper"
+  assert_contains_regex "$ROOT_DIR/modules/compat/docker_management.sh" '^docker_management_menu\(\) \{' "missing compat function docker_management_menu"
   assert_contains_fixed "$ROOT_DIR/modules/entry_network_test_suite.sh" 'source "$ROOT_DIR/modules/luopo/network_test/menu.sh"' "network test entry should source LuoPo menu"
   assert_contains_fixed "$ROOT_DIR/modules/entry_network_test_suite.sh" 'luopo_network_test_menu' "network test entry should call LuoPo menu"
   assert_contains_regex "$LUOPO_NETWORK_TEST_MENU_FILE" '^luopo_network_test_menu\(\) \{' "missing LuoPo network test menu entry"
@@ -164,6 +173,12 @@ main() {
   assert_contains_regex "$LUOPO_WORKSPACE_REGISTRY_FILE" '^LUOPO_WORKSPACE_ITEMS=\(' "missing LuoPo workspace registry"
   assert_contains_regex "$LUOPO_WORKSPACE_ACTIONS_FILE" '^luopo_workspace_manage_ssh_mode\(\) \{' "missing LuoPo workspace action"
   assert_contains_regex "$LUOPO_WORKSPACE_HELPERS_FILE" '^luopo_workspace_run_named_session\(\) \{' "missing LuoPo workspace helper"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_cluster_control_suite.sh" 'source "$ROOT_DIR/modules/luopo/cluster_control/menu.sh"' "cluster entry should source LuoPo menu"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_cluster_control_suite.sh" 'luopo_cluster_control_menu' "cluster entry should call LuoPo menu"
+  assert_contains_regex "$LUOPO_CLUSTER_MENU_FILE" '^luopo_cluster_control_menu\(\) \{' "missing LuoPo cluster menu entry"
+  assert_contains_regex "$LUOPO_CLUSTER_REGISTRY_FILE" '^LUOPO_CLUSTER_ITEMS=\(' "missing LuoPo cluster registry"
+  assert_contains_regex "$LUOPO_CLUSTER_ACTIONS_FILE" '^luopo_cluster_install_toolkit\(\) \{' "missing LuoPo cluster action"
+  assert_contains_regex "$LUOPO_CLUSTER_HELPERS_FILE" '^luopo_cluster_bootstrap\(\) \{' "missing LuoPo cluster helper"
 
   assert_contains_fixed "$COMPAT_COMMON_FILE" 'source "$LUOPO_VENDOR_FILE"' "vendor source missing"
   for fn in ensure_luopo_vendor_loaded run_luopo_compat_menu; do
@@ -174,16 +189,13 @@ main() {
     warp_management.sh \
     ldnmp_site_suite.sh \
     app_marketplace.sh \
-    system_tools_suite.sh \
-    cluster_control_suite.sh; do
+    system_tools_suite.sh; do
     assert_contains_fixed "$COMPAT_LOAD_FILE" "$compat_file" "compat loader missing $compat_file"
   done
-  assert_contains_regex "$ROOT_DIR/modules/compat/docker_management.sh" '^docker_management_menu\(\) \{' "missing compat function docker_management_menu"
   assert_contains_regex "$ROOT_DIR/modules/compat/warp_management.sh" '^warp_management_menu\(\) \{' "missing compat function warp_management_menu"
   assert_contains_regex "$ROOT_DIR/modules/compat/ldnmp_site_suite.sh" '^ldnmp_site_suite_menu\(\) \{' "missing compat function ldnmp_site_suite_menu"
   assert_contains_regex "$ROOT_DIR/modules/compat/app_marketplace.sh" '^app_marketplace_menu\(\) \{' "missing compat function app_marketplace_menu"
   assert_contains_regex "$ROOT_DIR/modules/compat/system_tools_suite.sh" '^system_tools_suite_menu\(\) \{' "missing compat function system_tools_suite_menu"
-  assert_contains_regex "$ROOT_DIR/modules/compat/cluster_control_suite.sh" '^cluster_control_suite_menu\(\) \{' "missing compat function cluster_control_suite_menu"
 
   assert_contains_fixed "$ROOT_DIR/modules/compat/warp_management.sh" 'bash menu.sh [option] [lisence/url/token]' "warp compat command mismatch"
   assert_not_contains_fixed "$INSTALL_FILE" 'K_COMPAT_PATH="/usr/local/bin/k"' "install should not define k compatibility launcher"

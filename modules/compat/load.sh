@@ -15,5 +15,3 @@ source "$COMPAT_DIR/ldnmp_site_suite.sh"
 source "$COMPAT_DIR/app_marketplace.sh"
 # shellcheck disable=SC1091
 source "$COMPAT_DIR/system_tools_suite.sh"
-# shellcheck disable=SC1091
-source "$COMPAT_DIR/cluster_control_suite.sh"
