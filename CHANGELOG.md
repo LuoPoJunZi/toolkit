@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.5
+- Auto release: v0.7.5
+- refactor: extract warp and app marketplace menus (d834f09)
+
 ## 0.7.4
 - Auto release: v0.7.4
 - refactor: move docker management under luopo modules (884475c)
