@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.1
+- Auto release: v0.7.1
+- refactor: extract workspace basic tools and bbr menus (033f4a2)
+
 ## 0.7.0
 - Auto release: v0.7.0
 - refactor: modularize menu routing and extract network test suite (90d52b5)
