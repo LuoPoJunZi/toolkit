@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.8
+- Auto release: v0.7.8
+- refactor: align menu action names with luopo handlers (d1016c1)
+
 ## 0.7.7
 - Auto release: v0.7.7
 - refactor: remove obsolete compat menu shims (2ec41e0)
