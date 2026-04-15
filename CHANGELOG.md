@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.4
+- Auto release: v0.7.4
+- refactor: move docker management under luopo modules (884475c)
+
 ## 0.7.3
 - Auto release: v0.7.3
 - refactor: extract cluster control menu (f679ecc)
