@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.2
+- Auto release: v0.7.2
+- refactor: extract oracle cloud menu (55c3a00)
+
 ## 0.7.1
 - Auto release: v0.7.1
 - refactor: extract workspace basic tools and bbr menus (033f4a2)
