@@ -6,8 +6,6 @@ COMPAT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 # shellcheck disable=SC1091
 source "$COMPAT_DIR/common.sh"
 # shellcheck disable=SC1091
-source "$COMPAT_DIR/docker_management.sh"
-# shellcheck disable=SC1091
 source "$COMPAT_DIR/warp_management.sh"
 # shellcheck disable=SC1091
 source "$COMPAT_DIR/ldnmp_site_suite.sh"

@@ -28,6 +28,7 @@ LUOPO_CLUSTER_MENU_FILE="$ROOT_DIR/modules/luopo/cluster_control/menu.sh"
 LUOPO_CLUSTER_REGISTRY_FILE="$ROOT_DIR/modules/luopo/cluster_control/registry.sh"
 LUOPO_CLUSTER_ACTIONS_FILE="$ROOT_DIR/modules/luopo/cluster_control/actions.sh"
 LUOPO_CLUSTER_HELPERS_FILE="$ROOT_DIR/modules/luopo/cluster_control/helpers.sh"
+LUOPO_DOCKER_MANAGER_FILE="$ROOT_DIR/modules/luopo/docker/manager.sh"
 VENDOR_FILE="$ROOT_DIR/vendor/luopo.sh"
 INSTALL_FILE="$ROOT_DIR/install.sh"
 UNINSTALL_FILE="$ROOT_DIR/core/uninstall.sh"
@@ -96,6 +97,7 @@ main() {
   assert_file "$LUOPO_CLUSTER_REGISTRY_FILE"
   assert_file "$LUOPO_CLUSTER_ACTIONS_FILE"
   assert_file "$LUOPO_CLUSTER_HELPERS_FILE"
+  assert_file "$LUOPO_DOCKER_MANAGER_FILE"
   assert_file "$VENDOR_FILE"
   assert_file "$INSTALL_FILE"
   assert_file "$UNINSTALL_FILE"
@@ -154,7 +156,9 @@ main() {
   assert_contains_regex "$LUOPO_BBR_MENU_FILE" '^luopo_bbr_management_menu\(\) \{' "missing LuoPo bbr menu entry"
   assert_contains_regex "$LUOPO_BBR_ACTIONS_FILE" '^luopo_bbr_enable_alpine\(\) \{' "missing LuoPo bbr action"
   assert_contains_regex "$LUOPO_BBR_HELPERS_FILE" '^luopo_bbr_current_algorithms\(\) \{' "missing LuoPo bbr helper"
-  assert_contains_regex "$ROOT_DIR/modules/compat/docker_management.sh" '^docker_management_menu\(\) \{' "missing compat function docker_management_menu"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_docker_management.sh" 'source "$ROOT_DIR/modules/luopo/docker/manager.sh"' "docker entry should source LuoPo docker manager"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_docker_management.sh" 'docker_manager' "docker entry should call native docker manager"
+  assert_contains_regex "$LUOPO_DOCKER_MANAGER_FILE" '^docker_manager\(\) \{' "missing LuoPo docker manager entry"
   assert_contains_fixed "$ROOT_DIR/modules/entry_network_test_suite.sh" 'source "$ROOT_DIR/modules/luopo/network_test/menu.sh"' "network test entry should source LuoPo menu"
   assert_contains_fixed "$ROOT_DIR/modules/entry_network_test_suite.sh" 'luopo_network_test_menu' "network test entry should call LuoPo menu"
   assert_contains_regex "$LUOPO_NETWORK_TEST_MENU_FILE" '^luopo_network_test_menu\(\) \{' "missing LuoPo network test menu entry"
@@ -185,7 +189,6 @@ main() {
     assert_contains_regex "$COMPAT_COMMON_FILE" "^${fn}\\(\\) \\{" "missing compat core function ${fn}"
   done
   for compat_file in \
-    docker_management.sh \
     warp_management.sh \
     ldnmp_site_suite.sh \
     app_marketplace.sh \
