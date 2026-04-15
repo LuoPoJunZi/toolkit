@@ -1,7 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+# shellcheck disable=SC1091
+source "$ROOT_DIR/modules/luopo/ldnmp/menu.sh"
+
 entry_ldnmp_site_suite() {
-  ldnmp_site_suite_menu
+  luopo_ldnmp_menu
 }
 

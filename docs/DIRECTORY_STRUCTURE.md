@@ -65,15 +65,17 @@ toolkit/
 │  ├─ compat/                      # upstream-compatible shims still in use
 │  │  ├─ load.sh                   # compatibility loader
 │  │  ├─ common.sh                 # shared compat helpers
-│  │  ├─ ldnmp_site_suite.sh       # 11. LDNMP site suite
-│  │  └─ system_tools_suite.sh     # 14. system tools
+│  │  ├─ ldnmp_site_suite.sh       # legacy compat shim kept for fallback
+│  │  └─ system_tools_suite.sh     # legacy compat shim kept for fallback
 │  └─ luopo/                       # LuoPo native menu implementations
 │     ├─ app_marketplace/          # 12. app marketplace
 │     ├─ basic_tools/              # 5. basic tools
 │     ├─ bbr_management/           # 6. BBR management
 │     ├─ docker/                   # 7. Docker management
+│     ├─ ldnmp/                    # 11. LDNMP site suite
 │     ├─ network_test/             # 9. test script suite
 │     ├─ oracle_cloud/             # 10. Oracle Cloud tools
+│     ├─ system_tools/             # 14. system tools
 │     ├─ warp_management/          # 8. WARP management
 │     ├─ workspace/                # 13. background workspace
 │     └─ cluster_control/          # 15. cluster control
