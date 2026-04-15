@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.6
+- Auto release: v0.7.6
+- refactor: extract ldnmp and system tools menus (17efa9f)
+
 ## 0.7.5
 - Auto release: v0.7.5
 - refactor: extract warp and app marketplace menus (d834f09)
