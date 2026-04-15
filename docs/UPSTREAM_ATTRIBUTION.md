@@ -21,10 +21,12 @@ The vendored compatibility layer in [`vendor/luopo.sh`](../vendor/luopo.sh) is n
 
 - host bridge loader: [`modules/compat/load.sh`](../modules/compat/load.sh)
 - host bridge runtime helpers: [`modules/compat/common.sh`](../modules/compat/common.sh)
+- LuoPo-native menu entry layer: [`modules/entries.sh`](../modules/entries.sh)
+- LuoPo-native feature modules: [`modules/luopo/`](../modules/luopo/)
 - vendored upstream snapshot: [`vendor/luopo.sh`](../vendor/luopo.sh)
 - LuoPo host menu entry wiring: [`core/menu.sh`](../core/menu.sh)
 
 ## Notes
 
 - `LuoPo VPS Toolkit` remains licensed under GPL-3.0 as declared in the repository [`LICENSE`](../LICENSE).
-- The mirrored compatibility layer keeps the upstream menu behavior as close as possible for future second-stage customization.
+- The mirrored compatibility layer now acts primarily as a shared upstream runtime/helper source, while menu entry routing lives in LuoPo-native modules.

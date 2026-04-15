@@ -64,9 +64,7 @@ toolkit/
 │  ├─ entry_exit.sh                # main-menu entry: exit
 │  ├─ compat/                      # upstream-compatible shims still in use
 │  │  ├─ load.sh                   # compatibility loader
-│  │  ├─ common.sh                 # shared compat helpers
-│  │  ├─ ldnmp_site_suite.sh       # legacy compat shim kept for fallback
-│  │  └─ system_tools_suite.sh     # legacy compat shim kept for fallback
+│  │  └─ common.sh                 # shared compat helpers
 │  └─ luopo/                       # LuoPo native menu implementations
 │     ├─ app_marketplace/          # 12. app marketplace
 │     ├─ basic_tools/              # 5. basic tools

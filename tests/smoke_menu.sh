@@ -244,7 +244,11 @@ main() {
   for fn in ensure_luopo_vendor_loaded run_luopo_compat_menu; do
     assert_contains_regex "$COMPAT_COMMON_FILE" "^${fn}\\(\\) \\{" "missing compat core function ${fn}"
   done
+  assert_contains_fixed "$COMPAT_LOAD_FILE" 'source "$COMPAT_DIR/common.sh"' "compat loader should source shared common bridge"
   assert_not_contains_fixed "$COMPAT_LOAD_FILE" 'ldnmp_site_suite.sh' "compat loader should no longer source ldnmp shim"
+  assert_not_contains_fixed "$COMPAT_LOAD_FILE" 'system_tools_suite.sh' "compat loader should no longer source system tools shim"
+  assert_not_contains_fixed "$COMPAT_LOAD_FILE" 'warp_management.sh' "compat loader should no longer source warp shim"
+  assert_not_contains_fixed "$COMPAT_LOAD_FILE" 'app_marketplace.sh' "compat loader should no longer source app market shim"
 
   assert_contains_fixed "$LUOPO_WARP_ACTIONS_FILE" 'bash menu.sh [option] [lisence/url/token]' "warp native command mismatch"
   assert_not_contains_fixed "$INSTALL_FILE" 'K_COMPAT_PATH="/usr/local/bin/k"' "install should not define k compatibility launcher"
