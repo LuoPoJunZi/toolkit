@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.7
+- Auto release: v0.7.7
+- refactor: remove obsolete compat menu shims (2ec41e0)
+
 ## 0.7.6
 - Auto release: v0.7.6
 - refactor: extract ldnmp and system tools menus (17efa9f)
