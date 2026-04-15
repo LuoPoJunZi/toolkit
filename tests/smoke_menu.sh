@@ -9,6 +9,17 @@ LUOPO_NETWORK_TEST_MENU_FILE="$ROOT_DIR/modules/luopo/network_test/menu.sh"
 LUOPO_NETWORK_TEST_REGISTRY_FILE="$ROOT_DIR/modules/luopo/network_test/registry.sh"
 LUOPO_NETWORK_TEST_ACTIONS_FILE="$ROOT_DIR/modules/luopo/network_test/actions.sh"
 LUOPO_NETWORK_TEST_HELPERS_FILE="$ROOT_DIR/modules/luopo/network_test/helpers.sh"
+LUOPO_BASIC_TOOLS_MENU_FILE="$ROOT_DIR/modules/luopo/basic_tools/menu.sh"
+LUOPO_BASIC_TOOLS_REGISTRY_FILE="$ROOT_DIR/modules/luopo/basic_tools/registry.sh"
+LUOPO_BASIC_TOOLS_ACTIONS_FILE="$ROOT_DIR/modules/luopo/basic_tools/actions.sh"
+LUOPO_BASIC_TOOLS_HELPERS_FILE="$ROOT_DIR/modules/luopo/basic_tools/helpers.sh"
+LUOPO_BBR_MENU_FILE="$ROOT_DIR/modules/luopo/bbr_management/menu.sh"
+LUOPO_BBR_ACTIONS_FILE="$ROOT_DIR/modules/luopo/bbr_management/actions.sh"
+LUOPO_BBR_HELPERS_FILE="$ROOT_DIR/modules/luopo/bbr_management/helpers.sh"
+LUOPO_WORKSPACE_MENU_FILE="$ROOT_DIR/modules/luopo/workspace/menu.sh"
+LUOPO_WORKSPACE_REGISTRY_FILE="$ROOT_DIR/modules/luopo/workspace/registry.sh"
+LUOPO_WORKSPACE_ACTIONS_FILE="$ROOT_DIR/modules/luopo/workspace/actions.sh"
+LUOPO_WORKSPACE_HELPERS_FILE="$ROOT_DIR/modules/luopo/workspace/helpers.sh"
 VENDOR_FILE="$ROOT_DIR/vendor/luopo.sh"
 INSTALL_FILE="$ROOT_DIR/install.sh"
 UNINSTALL_FILE="$ROOT_DIR/core/uninstall.sh"
@@ -58,6 +69,17 @@ main() {
   assert_file "$LUOPO_NETWORK_TEST_REGISTRY_FILE"
   assert_file "$LUOPO_NETWORK_TEST_ACTIONS_FILE"
   assert_file "$LUOPO_NETWORK_TEST_HELPERS_FILE"
+  assert_file "$LUOPO_BASIC_TOOLS_MENU_FILE"
+  assert_file "$LUOPO_BASIC_TOOLS_REGISTRY_FILE"
+  assert_file "$LUOPO_BASIC_TOOLS_ACTIONS_FILE"
+  assert_file "$LUOPO_BASIC_TOOLS_HELPERS_FILE"
+  assert_file "$LUOPO_BBR_MENU_FILE"
+  assert_file "$LUOPO_BBR_ACTIONS_FILE"
+  assert_file "$LUOPO_BBR_HELPERS_FILE"
+  assert_file "$LUOPO_WORKSPACE_MENU_FILE"
+  assert_file "$LUOPO_WORKSPACE_REGISTRY_FILE"
+  assert_file "$LUOPO_WORKSPACE_ACTIONS_FILE"
+  assert_file "$LUOPO_WORKSPACE_HELPERS_FILE"
   assert_file "$VENDOR_FILE"
   assert_file "$INSTALL_FILE"
   assert_file "$UNINSTALL_FILE"
@@ -105,38 +127,49 @@ main() {
     assert_contains_fixed "$ENTRIES_LOAD_FILE" "$feature_file" "entries loader missing $feature_file"
   done
 
+  assert_contains_fixed "$ROOT_DIR/modules/entry_basic_tools.sh" 'source "$ROOT_DIR/modules/luopo/basic_tools/menu.sh"' "basic tools entry should source LuoPo menu"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_basic_tools.sh" 'luopo_basic_tools_menu' "basic tools entry should call LuoPo menu"
+  assert_contains_regex "$LUOPO_BASIC_TOOLS_MENU_FILE" '^luopo_basic_tools_menu\(\) \{' "missing LuoPo basic tools menu entry"
+  assert_contains_regex "$LUOPO_BASIC_TOOLS_REGISTRY_FILE" '^LUOPO_BASIC_TOOLS_ITEMS=\(' "missing LuoPo basic tools registry"
+  assert_contains_regex "$LUOPO_BASIC_TOOLS_ACTIONS_FILE" '^luopo_basic_tools_install_curl\(\) \{' "missing LuoPo basic tools action"
+  assert_contains_regex "$LUOPO_BASIC_TOOLS_HELPERS_FILE" '^luopo_basic_tools_detect_package_manager\(\) \{' "missing LuoPo basic tools helper"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_bbr_management.sh" 'source "$ROOT_DIR/modules/luopo/bbr_management/menu.sh"' "bbr entry should source LuoPo menu"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_bbr_management.sh" 'luopo_bbr_management_menu' "bbr entry should call LuoPo menu"
+  assert_contains_regex "$LUOPO_BBR_MENU_FILE" '^luopo_bbr_management_menu\(\) \{' "missing LuoPo bbr menu entry"
+  assert_contains_regex "$LUOPO_BBR_ACTIONS_FILE" '^luopo_bbr_enable_alpine\(\) \{' "missing LuoPo bbr action"
+  assert_contains_regex "$LUOPO_BBR_HELPERS_FILE" '^luopo_bbr_current_algorithms\(\) \{' "missing LuoPo bbr helper"
   assert_contains_fixed "$ROOT_DIR/modules/entry_network_test_suite.sh" 'source "$ROOT_DIR/modules/luopo/network_test/menu.sh"' "network test entry should source LuoPo menu"
   assert_contains_fixed "$ROOT_DIR/modules/entry_network_test_suite.sh" 'luopo_network_test_menu' "network test entry should call LuoPo menu"
   assert_contains_regex "$LUOPO_NETWORK_TEST_MENU_FILE" '^luopo_network_test_menu\(\) \{' "missing LuoPo network test menu entry"
   assert_contains_regex "$LUOPO_NETWORK_TEST_REGISTRY_FILE" '^LUOPO_NETWORK_TEST_ITEMS=\(' "missing LuoPo network test registry"
   assert_contains_regex "$LUOPO_NETWORK_TEST_ACTIONS_FILE" '^luopo_network_test_chatgpt_unlock\(\) \{' "missing LuoPo network test action"
   assert_contains_regex "$LUOPO_NETWORK_TEST_HELPERS_FILE" '^luopo_network_test_run_shell\(\) \{' "missing LuoPo network test helper"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_workspace_suite.sh" 'source "$ROOT_DIR/modules/luopo/workspace/menu.sh"' "workspace entry should source LuoPo menu"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_workspace_suite.sh" 'luopo_workspace_menu' "workspace entry should call LuoPo menu"
+  assert_contains_regex "$LUOPO_WORKSPACE_MENU_FILE" '^luopo_workspace_menu\(\) \{' "missing LuoPo workspace menu entry"
+  assert_contains_regex "$LUOPO_WORKSPACE_REGISTRY_FILE" '^LUOPO_WORKSPACE_ITEMS=\(' "missing LuoPo workspace registry"
+  assert_contains_regex "$LUOPO_WORKSPACE_ACTIONS_FILE" '^luopo_workspace_manage_ssh_mode\(\) \{' "missing LuoPo workspace action"
+  assert_contains_regex "$LUOPO_WORKSPACE_HELPERS_FILE" '^luopo_workspace_run_named_session\(\) \{' "missing LuoPo workspace helper"
 
   assert_contains_fixed "$COMPAT_COMMON_FILE" 'source "$LUOPO_VENDOR_FILE"' "vendor source missing"
   for fn in ensure_luopo_vendor_loaded run_luopo_compat_menu; do
     assert_contains_regex "$COMPAT_COMMON_FILE" "^${fn}\\(\\) \\{" "missing compat core function ${fn}"
   done
   for compat_file in \
-    basic_tools.sh \
-    bbr_management.sh \
     docker_management.sh \
     warp_management.sh \
     oracle_cloud_suite.sh \
     ldnmp_site_suite.sh \
     app_marketplace.sh \
-    workspace_suite.sh \
     system_tools_suite.sh \
     cluster_control_suite.sh; do
     assert_contains_fixed "$COMPAT_LOAD_FILE" "$compat_file" "compat loader missing $compat_file"
   done
-  assert_contains_regex "$ROOT_DIR/modules/compat/basic_tools.sh" '^basic_tools_menu\(\) \{' "missing compat function basic_tools_menu"
-  assert_contains_regex "$ROOT_DIR/modules/compat/bbr_management.sh" '^bbr_management_menu\(\) \{' "missing compat function bbr_management_menu"
   assert_contains_regex "$ROOT_DIR/modules/compat/docker_management.sh" '^docker_management_menu\(\) \{' "missing compat function docker_management_menu"
   assert_contains_regex "$ROOT_DIR/modules/compat/warp_management.sh" '^warp_management_menu\(\) \{' "missing compat function warp_management_menu"
   assert_contains_regex "$ROOT_DIR/modules/compat/oracle_cloud_suite.sh" '^oracle_cloud_suite_menu\(\) \{' "missing compat function oracle_cloud_suite_menu"
   assert_contains_regex "$ROOT_DIR/modules/compat/ldnmp_site_suite.sh" '^ldnmp_site_suite_menu\(\) \{' "missing compat function ldnmp_site_suite_menu"
   assert_contains_regex "$ROOT_DIR/modules/compat/app_marketplace.sh" '^app_marketplace_menu\(\) \{' "missing compat function app_marketplace_menu"
-  assert_contains_regex "$ROOT_DIR/modules/compat/workspace_suite.sh" '^workspace_suite_menu\(\) \{' "missing compat function workspace_suite_menu"
   assert_contains_regex "$ROOT_DIR/modules/compat/system_tools_suite.sh" '^system_tools_suite_menu\(\) \{' "missing compat function system_tools_suite_menu"
   assert_contains_regex "$ROOT_DIR/modules/compat/cluster_control_suite.sh" '^cluster_control_suite_menu\(\) \{' "missing compat function cluster_control_suite_menu"
 
