@@ -1,5 +1,13 @@
 # Changelog
 
+## 0.7.0
+- Auto release: v0.7.0
+- refactor: modularize menu routing and extract network test suite (90d52b5)
+- fix(ci): drop stale app market contribution assertion (b054365)
+- style: remove duplicate app market separator (1d14f85)
+- style: trim third-party app list from app market (15d0900)
+- style: refresh visible luopo branding in compat layer (645157c)
+
 ## 0.6.1
 - Auto release: v0.6.1
 - refactor: standardize launcher on z only (595afc8)
