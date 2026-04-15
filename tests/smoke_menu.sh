@@ -3,10 +3,18 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 MENU_FILE="$ROOT_DIR/core/menu.sh"
-BRIDGE_FILE="$ROOT_DIR/modules/luopo_bridge.sh"
+COMPAT_LOAD_FILE="$ROOT_DIR/modules/compat/load.sh"
+COMPAT_COMMON_FILE="$ROOT_DIR/modules/compat/common.sh"
+LUOPO_NETWORK_TEST_MENU_FILE="$ROOT_DIR/modules/luopo/network_test/menu.sh"
+LUOPO_NETWORK_TEST_REGISTRY_FILE="$ROOT_DIR/modules/luopo/network_test/registry.sh"
+LUOPO_NETWORK_TEST_ACTIONS_FILE="$ROOT_DIR/modules/luopo/network_test/actions.sh"
+LUOPO_NETWORK_TEST_HELPERS_FILE="$ROOT_DIR/modules/luopo/network_test/helpers.sh"
 VENDOR_FILE="$ROOT_DIR/vendor/luopo.sh"
 INSTALL_FILE="$ROOT_DIR/install.sh"
 UNINSTALL_FILE="$ROOT_DIR/core/uninstall.sh"
+REGISTRY_FILE="$ROOT_DIR/core/menu_registry.sh"
+DISPATCHER_FILE="$ROOT_DIR/core/menu_dispatcher.sh"
+ENTRIES_LOAD_FILE="$ROOT_DIR/modules/entries.sh"
 
 fail() {
   echo "::error title=smoke_menu::$*"
@@ -44,41 +52,95 @@ assert_not_contains_fixed() {
 
 main() {
   assert_file "$MENU_FILE"
-  assert_file "$BRIDGE_FILE"
+  assert_file "$COMPAT_LOAD_FILE"
+  assert_file "$COMPAT_COMMON_FILE"
+  assert_file "$LUOPO_NETWORK_TEST_MENU_FILE"
+  assert_file "$LUOPO_NETWORK_TEST_REGISTRY_FILE"
+  assert_file "$LUOPO_NETWORK_TEST_ACTIONS_FILE"
+  assert_file "$LUOPO_NETWORK_TEST_HELPERS_FILE"
   assert_file "$VENDOR_FILE"
   assert_file "$INSTALL_FILE"
   assert_file "$UNINSTALL_FILE"
+  assert_file "$REGISTRY_FILE"
+  assert_file "$DISPATCHER_FILE"
+  assert_file "$ENTRIES_LOAD_FILE"
 
-  for label in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 88 0; do
-    assert_contains_regex "$MENU_FILE" "^[[:space:]]*${label}[[:space:]]*\\)" "missing case label ${label}"
-  done
-  assert_contains_regex "$MENU_FILE" "^[[:space:]]*99[[:space:]]*\\|[[:space:]]*00[[:space:]]*\\)" "missing case label 99|00"
-  if grep -Eq '^[[:space:]]*(16|17|18)[[:space:]]*\)' "$MENU_FILE"; then
-    fail "legacy case labels 16/17/18 should not remain in main menu"
-  fi
-
-  assert_contains_fixed "$MENU_FILE" 'run_action "system_info" show_system_info' "route 1 mismatch"
-  assert_contains_fixed "$MENU_FILE" 'run_action "system_update" system_update' "route 2 mismatch"
-  assert_contains_fixed "$MENU_FILE" 'run_action "system_cleanup" system_cleanup' "route 3 mismatch"
-  assert_contains_fixed "$MENU_FILE" 'run_action "scripts_hub" scripts_hub' "route 4 mismatch"
-  assert_contains_fixed "$MENU_FILE" 'run_action "basic_tools_menu" basic_tools_menu' "route 5 mismatch"
-  assert_contains_fixed "$MENU_FILE" 'run_action "bbr_management_menu" bbr_management_menu' "route 6 mismatch"
-  assert_contains_fixed "$MENU_FILE" 'run_action "docker_management_menu" docker_management_menu' "route 7 mismatch"
-  assert_contains_fixed "$MENU_FILE" 'run_action "warp_management_menu" warp_management_menu' "route 8 mismatch"
-  assert_contains_fixed "$MENU_FILE" 'run_action "network_test_suite_menu" network_test_suite_menu' "route 9 mismatch"
-  assert_contains_fixed "$MENU_FILE" 'run_action "oracle_cloud_suite_menu" oracle_cloud_suite_menu' "route 10 mismatch"
-  assert_contains_fixed "$MENU_FILE" 'run_action "ldnmp_site_suite_menu" ldnmp_site_suite_menu' "route 11 mismatch"
-  assert_contains_fixed "$MENU_FILE" 'run_action "app_marketplace_menu" app_marketplace_menu' "route 12 mismatch"
-  assert_contains_fixed "$MENU_FILE" 'run_action "workspace_suite_menu" workspace_suite_menu' "route 13 mismatch"
-  assert_contains_fixed "$MENU_FILE" 'run_action "system_tools_suite_menu" system_tools_suite_menu' "route 14 mismatch"
-  assert_contains_fixed "$MENU_FILE" 'run_action "cluster_control_suite_menu" cluster_control_suite_menu' "route 15 mismatch"
-
-  assert_contains_fixed "$BRIDGE_FILE" 'source "$LUOPO_VENDOR_FILE"' "vendor source missing"
-  for fn in ensure_luopo_vendor_loaded run_luopo_compat_menu basic_tools_menu bbr_management_menu docker_management_menu warp_management_menu network_test_suite_menu oracle_cloud_suite_menu ldnmp_site_suite_menu app_marketplace_menu workspace_suite_menu system_tools_suite_menu cluster_control_suite_menu; do
-    assert_contains_regex "$BRIDGE_FILE" "^${fn}\\(\\) \\{" "missing bridge function ${fn}"
+  for label in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 99 88 0; do
+    assert_contains_fixed "$REGISTRY_FILE" "\"${label}|menu_label_${label}" "missing menu registry item ${label}"
   done
 
-  assert_contains_fixed "$BRIDGE_FILE" 'bash menu.sh [option] [lisence/url/token]' "warp bridge command mismatch"
+  assert_contains_fixed "$MENU_FILE" 'source "$ROOT_DIR/core/menu_registry.sh"' "menu should load registry"
+  assert_contains_fixed "$MENU_FILE" 'source "$ROOT_DIR/core/menu_dispatcher.sh"' "menu should load dispatcher"
+  assert_contains_fixed "$MENU_FILE" 'source "$ROOT_DIR/modules/entries.sh"' "menu should load entry handlers"
+  assert_contains_fixed "$MENU_FILE" 'source "$ROOT_DIR/modules/compat/load.sh"' "menu should load compat handlers"
+  assert_not_contains_fixed "$MENU_FILE" 'source "$ROOT_DIR/modules/luopo_bridge.sh"' "menu should not source legacy bridge"
+  assert_not_contains_fixed "$MENU_FILE" 'source "$ROOT_DIR/modules/features/load.sh"' "menu should not source legacy features loader"
+  assert_contains_fixed "$MENU_FILE" 'for item in "${MENU_ITEMS[@]}"; do' "menu should render items from registry"
+  assert_contains_fixed "$MENU_FILE" 'dispatch_menu_action "$choice"' "menu should dispatch choices via dispatcher"
+  assert_contains_fixed "$MENU_FILE" 'if [[ "$choice" == "00" ]]; then' "menu should remap 00 to 99"
+
+  assert_contains_fixed "$DISPATCHER_FILE" 'entry_exit' "dispatcher should support exit handler"
+  assert_contains_fixed "$DISPATCHER_FILE" 'run_action "$action_name" "$handler"' "dispatcher should execute handler via run_action"
+  assert_contains_fixed "$DISPATCHER_FILE" 'if [[ "$pause_mode" == "press_enter" ]]; then' "dispatcher should honor pause mode"
+
+  for feature_file in \
+    entry_system_info.sh \
+    entry_system_update.sh \
+    entry_system_cleanup.sh \
+    entry_scripts_hub.sh \
+    entry_basic_tools.sh \
+    entry_bbr_management.sh \
+    entry_docker_management.sh \
+    entry_warp_management.sh \
+    entry_network_test_suite.sh \
+    entry_oracle_cloud_suite.sh \
+    entry_ldnmp_site_suite.sh \
+    entry_app_marketplace.sh \
+    entry_workspace_suite.sh \
+    entry_system_tools_suite.sh \
+    entry_cluster_control_suite.sh \
+    entry_uninstall.sh \
+    entry_self_update.sh \
+    entry_exit.sh; do
+    assert_contains_fixed "$ENTRIES_LOAD_FILE" "$feature_file" "entries loader missing $feature_file"
+  done
+
+  assert_contains_fixed "$ROOT_DIR/modules/entry_network_test_suite.sh" 'source "$ROOT_DIR/modules/luopo/network_test/menu.sh"' "network test entry should source LuoPo menu"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_network_test_suite.sh" 'luopo_network_test_menu' "network test entry should call LuoPo menu"
+  assert_contains_regex "$LUOPO_NETWORK_TEST_MENU_FILE" '^luopo_network_test_menu\(\) \{' "missing LuoPo network test menu entry"
+  assert_contains_regex "$LUOPO_NETWORK_TEST_REGISTRY_FILE" '^LUOPO_NETWORK_TEST_ITEMS=\(' "missing LuoPo network test registry"
+  assert_contains_regex "$LUOPO_NETWORK_TEST_ACTIONS_FILE" '^luopo_network_test_chatgpt_unlock\(\) \{' "missing LuoPo network test action"
+  assert_contains_regex "$LUOPO_NETWORK_TEST_HELPERS_FILE" '^luopo_network_test_run_shell\(\) \{' "missing LuoPo network test helper"
+
+  assert_contains_fixed "$COMPAT_COMMON_FILE" 'source "$LUOPO_VENDOR_FILE"' "vendor source missing"
+  for fn in ensure_luopo_vendor_loaded run_luopo_compat_menu; do
+    assert_contains_regex "$COMPAT_COMMON_FILE" "^${fn}\\(\\) \\{" "missing compat core function ${fn}"
+  done
+  for compat_file in \
+    basic_tools.sh \
+    bbr_management.sh \
+    docker_management.sh \
+    warp_management.sh \
+    oracle_cloud_suite.sh \
+    ldnmp_site_suite.sh \
+    app_marketplace.sh \
+    workspace_suite.sh \
+    system_tools_suite.sh \
+    cluster_control_suite.sh; do
+    assert_contains_fixed "$COMPAT_LOAD_FILE" "$compat_file" "compat loader missing $compat_file"
+  done
+  assert_contains_regex "$ROOT_DIR/modules/compat/basic_tools.sh" '^basic_tools_menu\(\) \{' "missing compat function basic_tools_menu"
+  assert_contains_regex "$ROOT_DIR/modules/compat/bbr_management.sh" '^bbr_management_menu\(\) \{' "missing compat function bbr_management_menu"
+  assert_contains_regex "$ROOT_DIR/modules/compat/docker_management.sh" '^docker_management_menu\(\) \{' "missing compat function docker_management_menu"
+  assert_contains_regex "$ROOT_DIR/modules/compat/warp_management.sh" '^warp_management_menu\(\) \{' "missing compat function warp_management_menu"
+  assert_contains_regex "$ROOT_DIR/modules/compat/oracle_cloud_suite.sh" '^oracle_cloud_suite_menu\(\) \{' "missing compat function oracle_cloud_suite_menu"
+  assert_contains_regex "$ROOT_DIR/modules/compat/ldnmp_site_suite.sh" '^ldnmp_site_suite_menu\(\) \{' "missing compat function ldnmp_site_suite_menu"
+  assert_contains_regex "$ROOT_DIR/modules/compat/app_marketplace.sh" '^app_marketplace_menu\(\) \{' "missing compat function app_marketplace_menu"
+  assert_contains_regex "$ROOT_DIR/modules/compat/workspace_suite.sh" '^workspace_suite_menu\(\) \{' "missing compat function workspace_suite_menu"
+  assert_contains_regex "$ROOT_DIR/modules/compat/system_tools_suite.sh" '^system_tools_suite_menu\(\) \{' "missing compat function system_tools_suite_menu"
+  assert_contains_regex "$ROOT_DIR/modules/compat/cluster_control_suite.sh" '^cluster_control_suite_menu\(\) \{' "missing compat function cluster_control_suite_menu"
+
+  assert_contains_fixed "$ROOT_DIR/modules/compat/warp_management.sh" 'bash menu.sh [option] [lisence/url/token]' "warp compat command mismatch"
   assert_not_contains_fixed "$INSTALL_FILE" 'K_COMPAT_PATH="/usr/local/bin/k"' "install should not define k compatibility launcher"
   assert_contains_fixed "$INSTALL_FILE" 'rm -f /usr/local/bin/k /usr/bin/k' "install should cleanup legacy k launchers"
   assert_contains_fixed "$INSTALL_FILE" 'REPO_ARCHIVE_URL="${LUOPO_REPO_ARCHIVE_URL:-https://codeload.github.com/LuoPoJunZi/toolkit/tar.gz/refs/heads/main}"' "install should support remote bootstrap archive"

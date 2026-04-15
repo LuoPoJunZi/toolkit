@@ -19,7 +19,8 @@ The vendored compatibility layer in [`vendor/luopo.sh`](../vendor/luopo.sh) is n
 
 ## Integration Layout
 
-- host bridge: [`modules/luopo_bridge.sh`](../modules/luopo_bridge.sh)
+- host bridge loader: [`modules/compat/load.sh`](../modules/compat/load.sh)
+- host bridge runtime helpers: [`modules/compat/common.sh`](../modules/compat/common.sh)
 - vendored upstream snapshot: [`vendor/luopo.sh`](../vendor/luopo.sh)
 - LuoPo host menu entry wiring: [`core/menu.sh`](../core/menu.sh)
 
