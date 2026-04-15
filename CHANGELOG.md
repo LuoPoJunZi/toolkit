@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.3
+- Auto release: v0.7.3
+- refactor: extract cluster control menu (f679ecc)
+
 ## 0.7.2
 - Auto release: v0.7.2
 - refactor: extract oracle cloud menu (55c3a00)
