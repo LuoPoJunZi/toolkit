@@ -10,8 +10,6 @@ source "$COMPAT_DIR/docker_management.sh"
 # shellcheck disable=SC1091
 source "$COMPAT_DIR/warp_management.sh"
 # shellcheck disable=SC1091
-source "$COMPAT_DIR/oracle_cloud_suite.sh"
-# shellcheck disable=SC1091
 source "$COMPAT_DIR/ldnmp_site_suite.sh"
 # shellcheck disable=SC1091
 source "$COMPAT_DIR/app_marketplace.sh"

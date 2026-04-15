@@ -16,6 +16,10 @@ LUOPO_BASIC_TOOLS_HELPERS_FILE="$ROOT_DIR/modules/luopo/basic_tools/helpers.sh"
 LUOPO_BBR_MENU_FILE="$ROOT_DIR/modules/luopo/bbr_management/menu.sh"
 LUOPO_BBR_ACTIONS_FILE="$ROOT_DIR/modules/luopo/bbr_management/actions.sh"
 LUOPO_BBR_HELPERS_FILE="$ROOT_DIR/modules/luopo/bbr_management/helpers.sh"
+LUOPO_ORACLE_CLOUD_MENU_FILE="$ROOT_DIR/modules/luopo/oracle_cloud/menu.sh"
+LUOPO_ORACLE_CLOUD_REGISTRY_FILE="$ROOT_DIR/modules/luopo/oracle_cloud/registry.sh"
+LUOPO_ORACLE_CLOUD_ACTIONS_FILE="$ROOT_DIR/modules/luopo/oracle_cloud/actions.sh"
+LUOPO_ORACLE_CLOUD_HELPERS_FILE="$ROOT_DIR/modules/luopo/oracle_cloud/helpers.sh"
 LUOPO_WORKSPACE_MENU_FILE="$ROOT_DIR/modules/luopo/workspace/menu.sh"
 LUOPO_WORKSPACE_REGISTRY_FILE="$ROOT_DIR/modules/luopo/workspace/registry.sh"
 LUOPO_WORKSPACE_ACTIONS_FILE="$ROOT_DIR/modules/luopo/workspace/actions.sh"
@@ -76,6 +80,10 @@ main() {
   assert_file "$LUOPO_BBR_MENU_FILE"
   assert_file "$LUOPO_BBR_ACTIONS_FILE"
   assert_file "$LUOPO_BBR_HELPERS_FILE"
+  assert_file "$LUOPO_ORACLE_CLOUD_MENU_FILE"
+  assert_file "$LUOPO_ORACLE_CLOUD_REGISTRY_FILE"
+  assert_file "$LUOPO_ORACLE_CLOUD_ACTIONS_FILE"
+  assert_file "$LUOPO_ORACLE_CLOUD_HELPERS_FILE"
   assert_file "$LUOPO_WORKSPACE_MENU_FILE"
   assert_file "$LUOPO_WORKSPACE_REGISTRY_FILE"
   assert_file "$LUOPO_WORKSPACE_ACTIONS_FILE"
@@ -144,6 +152,12 @@ main() {
   assert_contains_regex "$LUOPO_NETWORK_TEST_REGISTRY_FILE" '^LUOPO_NETWORK_TEST_ITEMS=\(' "missing LuoPo network test registry"
   assert_contains_regex "$LUOPO_NETWORK_TEST_ACTIONS_FILE" '^luopo_network_test_chatgpt_unlock\(\) \{' "missing LuoPo network test action"
   assert_contains_regex "$LUOPO_NETWORK_TEST_HELPERS_FILE" '^luopo_network_test_run_shell\(\) \{' "missing LuoPo network test helper"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_oracle_cloud_suite.sh" 'source "$ROOT_DIR/modules/luopo/oracle_cloud/menu.sh"' "oracle cloud entry should source LuoPo menu"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_oracle_cloud_suite.sh" 'luopo_oracle_cloud_menu' "oracle cloud entry should call LuoPo menu"
+  assert_contains_regex "$LUOPO_ORACLE_CLOUD_MENU_FILE" '^luopo_oracle_cloud_menu\(\) \{' "missing LuoPo oracle cloud menu entry"
+  assert_contains_regex "$LUOPO_ORACLE_CLOUD_REGISTRY_FILE" '^LUOPO_ORACLE_CLOUD_ITEMS=\(' "missing LuoPo oracle cloud registry"
+  assert_contains_regex "$LUOPO_ORACLE_CLOUD_ACTIONS_FILE" '^luopo_oracle_cloud_install_lookbusy\(\) \{' "missing LuoPo oracle cloud action"
+  assert_contains_regex "$LUOPO_ORACLE_CLOUD_HELPERS_FILE" '^luopo_oracle_cloud_run_shell\(\) \{' "missing LuoPo oracle cloud helper"
   assert_contains_fixed "$ROOT_DIR/modules/entry_workspace_suite.sh" 'source "$ROOT_DIR/modules/luopo/workspace/menu.sh"' "workspace entry should source LuoPo menu"
   assert_contains_fixed "$ROOT_DIR/modules/entry_workspace_suite.sh" 'luopo_workspace_menu' "workspace entry should call LuoPo menu"
   assert_contains_regex "$LUOPO_WORKSPACE_MENU_FILE" '^luopo_workspace_menu\(\) \{' "missing LuoPo workspace menu entry"
@@ -158,7 +172,6 @@ main() {
   for compat_file in \
     docker_management.sh \
     warp_management.sh \
-    oracle_cloud_suite.sh \
     ldnmp_site_suite.sh \
     app_marketplace.sh \
     system_tools_suite.sh \
@@ -167,7 +180,6 @@ main() {
   done
   assert_contains_regex "$ROOT_DIR/modules/compat/docker_management.sh" '^docker_management_menu\(\) \{' "missing compat function docker_management_menu"
   assert_contains_regex "$ROOT_DIR/modules/compat/warp_management.sh" '^warp_management_menu\(\) \{' "missing compat function warp_management_menu"
-  assert_contains_regex "$ROOT_DIR/modules/compat/oracle_cloud_suite.sh" '^oracle_cloud_suite_menu\(\) \{' "missing compat function oracle_cloud_suite_menu"
   assert_contains_regex "$ROOT_DIR/modules/compat/ldnmp_site_suite.sh" '^ldnmp_site_suite_menu\(\) \{' "missing compat function ldnmp_site_suite_menu"
   assert_contains_regex "$ROOT_DIR/modules/compat/app_marketplace.sh" '^app_marketplace_menu\(\) \{' "missing compat function app_marketplace_menu"
   assert_contains_regex "$ROOT_DIR/modules/compat/system_tools_suite.sh" '^system_tools_suite_menu\(\) \{' "missing compat function system_tools_suite_menu"
