@@ -1,9 +1,10 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-luopo_app_marketplace_launch_compat() {
-  run_luopo_compat_menu linux_panel
-}
+LUOPO_APP_MARKETPLACE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+
+# shellcheck disable=SC1091
+source "$LUOPO_APP_MARKETPLACE_DIR/native_apps.sh"
 
 luopo_app_marketplace_dispatch_choice() {
   local choice="$1"
@@ -14,6 +15,22 @@ luopo_app_marketplace_dispatch_choice() {
       ;;
     b|r)
       run_luopo_compat_menu linux_panel "$choice"
+      return 0
+      ;;
+    20)
+      luopo_app_marketplace_portainer_menu
+      return 0
+      ;;
+    22)
+      luopo_app_marketplace_uptime_kuma_menu
+      return 0
+      ;;
+    67)
+      luopo_app_marketplace_ddns_go_menu
+      return 0
+      ;;
+    92)
+      luopo_app_marketplace_filebrowser_menu
       return 0
       ;;
   esac
