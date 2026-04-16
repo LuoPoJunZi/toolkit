@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.14
+- Auto release: v0.7.14
+- refactor: deepen native system tools actions (be7da79)
+
 ## 0.7.13
 - Auto release: v0.7.13
 - refactor: move system tools menu flow into luopo layer (470591c)
