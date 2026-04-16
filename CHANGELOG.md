@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.12
+- Auto release: v0.7.12
+- feat: expand native app marketplace docker handlers (bad4094)
+
 ## 0.7.11
 - Auto release: v0.7.11
 - feat: add native app marketplace handlers for core docker apps (5ddcd76)
