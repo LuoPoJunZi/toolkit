@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.13
+- Auto release: v0.7.13
+- refactor: move system tools menu flow into luopo layer (470591c)
+
 ## 0.7.12
 - Auto release: v0.7.12
 - feat: expand native app marketplace docker handlers (bad4094)
