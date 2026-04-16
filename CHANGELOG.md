@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.11
+- Auto release: v0.7.11
+- feat: add native app marketplace handlers for core docker apps (5ddcd76)
+
 ## 0.7.10
 - Auto release: v0.7.10
 - refactor: render and dispatch app marketplace in luopo layer (392f819)
