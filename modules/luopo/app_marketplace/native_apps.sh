@@ -342,6 +342,45 @@ luopo_app_marketplace_uptime_kuma_menu() {
     "luopo_app_marketplace_uptime_kuma_uninstall"
 }
 
+luopo_app_marketplace_memos_install() {
+  local app_port="$1"
+  docker rm -f memos >/dev/null 2>&1 || true
+  docker run -d \
+    --name memos \
+    -p "${app_port}:5230" \
+    -v /home/docker/memos:/var/opt/memos \
+    --restart=always \
+    neosmemo/memos:stable
+}
+
+luopo_app_marketplace_memos_update() {
+  local app_port="$1"
+  docker rm -f memos >/dev/null 2>&1 || true
+  docker rmi -f neosmemo/memos:stable >/dev/null 2>&1 || true
+  luopo_app_marketplace_memos_install "$app_port"
+}
+
+luopo_app_marketplace_memos_uninstall() {
+  docker rm -f memos >/dev/null 2>&1 || true
+  docker rmi -f neosmemo/memos:stable >/dev/null 2>&1 || true
+  rm -rf /home/docker/memos
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_memos_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "23" \
+    "Memos网页备忘录" \
+    "memos" \
+    "neosmemo/memos:stable" \
+    "8023" \
+    "Memos 是一款轻量级、自托管的备忘录中心。" \
+    "官网介绍: https://github.com/usememos/memos" \
+    "luopo_app_marketplace_memos_install" \
+    "luopo_app_marketplace_memos_update" \
+    "luopo_app_marketplace_memos_uninstall"
+}
+
 luopo_app_marketplace_ddns_go_install() {
   local app_port="$1"
   docker rm -f ddns-go >/dev/null 2>&1 || true
@@ -379,6 +418,89 @@ luopo_app_marketplace_ddns_go_menu() {
     "luopo_app_marketplace_ddns_go_install" \
     "luopo_app_marketplace_ddns_go_update" \
     "luopo_app_marketplace_ddns_go_uninstall"
+}
+
+luopo_app_marketplace_navidrome_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/navidrome/music /home/docker/navidrome/data
+  docker rm -f navidrome >/dev/null 2>&1 || true
+  docker run -d \
+    --name navidrome \
+    --restart=always \
+    --user "$(id -u):$(id -g)" \
+    -v /home/docker/navidrome/music:/music \
+    -v /home/docker/navidrome/data:/data \
+    -p "${app_port}:4533" \
+    -e ND_LOGLEVEL=info \
+    deluan/navidrome:latest
+}
+
+luopo_app_marketplace_navidrome_update() {
+  local app_port="$1"
+  docker rm -f navidrome >/dev/null 2>&1 || true
+  docker rmi -f deluan/navidrome:latest >/dev/null 2>&1 || true
+  luopo_app_marketplace_navidrome_install "$app_port"
+}
+
+luopo_app_marketplace_navidrome_uninstall() {
+  docker rm -f navidrome >/dev/null 2>&1 || true
+  docker rmi -f deluan/navidrome:latest >/dev/null 2>&1 || true
+  rm -rf /home/docker/navidrome
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_navidrome_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "71" \
+    "Navidrome私有音乐服务器" \
+    "navidrome" \
+    "deluan/navidrome:latest" \
+    "8071" \
+    "轻量、高性能的私有音乐流媒体服务器。" \
+    "官网介绍: https://www.navidrome.org/" \
+    "luopo_app_marketplace_navidrome_install" \
+    "luopo_app_marketplace_navidrome_update" \
+    "luopo_app_marketplace_navidrome_uninstall"
+}
+
+luopo_app_marketplace_beszel_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/beszel
+  docker rm -f beszel >/dev/null 2>&1 || true
+  docker run -d \
+    --name beszel \
+    --restart=always \
+    -v /home/docker/beszel:/beszel_data \
+    -p "${app_port}:8090" \
+    henrygd/beszel
+}
+
+luopo_app_marketplace_beszel_update() {
+  local app_port="$1"
+  docker rm -f beszel >/dev/null 2>&1 || true
+  docker rmi -f henrygd/beszel >/dev/null 2>&1 || true
+  luopo_app_marketplace_beszel_install "$app_port"
+}
+
+luopo_app_marketplace_beszel_uninstall() {
+  docker rm -f beszel >/dev/null 2>&1 || true
+  docker rmi -f henrygd/beszel >/dev/null 2>&1 || true
+  rm -rf /home/docker/beszel
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_beszel_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "79" \
+    "Beszel服务器监控" \
+    "beszel" \
+    "henrygd/beszel" \
+    "8079" \
+    "Beszel 轻量易用的服务器监控工具。" \
+    "官网介绍: https://beszel.dev/zh/" \
+    "luopo_app_marketplace_beszel_install" \
+    "luopo_app_marketplace_beszel_update" \
+    "luopo_app_marketplace_beszel_uninstall"
 }
 
 luopo_app_marketplace_filebrowser_install() {

@@ -25,8 +25,20 @@ luopo_app_marketplace_dispatch_choice() {
       luopo_app_marketplace_uptime_kuma_menu
       return 0
       ;;
+    23)
+      luopo_app_marketplace_memos_menu
+      return 0
+      ;;
     67)
       luopo_app_marketplace_ddns_go_menu
+      return 0
+      ;;
+    71)
+      luopo_app_marketplace_navidrome_menu
+      return 0
+      ;;
+    79)
+      luopo_app_marketplace_beszel_menu
       return 0
       ;;
     92)
