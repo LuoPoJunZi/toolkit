@@ -10,7 +10,42 @@ source "$LUOPO_SYSTEM_TOOLS_DIR/registry.sh"
 # shellcheck disable=SC1091
 source "$LUOPO_SYSTEM_TOOLS_DIR/actions.sh"
 
+luopo_render_system_tools_menu() {
+  echo "系统工具"
+  echo -e "${gl_kjlan}------------------------${gl_bai}"
+
+  local row left right
+  for row in "${LUOPO_SYSTEM_TOOLS_LAYOUT[@]}"; do
+    if [[ "$row" == "---" ]]; then
+      echo -e "${gl_kjlan}------------------------${gl_bai}"
+      continue
+    fi
+
+    IFS='|' read -r left right <<<"$row"
+    if [[ -n "${right:-}" ]]; then
+      printf "%-52s " "$(luopo_system_tools_render_cell "$left")"
+      luopo_system_tools_render_cell "$right"
+      echo
+    else
+      luopo_system_tools_render_cell "$left"
+      echo
+    fi
+  done
+
+  echo -e "${gl_kjlan}------------------------${gl_bai}"
+  echo -e "${gl_kjlan}0.   ${gl_bai}返回主菜单"
+  echo -e "${gl_kjlan}------------------------${gl_bai}"
+}
+
 luopo_system_tools_menu() {
   luopo_system_tools_bootstrap || return 1
-  luopo_system_tools_launch_compat
+
+  while true; do
+    clear
+    luopo_render_system_tools_menu
+    read -r -p "请输入你的选择: " sub_choice
+    if ! luopo_system_tools_dispatch_choice "$sub_choice"; then
+      return 0
+    fi
+  done
 }
