@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.15
+- Auto release: v0.7.15
+- refactor: deepen system tools and ldnmp routing (6720994)
+
 ## 0.7.14
 - Auto release: v0.7.14
 - refactor: deepen native system tools actions (be7da79)
