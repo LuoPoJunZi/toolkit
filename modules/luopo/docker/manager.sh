@@ -857,6 +857,6 @@ docker_manager() {
     esac
 
     echo ""
-    read -r -p "按任意键继续..." _
+    read -r -p "按回车继续..." _
   done
 }
