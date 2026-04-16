@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.10
+- Auto release: v0.7.10
+- refactor: render and dispatch app marketplace in luopo layer (392f819)
+
 ## 0.7.9
 - Auto release: v0.7.9
 - docs: refresh run checklist for current menu layout (abcada0)
