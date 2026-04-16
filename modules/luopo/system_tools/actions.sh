@@ -389,6 +389,27 @@ luopo_system_tools_hosts_menu() {
   done
 }
 
+luopo_system_tools_history_menu() {
+  clear
+  send_stats "命令行历史记录"
+  local history_file=""
+  for file in "$HOME/.bash_history" "$HOME/.ash_history" "$HOME/.zsh_history" "$HOME/.local/share/fish/fish_history"; do
+    if [[ -f "$file" ]]; then
+      history_file="$file"
+      break
+    fi
+  done
+
+  if [[ -n "$history_file" ]]; then
+    echo "历史记录文件: $history_file"
+    echo "------------------------"
+    cat -n "$history_file"
+  else
+    echo "未找到可用的历史记录文件"
+  fi
+  press_enter
+}
+
 luopo_system_tools_generate_credentials() {
   clear
   send_stats "用户信息生成器"
@@ -527,13 +548,21 @@ luopo_system_tools_dispatch_choice() {
     16) run_luopo_compat_menu linux_bbr ;;
     17) iptables_panel ;;
     24) sshkey_panel ;;
+    31) linux_language ;;
+    32) shell_bianse ;;
     30) linux_file ;;
     33) linux_trash ;;
     34) linux_backup ;;
     35) ssh_manager ;;
     36) disk_manager ;;
+    37) luopo_system_tools_history_menu ;;
     38) rsync_manager ;;
+    39) linux_fav ;;
+    40) net_menu ;;
+    41) log_menu ;;
+    42) env_menu ;;
     61) luopo_system_tools_feedback ;;
+    66) run_luopo_compat_menu linux_Settings 66 ;;
     99) server_reboot ;;
     100) luopo_system_tools_privacy_menu ;;
     101) luopo_system_tools_command_help ;;

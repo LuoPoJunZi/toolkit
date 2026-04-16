@@ -10,7 +10,36 @@ source "$LUOPO_LDNMP_DIR/registry.sh"
 # shellcheck disable=SC1091
 source "$LUOPO_LDNMP_DIR/actions.sh"
 
+luopo_render_ldnmp_menu() {
+  local row left right
+  echo "LDNMP建站"
+  ldnmp_tato
+  echo -e "${gl_huang}------------------------"
+  for row in "${LUOPO_LDNMP_LAYOUT[@]}"; do
+    if [[ "$row" == "---" ]]; then
+      echo -e "${gl_huang}------------------------"
+      continue
+    fi
+    IFS='|' read -r left right <<<"$row"
+    printf "%-52s" "$(luopo_ldnmp_render_cell "$left")"
+    if [[ -n "${right:-}" ]]; then
+      luopo_ldnmp_render_cell "$right"
+    fi
+    printf '\n'
+  done
+  echo -e "${gl_huang}------------------------"
+  echo -e "${gl_huang}0.   ${gl_bai}返回主菜单"
+  echo -e "${gl_huang}------------------------${gl_bai}"
+}
+
 luopo_ldnmp_menu() {
   luopo_ldnmp_bootstrap || return 1
-  luopo_ldnmp_launch_compat
+  while true; do
+    clear
+    luopo_render_ldnmp_menu
+    read -r -p "请输入你的选择: " sub_choice
+    if ! luopo_ldnmp_dispatch_choice "$sub_choice"; then
+      return 0
+    fi
+  done
 }
