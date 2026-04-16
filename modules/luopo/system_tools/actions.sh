@@ -83,6 +83,312 @@ luopo_system_tools_swap_menu() {
   done
 }
 
+luopo_system_tools_network_priority_menu() {
+  root_use
+  while true; do
+    clear
+    send_stats "网络优先级切换"
+    echo "切换优先 ipv4/ipv6"
+    echo "------------------------"
+    echo "1. IPv4 优先"
+    echo "2. IPv6 优先"
+    echo "3. IPv6 修复工具"
+    echo "------------------------"
+    echo "0. 返回上一级选单"
+    echo "------------------------"
+    read -r -p "请输入你的选择: " sub_choice
+    case "$sub_choice" in
+      1)
+        prefer_ipv4
+        ;;
+      2)
+        rm -f /etc/gai.conf
+        echo "已切换为 IPv6 优先"
+        send_stats "已切换为 IPv6 优先"
+        ;;
+      3)
+        bash <(curl -L -s jhb.ovh/jb/v6.sh)
+        ;;
+      0)
+        return 0
+        ;;
+      *)
+        luopo_system_tools_invalid_choice
+        continue
+        ;;
+    esac
+    break_end
+  done
+}
+
+luopo_system_tools_show_ports() {
+  clear
+  send_stats "查看端口占用状态"
+  ss -tulnape
+  press_enter
+}
+
+luopo_system_tools_user_management_menu() {
+  root_use
+  while true; do
+    clear
+    send_stats "用户管理"
+    luopo_system_tools_print_user_table
+    echo
+    echo "账户操作"
+    echo "------------------------"
+    echo "1. 创建普通用户"
+    echo "2. 创建高级用户"
+    echo "3. 赋予 sudo 权限"
+    echo "4. 移除 sudo 权限"
+    echo "5. 删除用户"
+    echo "------------------------"
+    echo "0. 返回上一级选单"
+    echo "------------------------"
+    read -r -p "请输入你的选择: " sub_choice
+    case "$sub_choice" in
+      1)
+        read -r -p "请输入新用户名: " new_username
+        [[ -n "$new_username" ]] || { echo "用户名不能为空"; press_enter; continue; }
+        create_user_with_sshkey "$new_username" false
+        ;;
+      2)
+        read -r -p "请输入新用户名: " new_username
+        [[ -n "$new_username" ]] || { echo "用户名不能为空"; press_enter; continue; }
+        create_user_with_sshkey "$new_username" true
+        ;;
+      3)
+        read -r -p "请输入用户名: " username
+        [[ -n "$username" ]] || { echo "用户名不能为空"; press_enter; continue; }
+        if id "$username" >/dev/null 2>&1; then
+          echo "$username ALL=(ALL:ALL) ALL" > "/etc/sudoers.d/$username"
+          chmod 440 "/etc/sudoers.d/$username"
+          echo "已赋予 $username sudo 权限"
+        else
+          echo "用户不存在"
+        fi
+        ;;
+      4)
+        read -r -p "请输入用户名: " username
+        [[ -n "$username" ]] || { echo "用户名不能为空"; press_enter; continue; }
+        rm -f "/etc/sudoers.d/$username"
+        sed -i "/^$username .*ALL$/d" /etc/sudoers
+        echo "已移除 $username sudo 权限"
+        ;;
+      5)
+        read -r -p "请输入要删除的用户名: " username
+        [[ -n "$username" ]] || { echo "用户名不能为空"; press_enter; continue; }
+        if id "$username" >/dev/null 2>&1; then
+          userdel -r "$username"
+          echo "用户 $username 已删除"
+        else
+          echo "用户不存在"
+        fi
+        ;;
+      0)
+        return 0
+        ;;
+      *)
+        luopo_system_tools_invalid_choice
+        continue
+        ;;
+    esac
+    break_end
+  done
+}
+
+luopo_system_tools_change_hostname_menu() {
+  root_use
+  while true; do
+    clear
+    echo "当前主机名: $(hostname)"
+    echo "------------------------"
+    echo "1. 修改主机名"
+    echo "------------------------"
+    echo "0. 返回上一级选单"
+    echo "------------------------"
+    read -r -p "请输入你的选择: " sub_choice
+    case "$sub_choice" in
+      1)
+        read -r -p "请输入新的主机名: " new_hostname
+        [[ -n "$new_hostname" ]] || { echo "主机名不能为空"; press_enter; continue; }
+        if command -v hostnamectl >/dev/null 2>&1; then
+          hostnamectl set-hostname "$new_hostname"
+        else
+          hostname "$new_hostname"
+          echo "$new_hostname" > /etc/hostname
+        fi
+        if grep -q '^127\.0\.1\.1' /etc/hosts 2>/dev/null; then
+          sed -i "s/^127\.0\.1\.1.*/127.0.1.1 $new_hostname/" /etc/hosts
+        else
+          echo "127.0.1.1 $new_hostname" >> /etc/hosts
+        fi
+        echo "主机名已更新为: $new_hostname"
+        ;;
+      0)
+        return 0
+        ;;
+      *)
+        luopo_system_tools_invalid_choice
+        continue
+        ;;
+    esac
+    break_end
+  done
+}
+
+luopo_system_tools_switch_mirror_menu() {
+  root_use
+  while true; do
+    clear
+    echo "接入 LinuxMirrors 切换系统更新源"
+    echo "------------------------"
+    echo "1. 中国大陆【默认】"
+    echo "2. 中国大陆【教育网】"
+    echo "3. 海外地区"
+    echo "4. 智能切换更新源"
+    echo "------------------------"
+    echo "0. 返回上一级选单"
+    echo "------------------------"
+    read -r -p "输入你的选择: " sub_choice
+    case "$sub_choice" in
+      1)
+        send_stats "中国大陆默认源"
+        bash <(curl -sSL https://linuxmirrors.cn/main.sh)
+        ;;
+      2)
+        send_stats "中国大陆教育源"
+        bash <(curl -sSL https://linuxmirrors.cn/main.sh) --edu
+        ;;
+      3)
+        send_stats "海外源"
+        bash <(curl -sSL https://linuxmirrors.cn/main.sh) --abroad
+        ;;
+      4)
+        send_stats "智能切换更新源"
+        switch_mirror false false
+        ;;
+      0)
+        return 0
+        ;;
+      *)
+        luopo_system_tools_invalid_choice
+        continue
+        ;;
+    esac
+    break_end
+  done
+}
+
+luopo_system_tools_crontab_menu() {
+  root_use
+  check_crontab_installed
+  while true; do
+    clear
+    echo "当前定时任务列表"
+    echo "------------------------"
+    crontab -l 2>/dev/null || echo "暂无定时任务"
+    echo "------------------------"
+    echo "1. 添加每月任务"
+    echo "2. 添加每周任务"
+    echo "3. 添加每日任务"
+    echo "4. 添加每小时任务"
+    echo "5. 删除含关键字的任务"
+    echo "6. 编辑当前任务"
+    echo "------------------------"
+    echo "0. 返回上一级选单"
+    echo "------------------------"
+    read -r -p "请输入你的选择: " sub_choice
+    case "$sub_choice" in
+      1)
+        read -r -p "请输入日期 (1-31): " cron_day
+        read -r -p "请输入时间 (HH:MM): " cron_time
+        read -r -p "请输入任务命令: " cron_command
+        IFS=: read -r cron_hour cron_minute <<<"$cron_time"
+        (crontab -l 2>/dev/null; echo "$cron_minute $cron_hour $cron_day * * $cron_command") | crontab -
+        ;;
+      2)
+        read -r -p "请输入星期几 (0-6, 0=周日): " cron_weekday
+        read -r -p "请输入时间 (HH:MM): " cron_time
+        read -r -p "请输入任务命令: " cron_command
+        IFS=: read -r cron_hour cron_minute <<<"$cron_time"
+        (crontab -l 2>/dev/null; echo "$cron_minute $cron_hour * * $cron_weekday $cron_command") | crontab -
+        ;;
+      3)
+        read -r -p "请输入时间 (HH:MM): " cron_time
+        read -r -p "请输入任务命令: " cron_command
+        IFS=: read -r cron_hour cron_minute <<<"$cron_time"
+        (crontab -l 2>/dev/null; echo "$cron_minute $cron_hour * * * $cron_command") | crontab -
+        ;;
+      4)
+        read -r -p "请输入分钟 (0-59): " cron_minute
+        read -r -p "请输入任务命令: " cron_command
+        (crontab -l 2>/dev/null; echo "$cron_minute * * * * $cron_command") | crontab -
+        ;;
+      5)
+        read -r -p "请输入要删除任务的关键字: " cron_keyword
+        [[ -n "$cron_keyword" ]] || { echo "关键字不能为空"; press_enter; continue; }
+        crontab -l 2>/dev/null | grep -v "$cron_keyword" | crontab -
+        echo "已删除包含关键字的定时任务"
+        ;;
+      6)
+        crontab -e
+        ;;
+      0)
+        return 0
+        ;;
+      *)
+        luopo_system_tools_invalid_choice
+        continue
+        ;;
+    esac
+    break_end
+  done
+}
+
+luopo_system_tools_hosts_menu() {
+  root_use
+  while true; do
+    clear
+    echo "本机 host 解析列表"
+    echo "如果你在这里添加解析匹配，将不再使用动态解析了"
+    cat /etc/hosts
+    echo
+    echo "操作"
+    echo "------------------------"
+    echo "1. 添加新的解析"
+    echo "2. 删除解析地址"
+    echo "------------------------"
+    echo "0. 返回上一级选单"
+    echo "------------------------"
+    read -r -p "请输入你的选择: " sub_choice
+    case "$sub_choice" in
+      1)
+        read -r -p "请输入新的解析记录，格式: 110.25.5.33 example.com : " addhost
+        [[ -n "$addhost" ]] || { echo "解析记录不能为空"; press_enter; continue; }
+        echo "$addhost" >> /etc/hosts
+        send_stats "本地host解析新增"
+        echo "已添加解析记录"
+        ;;
+      2)
+        read -r -p "请输入要删除的关键字或域名: " delhost
+        [[ -n "$delhost" ]] || { echo "删除关键字不能为空"; press_enter; continue; }
+        sed -i "/$delhost/d" /etc/hosts
+        send_stats "本地host解析删除"
+        echo "已删除匹配记录"
+        ;;
+      0)
+        return 0
+        ;;
+      *)
+        luopo_system_tools_invalid_choice
+        continue
+        ;;
+    esac
+    break_end
+  done
+}
+
 luopo_system_tools_generate_credentials() {
   clear
   send_stats "用户信息生成器"
@@ -204,6 +510,14 @@ luopo_system_tools_dispatch_choice() {
     1) luopo_system_tools_set_shortcut ;;
     2) luopo_system_tools_change_login_password ;;
     3) add_sshpasswd ;;
+    10) luopo_system_tools_network_priority_menu ;;
+    11) luopo_system_tools_show_ports ;;
+    13) luopo_system_tools_user_management_menu ;;
+    18) luopo_system_tools_change_hostname_menu ;;
+    19) luopo_system_tools_switch_mirror_menu ;;
+    20) luopo_system_tools_crontab_menu ;;
+    21) luopo_system_tools_hosts_menu ;;
+    22) fail2ban_panel ;;
     5) luopo_system_tools_open_all_ports ;;
     7) set_dns_ui ;;
     8) dd_xitong ;;

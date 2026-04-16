@@ -86,3 +86,19 @@ luopo_system_tools_print_generated_credentials() {
   done
 }
 
+luopo_system_tools_print_user_table() {
+  echo "用户列表"
+  echo "----------------------------------------------------------------------------"
+  printf "%-24s %-34s %-20s %-10s\n" "用户名" "主目录" "用户组" "sudo权限"
+  while IFS=: read -r username _ _ _ _ _ homedir _; do
+    local groups sudo_status
+    groups="$(groups "$username" 2>/dev/null | cut -d : -f 2 | xargs)"
+    if sudo -n -lU "$username" 2>/dev/null | grep -q "(ALL) \(NOPASSWD: \)\?ALL"; then
+      sudo_status="Yes"
+    else
+      sudo_status="No"
+    fi
+    printf "%-24s %-34s %-20s %-10s\n" "$username" "$homedir" "$groups" "$sudo_status"
+  done < /etc/passwd
+}
+
