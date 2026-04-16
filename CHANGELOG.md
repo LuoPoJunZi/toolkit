@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.9
+- Auto release: v0.7.9
+- docs: refresh run checklist for current menu layout (abcada0)
+
 ## 0.7.8
 - Auto release: v0.7.8
 - refactor: align menu action names with luopo handlers (d1016c1)
