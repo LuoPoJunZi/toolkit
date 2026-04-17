@@ -14,6 +14,73 @@ luopo_ldnmp_install_wordpress() {
   ldnmp_wp
 }
 
+luopo_ldnmp_install_typecho() {
+  clear
+  local webname="Typecho"
+  send_stats "安装$webname"
+  echo "开始部署 $webname"
+  add_yuming
+  repeat_add_yuming
+  ldnmp_install_status
+  install_ssltls
+  certs_status
+  add_db
+
+  wget -O /home/web/conf.d/map.conf "${gh_proxy}raw.githubusercontent.com/kejilion/nginx/main/map.conf"
+  wget -O "/home/web/conf.d/$yuming.conf" "${gh_proxy}raw.githubusercontent.com/kejilion/nginx/main/typecho.com.conf"
+  sed -i "s/yuming.com/$yuming/g" "/home/web/conf.d/$yuming.conf"
+  nginx_http_on
+
+  mkdir -p "/home/web/html/$yuming"
+  cd "/home/web/html/$yuming"
+  wget -O latest.zip "${gh_proxy}github.com/typecho/typecho/releases/latest/download/typecho.zip"
+  unzip -o latest.zip
+  rm -f latest.zip
+
+  restart_ldnmp
+  clear
+  ldnmp_web_on
+  echo "数据库前缀: typecho_"
+  echo "数据库地址: mysql"
+  echo "用户名: $dbuse"
+  echo "密码: $dbusepasswd"
+  echo "数据库名: $dbname"
+}
+
+luopo_ldnmp_install_linkstack() {
+  clear
+  local webname="LinkStack"
+  send_stats "安装$webname"
+  echo "开始部署 $webname"
+  add_yuming
+  repeat_add_yuming
+  ldnmp_install_status
+  install_ssltls
+  certs_status
+  add_db
+
+  wget -O /home/web/conf.d/map.conf "${gh_proxy}raw.githubusercontent.com/kejilion/nginx/main/map.conf"
+  wget -O "/home/web/conf.d/$yuming.conf" "${gh_proxy}raw.githubusercontent.com/kejilion/nginx/refs/heads/main/index_php.conf"
+  sed -i "s|/var/www/html/yuming.com/|/var/www/html/yuming.com/linkstack|g" "/home/web/conf.d/$yuming.conf"
+  sed -i "s|yuming.com|$yuming|g" "/home/web/conf.d/$yuming.conf"
+  nginx_http_on
+
+  mkdir -p "/home/web/html/$yuming"
+  cd "/home/web/html/$yuming"
+  wget -O latest.zip "${gh_proxy}github.com/linkstackorg/linkstack/releases/latest/download/linkstack.zip"
+  unzip -o latest.zip
+  rm -f latest.zip
+
+  restart_ldnmp
+  clear
+  ldnmp_web_on
+  echo "数据库地址: mysql"
+  echo "数据库端口: 3306"
+  echo "数据库名: $dbname"
+  echo "用户名: $dbuse"
+  echo "密码: $dbusepasswd"
+}
+
 luopo_ldnmp_install_nginx_only() {
   ldnmp_install_status_one
   nginx_install_all
@@ -436,6 +503,8 @@ luopo_ldnmp_dispatch_choice() {
     0) return 1 ;;
     1) luopo_ldnmp_install_all ;;
     2) luopo_ldnmp_install_wordpress ;;
+    8) luopo_ldnmp_install_typecho ;;
+    9) luopo_ldnmp_install_linkstack ;;
     21) luopo_ldnmp_install_nginx_only ;;
     22) luopo_ldnmp_redirect_site ;;
     23) luopo_ldnmp_reverse_proxy_ip_port ;;
