@@ -967,3 +967,331 @@ luopo_app_marketplace_syncthing_menu() {
     "luopo_app_marketplace_syncthing_update" \
     "luopo_app_marketplace_syncthing_uninstall"
 }
+
+luopo_app_marketplace_npm_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/npm/data /home/docker/npm/letsencrypt
+  docker rm -f npm >/dev/null 2>&1 || true
+  docker run -d \
+    --name=npm \
+    --restart=always \
+    -p "${app_port}:81" \
+    -p 80:80 \
+    -p 443:443 \
+    -v /home/docker/npm/data:/data \
+    -v /home/docker/npm/letsencrypt:/etc/letsencrypt \
+    jc21/nginx-proxy-manager:latest
+}
+
+luopo_app_marketplace_npm_update() {
+  local app_port="$1"
+  docker rm -f npm >/dev/null 2>&1 || true
+  docker rmi -f jc21/nginx-proxy-manager:latest >/dev/null 2>&1 || true
+  luopo_app_marketplace_npm_install "$app_port"
+}
+
+luopo_app_marketplace_npm_uninstall() {
+  docker rm -f npm >/dev/null 2>&1 || true
+  docker rmi -f jc21/nginx-proxy-manager:latest >/dev/null 2>&1 || true
+  rm -rf /home/docker/npm
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_npm_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "4" \
+    "NginxProxyManager可视化面板" \
+    "npm" \
+    "jc21/nginx-proxy-manager:latest" \
+    "81" \
+    "可视化反向代理与证书管理面板。" \
+    "官网介绍: https://nginxproxymanager.com/" \
+    "luopo_app_marketplace_npm_install" \
+    "luopo_app_marketplace_npm_update" \
+    "luopo_app_marketplace_npm_uninstall"
+}
+
+luopo_app_marketplace_openlist_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/openlist
+  chmod -R 777 /home/docker/openlist
+  docker rm -f openlist >/dev/null 2>&1 || true
+  docker run -d \
+    --name openlist \
+    --restart=always \
+    -v /home/docker/openlist:/opt/openlist/data \
+    -p "${app_port}:5244" \
+    openlistteam/openlist:latest-aria2
+}
+
+luopo_app_marketplace_openlist_update() {
+  local app_port="$1"
+  docker rm -f openlist >/dev/null 2>&1 || true
+  docker rmi -f openlistteam/openlist:latest-aria2 >/dev/null 2>&1 || true
+  luopo_app_marketplace_openlist_install "$app_port"
+}
+
+luopo_app_marketplace_openlist_uninstall() {
+  docker rm -f openlist >/dev/null 2>&1 || true
+  docker rmi -f openlistteam/openlist:latest-aria2 >/dev/null 2>&1 || true
+  rm -rf /home/docker/openlist
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_openlist_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "5" \
+    "OpenList多存储文件列表程序" \
+    "openlist" \
+    "openlistteam/openlist:latest-aria2" \
+    "5244" \
+    "支持多种存储后端的文件列表与网盘程序。" \
+    "官网介绍: https://github.com/OpenListTeam/OpenList" \
+    "luopo_app_marketplace_openlist_install" \
+    "luopo_app_marketplace_openlist_update" \
+    "luopo_app_marketplace_openlist_uninstall"
+}
+
+luopo_app_marketplace_qinglong_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/qinglong/data
+  docker rm -f qinglong >/dev/null 2>&1 || true
+  docker run -d \
+    --name qinglong \
+    --hostname qinglong \
+    --restart=always \
+    -v /home/docker/qinglong/data:/ql/data \
+    -p "${app_port}:5700" \
+    whyour/qinglong:latest
+}
+
+luopo_app_marketplace_qinglong_update() {
+  local app_port="$1"
+  docker rm -f qinglong >/dev/null 2>&1 || true
+  docker rmi -f whyour/qinglong:latest >/dev/null 2>&1 || true
+  luopo_app_marketplace_qinglong_install "$app_port"
+}
+
+luopo_app_marketplace_qinglong_uninstall() {
+  docker rm -f qinglong >/dev/null 2>&1 || true
+  docker rmi -f whyour/qinglong:latest >/dev/null 2>&1 || true
+  rm -rf /home/docker/qinglong
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_qinglong_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "12" \
+    "青龙面板定时任务管理平台" \
+    "qinglong" \
+    "whyour/qinglong:latest" \
+    "5700" \
+    "青龙面板是常用的定时任务管理平台。" \
+    "官网介绍: https://github.com/whyour/qinglong" \
+    "luopo_app_marketplace_qinglong_install" \
+    "luopo_app_marketplace_qinglong_update" \
+    "luopo_app_marketplace_qinglong_uninstall"
+}
+
+luopo_app_marketplace_adguardhome_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/adguardhome/work /home/docker/adguardhome/conf
+  docker rm -f adguardhome >/dev/null 2>&1 || true
+  docker run -d \
+    --name adguardhome \
+    --restart=always \
+    -v /home/docker/adguardhome/work:/opt/adguardhome/work \
+    -v /home/docker/adguardhome/conf:/opt/adguardhome/conf \
+    -p 53:53/tcp \
+    -p 53:53/udp \
+    -p "${app_port}:3000/tcp" \
+    adguard/adguardhome
+}
+
+luopo_app_marketplace_adguardhome_update() {
+  local app_port="$1"
+  docker rm -f adguardhome >/dev/null 2>&1 || true
+  docker rmi -f adguard/adguardhome >/dev/null 2>&1 || true
+  luopo_app_marketplace_adguardhome_install "$app_port"
+}
+
+luopo_app_marketplace_adguardhome_uninstall() {
+  docker rm -f adguardhome >/dev/null 2>&1 || true
+  docker rmi -f adguard/adguardhome >/dev/null 2>&1 || true
+  rm -rf /home/docker/adguardhome
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_adguardhome_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "17" \
+    "AdGuardHome去广告软件" \
+    "adguardhome" \
+    "adguard/adguardhome" \
+    "8017" \
+    "网络级广告拦截与 DNS 管理工具。" \
+    "官网介绍: https://github.com/AdguardTeam/AdGuardHome" \
+    "luopo_app_marketplace_adguardhome_install" \
+    "luopo_app_marketplace_adguardhome_update" \
+    "luopo_app_marketplace_adguardhome_uninstall"
+}
+
+luopo_app_marketplace_vscode_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/vscode-web
+  docker rm -f vscode-web >/dev/null 2>&1 || true
+  docker run -d \
+    --name vscode-web \
+    --restart=always \
+    -p "${app_port}:8080" \
+    -v /home/docker/vscode-web:/home/coder/.local/share/code-server \
+    codercom/code-server
+}
+
+luopo_app_marketplace_vscode_update() {
+  local app_port="$1"
+  docker rm -f vscode-web >/dev/null 2>&1 || true
+  docker rmi -f codercom/code-server >/dev/null 2>&1 || true
+  luopo_app_marketplace_vscode_install "$app_port"
+}
+
+luopo_app_marketplace_vscode_uninstall() {
+  docker rm -f vscode-web >/dev/null 2>&1 || true
+  docker rmi -f codercom/code-server >/dev/null 2>&1 || true
+  rm -rf /home/docker/vscode-web
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_vscode_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "21" \
+    "VScode网页版" \
+    "vscode-web" \
+    "codercom/code-server" \
+    "8021" \
+    "强大的在线代码编辑工具。" \
+    "官网介绍: https://github.com/coder/code-server" \
+    "luopo_app_marketplace_vscode_install" \
+    "luopo_app_marketplace_vscode_update" \
+    "luopo_app_marketplace_vscode_uninstall"
+}
+
+luopo_app_marketplace_dockge_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/dockge/data /home/docker/dockge/stacks
+  docker rm -f dockge >/dev/null 2>&1 || true
+  docker run -d \
+    --name dockge \
+    --restart=always \
+    -p "${app_port}:5001" \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    -v /home/docker/dockge/data:/app/data \
+    -v /home/docker/dockge/stacks:/home/docker/dockge/stacks \
+    -e DOCKGE_STACKS_DIR=/home/docker/dockge/stacks \
+    louislam/dockge
+}
+
+luopo_app_marketplace_dockge_update() {
+  local app_port="$1"
+  docker rm -f dockge >/dev/null 2>&1 || true
+  docker rmi -f louislam/dockge >/dev/null 2>&1 || true
+  luopo_app_marketplace_dockge_install "$app_port"
+}
+
+luopo_app_marketplace_dockge_uninstall() {
+  docker rm -f dockge >/dev/null 2>&1 || true
+  docker rmi -f louislam/dockge >/dev/null 2>&1 || true
+  rm -rf /home/docker/dockge
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_dockge_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "27" \
+    "Dockge容器堆栈管理面板" \
+    "dockge" \
+    "louislam/dockge" \
+    "8027" \
+    "可视化 docker-compose 容器堆栈管理面板。" \
+    "官网介绍: https://github.com/louislam/dockge" \
+    "luopo_app_marketplace_dockge_install" \
+    "luopo_app_marketplace_dockge_update" \
+    "luopo_app_marketplace_dockge_uninstall"
+}
+
+luopo_app_marketplace_myip_install() {
+  local app_port="$1"
+  docker rm -f myip >/dev/null 2>&1 || true
+  docker run -d \
+    --name myip \
+    --restart=always \
+    -p "${app_port}:18966" \
+    jason5ng32/myip:latest
+}
+
+luopo_app_marketplace_myip_update() {
+  local app_port="$1"
+  docker rm -f myip >/dev/null 2>&1 || true
+  docker rmi -f jason5ng32/myip:latest >/dev/null 2>&1 || true
+  luopo_app_marketplace_myip_install "$app_port"
+}
+
+luopo_app_marketplace_myip_uninstall() {
+  docker rm -f myip >/dev/null 2>&1 || true
+  docker rmi -f jason5ng32/myip:latest >/dev/null 2>&1 || true
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_myip_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "37" \
+    "MyIP工具箱" \
+    "myip" \
+    "jason5ng32/myip:latest" \
+    "8037" \
+    "多功能 IP 工具箱，可查看 IP 信息与网络连通性。" \
+    "官网介绍: https://github.com/jason5ng32/MyIP" \
+    "luopo_app_marketplace_myip_install" \
+    "luopo_app_marketplace_myip_update" \
+    "luopo_app_marketplace_myip_uninstall"
+}
+
+luopo_app_marketplace_bitwarden_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/bitwarden/data
+  docker rm -f bitwarden >/dev/null 2>&1 || true
+  docker run -d \
+    --name bitwarden \
+    --restart=always \
+    -p "${app_port}:80" \
+    -v /home/docker/bitwarden/data:/data \
+    vaultwarden/server
+}
+
+luopo_app_marketplace_bitwarden_update() {
+  local app_port="$1"
+  docker rm -f bitwarden >/dev/null 2>&1 || true
+  docker rmi -f vaultwarden/server >/dev/null 2>&1 || true
+  luopo_app_marketplace_bitwarden_install "$app_port"
+}
+
+luopo_app_marketplace_bitwarden_uninstall() {
+  docker rm -f bitwarden >/dev/null 2>&1 || true
+  docker rmi -f vaultwarden/server >/dev/null 2>&1 || true
+  rm -rf /home/docker/bitwarden
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_bitwarden_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "72" \
+    "bitwarden密码管理器" \
+    "bitwarden" \
+    "vaultwarden/server" \
+    "8072" \
+    "你可以完全控制数据的自托管密码管理器。" \
+    "官网介绍: https://bitwarden.com/" \
+    "luopo_app_marketplace_bitwarden_install" \
+    "luopo_app_marketplace_bitwarden_update" \
+    "luopo_app_marketplace_bitwarden_uninstall"
+}

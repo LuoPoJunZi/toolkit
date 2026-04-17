@@ -68,8 +68,28 @@ luopo_app_marketplace_dispatch_choice() {
       luopo_app_marketplace_restore_all
       return 0
       ;;
+    4)
+      luopo_app_marketplace_npm_menu
+      return 0
+      ;;
+    5)
+      luopo_app_marketplace_openlist_menu
+      return 0
+      ;;
+    12)
+      luopo_app_marketplace_qinglong_menu
+      return 0
+      ;;
+    17)
+      luopo_app_marketplace_adguardhome_menu
+      return 0
+      ;;
     20)
       luopo_app_marketplace_portainer_menu
+      return 0
+      ;;
+    21)
+      luopo_app_marketplace_vscode_menu
       return 0
       ;;
     22)
@@ -78,6 +98,10 @@ luopo_app_marketplace_dispatch_choice() {
       ;;
     23)
       luopo_app_marketplace_memos_menu
+      return 0
+      ;;
+    27)
+      luopo_app_marketplace_dockge_menu
       return 0
       ;;
     28)
@@ -96,6 +120,10 @@ luopo_app_marketplace_dispatch_choice() {
       luopo_app_marketplace_drawio_menu
       return 0
       ;;
+    37)
+      luopo_app_marketplace_myip_menu
+      return 0
+      ;;
     64)
       luopo_app_marketplace_it_tools_menu
       return 0
@@ -106,6 +134,10 @@ luopo_app_marketplace_dispatch_choice() {
       ;;
     71)
       luopo_app_marketplace_navidrome_menu
+      return 0
+      ;;
+    72)
+      luopo_app_marketplace_bitwarden_menu
       return 0
       ;;
     79)
