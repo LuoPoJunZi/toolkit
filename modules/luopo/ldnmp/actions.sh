@@ -71,6 +71,71 @@ luopo_ldnmp_reverse_proxy_domain() {
   nginx_web_on
 }
 
+luopo_ldnmp_install_bitwarden() {
+  clear
+  local webname="Bitwarden"
+  send_stats "安装$webname"
+  echo "开始部署 $webname"
+  add_yuming
+
+  mkdir -p "/home/web/html/$yuming/bitwarden/data"
+  docker rm -f bitwarden >/dev/null 2>&1 || true
+  docker run -d \
+    --name bitwarden \
+    --restart=always \
+    -p 3280:80 \
+    -v "/home/web/html/$yuming/bitwarden/data:/data" \
+    vaultwarden/server
+
+  local duankou=3280
+  ldnmp_Proxy "$yuming" 127.0.0.1 "$duankou"
+}
+
+luopo_ldnmp_install_halo() {
+  clear
+  local webname="Halo"
+  send_stats "安装$webname"
+  echo "开始部署 $webname"
+  add_yuming
+
+  mkdir -p "/home/web/html/$yuming/.halo2"
+  docker rm -f halo >/dev/null 2>&1 || true
+  docker run -d \
+    --name halo \
+    --restart=always \
+    -p 8010:8090 \
+    -v "/home/web/html/$yuming/.halo2:/root/.halo2" \
+    halohub/halo:2
+
+  local duankou=8010
+  ldnmp_Proxy "$yuming" 127.0.0.1 "$duankou"
+}
+
+luopo_ldnmp_install_ai_prompt_generator() {
+  clear
+  local webname="AI绘画提示词生成器"
+  send_stats "安装$webname"
+  echo "开始部署 $webname"
+  add_yuming
+  nginx_install_status
+  install_ssltls
+  certs_status
+
+  wget -O "/home/web/conf.d/$yuming.conf" "${gh_proxy}raw.githubusercontent.com/kejilion/nginx/main/html.conf"
+  sed -i "s/yuming.com/$yuming/g" "/home/web/conf.d/$yuming.conf"
+  nginx_http_on
+
+  mkdir -p "/home/web/html/$yuming"
+  cd "/home/web/html/$yuming"
+  wget "${gh_proxy}github.com/kejilion/Website_source_code/raw/refs/heads/main/ai_prompt_generator.zip"
+  unzip "$(ls -t ./*.zip | head -1)"
+  rm -f ./*.zip
+
+  docker exec nginx chown -R nginx:nginx /var/www/html
+  docker exec nginx nginx -s reload
+  nginx_web_on
+}
+
 luopo_ldnmp_reverse_proxy_load_balance() {
   ldnmp_Proxy_backend
 }
@@ -89,6 +154,57 @@ luopo_ldnmp_security() {
 
 luopo_ldnmp_optimization() {
   web_optimization
+}
+
+luopo_ldnmp_custom_static_site() {
+  clear
+  local webname="静态站点"
+  send_stats "安装$webname"
+  echo "开始部署 $webname"
+  add_yuming
+  repeat_add_yuming
+  nginx_install_status
+  install_ssltls
+  certs_status
+
+  wget -O "/home/web/conf.d/$yuming.conf" "${gh_proxy}raw.githubusercontent.com/kejilion/nginx/main/html.conf"
+  sed -i "s/yuming.com/$yuming/g" "/home/web/conf.d/$yuming.conf"
+  nginx_http_on
+
+  mkdir -p "/home/web/html/$yuming"
+  cd "/home/web/html/$yuming"
+
+  clear
+  echo -e "[${gl_huang}1/2${gl_bai}] 上传静态源码"
+  echo "-------------"
+  echo "目前只允许上传 zip 格式源码包，请将源码包放到 /home/web/html/${yuming} 目录下"
+  read -r -p "也可以输入下载链接，远程下载源码包，直接回车将跳过远程下载: " url_download
+
+  if [[ -n "$url_download" ]]; then
+    wget "$url_download"
+  fi
+
+  local latest_zip
+  latest_zip="$(ls -t ./*.zip 2>/dev/null | head -1)"
+  if [[ -n "$latest_zip" ]]; then
+    unzip "$latest_zip"
+    rm -f "$latest_zip"
+  else
+    echo "未检测到 zip 源码包，将继续配置站点目录。"
+  fi
+
+  clear
+  echo -e "[${gl_huang}2/2${gl_bai}] index.html 所在路径"
+  echo "-------------"
+  find "$(realpath .)" -name "index.html" -print | xargs -r -I {} dirname {}
+  read -r -p "请输入 index.html 的路径，类似 /home/web/html/$yuming/index/: " index_lujing
+
+  sed -i "s#root /var/www/html/$yuming/#root $index_lujing#g" "/home/web/conf.d/$yuming.conf"
+  sed -i "s#/home/web/#/var/www/#g" "/home/web/conf.d/$yuming.conf"
+
+  docker exec nginx chown -R nginx:nginx /var/www/html
+  docker exec nginx nginx -s reload
+  nginx_web_on
 }
 
 luopo_ldnmp_backup_all() {
@@ -324,8 +440,12 @@ luopo_ldnmp_dispatch_choice() {
     22) luopo_ldnmp_redirect_site ;;
     23) luopo_ldnmp_reverse_proxy_ip_port ;;
     24) luopo_ldnmp_reverse_proxy_domain ;;
+    25) luopo_ldnmp_install_bitwarden ;;
+    26) luopo_ldnmp_install_halo ;;
+    27) luopo_ldnmp_install_ai_prompt_generator ;;
     28) luopo_ldnmp_reverse_proxy_load_balance ;;
     29) luopo_ldnmp_stream_proxy ;;
+    30) luopo_ldnmp_custom_static_site ;;
     31) luopo_ldnmp_site_status ;;
     32) luopo_ldnmp_backup_all ;;
     33) luopo_ldnmp_scheduled_remote_backup ;;
@@ -335,8 +455,7 @@ luopo_ldnmp_dispatch_choice() {
     37) luopo_ldnmp_update_menu ;;
     38) luopo_ldnmp_uninstall ;;
     *)
-      echo "该功能当前仍使用兼容实现，正在切换..."
-      press_enter
+      echo "该功能当前仍使用兼容实现，请在打开后再次选择编号: $choice"
       luopo_ldnmp_launch_compat
       ;;
   esac
