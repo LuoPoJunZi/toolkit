@@ -2,7 +2,7 @@
 set -euo pipefail
 
 luopo_oracle_cloud_bootstrap() {
-  ensure_luopo_vendor_loaded
+  return 0
 }
 
 luopo_oracle_cloud_finish() {

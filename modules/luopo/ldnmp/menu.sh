@@ -13,7 +13,7 @@ source "$LUOPO_LDNMP_DIR/actions.sh"
 luopo_render_ldnmp_menu() {
   local row left right
   echo "LDNMP建站"
-  ldnmp_tato
+  luopo_ldnmp_render_status_banner
   echo -e "${gl_huang}------------------------"
   for row in "${LUOPO_LDNMP_LAYOUT[@]}"; do
     if [[ "$row" == "---" ]]; then

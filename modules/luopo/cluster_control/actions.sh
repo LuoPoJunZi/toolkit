@@ -42,14 +42,14 @@ luopo_cluster_restore() {
   luopo_cluster_finish
 }
 
-luopo_cluster_install_toolkit() { run_commands_on_servers "bash <(curl -fsSL https://z.evzzz.com)"; }
-luopo_cluster_update_system() { run_commands_on_servers "z update"; }
-luopo_cluster_clean_system() { run_commands_on_servers "z clean"; }
-luopo_cluster_install_docker() { run_commands_on_servers "z docker install"; }
-luopo_cluster_install_bbr3() { run_commands_on_servers "z bbr3"; }
-luopo_cluster_set_swap() { run_commands_on_servers "z swap 1024"; }
-luopo_cluster_set_timezone() { run_commands_on_servers "z time Asia/Shanghai"; }
-luopo_cluster_open_ports() { run_commands_on_servers "z iptables_open"; }
+luopo_cluster_install_toolkit() { luopo_cluster_run_commands_on_servers "bash <(curl -fsSL https://z.evzzz.com)"; }
+luopo_cluster_update_system() { luopo_cluster_run_commands_on_servers "z update"; }
+luopo_cluster_clean_system() { luopo_cluster_run_commands_on_servers "z clean"; }
+luopo_cluster_install_docker() { luopo_cluster_run_commands_on_servers "z docker install"; }
+luopo_cluster_install_bbr3() { luopo_cluster_run_commands_on_servers "z bbr3"; }
+luopo_cluster_set_swap() { luopo_cluster_run_commands_on_servers "z swap 1024"; }
+luopo_cluster_set_timezone() { luopo_cluster_run_commands_on_servers "z time Asia/Shanghai"; }
+luopo_cluster_open_ports() { luopo_cluster_run_commands_on_servers "z iptables_open"; }
 
 luopo_cluster_custom_command() {
   send_stats "自定义执行命令"
@@ -58,5 +58,5 @@ luopo_cluster_custom_command() {
     luopo_cluster_finish
     return 0
   fi
-  run_commands_on_servers "${mingling}"
+  luopo_cluster_run_commands_on_servers "${mingling}"
 }

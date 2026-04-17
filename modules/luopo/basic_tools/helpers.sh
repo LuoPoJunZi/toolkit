@@ -8,7 +8,7 @@ LUOPO_BASIC_TOOLS=(
 )
 
 luopo_basic_tools_bootstrap() {
-  ensure_luopo_vendor_loaded
+  return 0
 }
 
 luopo_basic_tools_finish() {

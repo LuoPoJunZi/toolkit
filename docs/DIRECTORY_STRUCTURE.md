@@ -25,6 +25,8 @@ toolkit/
 │  ├─ THIRD_PARTY_SCRIPTS.md       # Whitelist and source declarations
 │  ├─ INTEGRATIONS_INDEX_SPEC.md   # integration index schema
 │  ├─ BORROWING_STRATEGY.md        # intentional reference notes
+│  ├─ VENDOR_DEPENDENCY_AUDIT.md   # native modules still tied to vendor runtime
+│  ├─ STRUCTURE_OPTIMIZATION_LOG.md # local progress log for structure refactors
 │  └─ FAQ.md
 ├─ lang/
 │  ├─ zh_CN.sh                     # Chinese i18n strings
@@ -34,6 +36,7 @@ toolkit/
 │  ├─ ui.sh                        # UI output, prompts, confirmations
 │  ├─ env.sh                       # OS checks, dependency checks
 │  ├─ logger.sh                    # action/error logs
+│  ├─ runtime.sh                   # shared runtime helpers extracted from vendor
 │  ├─ self_update.sh               # script self-update (git-based)
 │  ├─ rollback.sh                  # rollback metadata and restore flow
 │  ├─ diagnose.sh                  # collect diagnostics package
@@ -67,13 +70,31 @@ toolkit/
 │  │  └─ common.sh                 # shared compat helpers
 │  └─ luopo/                       # LuoPo native menu implementations
 │     ├─ app_marketplace/          # 12. app marketplace
+│     │  ├─ helpers.sh             # native marketplace helpers
+│     │  └─ native_apps.sh         # native app implementations and proxy wiring
 │     ├─ basic_tools/              # 5. basic tools
 │     ├─ bbr_management/           # 6. BBR management
 │     ├─ docker/                   # 7. Docker management
 │     ├─ ldnmp/                    # 11. LDNMP site suite
+│     │  ├─ helpers.sh             # native bootstrap and render helpers
+│     │  ├─ legacy_bridge.sh       # isolated legacy runtime bridge
+│     │  ├─ menu.sh                # LDNMP menu renderer
+│     │  ├─ registry.sh            # LDNMP menu registry/layout
+│     │  ├─ actions.sh             # LDNMP dispatcher/aggregator
+│     │  ├─ actions_sites.sh       # site/app install flows
+│     │  ├─ actions_proxy.sh       # reverse proxy / site ops
+│     │  └─ actions_maintenance.sh # backup / restore / update / uninstall
 │     ├─ network_test/             # 9. test script suite
 │     ├─ oracle_cloud/             # 10. Oracle Cloud tools
 │     ├─ system_tools/             # 14. system tools
+│     │  ├─ helpers.sh             # native helpers
+│     │  ├─ legacy_bridge.sh       # isolated legacy action bridge
+│     │  ├─ menu.sh                # system tools menu renderer
+│     │  ├─ registry.sh            # system tools registry/layout
+│     │  ├─ actions.sh             # system tools dispatcher/aggregator
+│     │  ├─ actions_access.sh      # shortcut / SSH / user / port related actions
+│     │  ├─ actions_operations.sh  # hostname / mirror / cron / hosts / traffic ops
+│     │  └─ actions_misc.sh        # tune / history / timezone / feedback / uninstall
 │     ├─ warp_management/          # 8. WARP management
 │     ├─ workspace/                # 13. background workspace
 │     └─ cluster_control/          # 15. cluster control

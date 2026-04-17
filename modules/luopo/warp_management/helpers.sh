@@ -8,7 +8,7 @@ ROOT_DIR="$(cd "$LUOPO_WARP_DIR/../../.." && pwd)"
 source "$ROOT_DIR/modules/compat/common.sh"
 
 luopo_warp_bootstrap() {
-  ensure_luopo_vendor_loaded
+  return 0
 }
 
 luopo_warp_finish() {

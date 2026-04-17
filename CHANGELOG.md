@@ -1,5 +1,11 @@
 # Changelog
 
+## 0.8.0
+- Manual release: v0.8.0
+- refactor: deepen native ldnmp and system tools structure
+- refactor: remove app marketplace proxy bridge and reuse native ldnmp helpers
+- docs: sync structure optimization log and dependency audit
+
 ## 0.7.30
 - Auto release: v0.7.30
 - feat: complete native app marketplace entries (95eed6c)

@@ -10,6 +10,8 @@ source "$ROOT_DIR/core/env.sh"
 # shellcheck disable=SC1091
 source "$ROOT_DIR/core/logger.sh"
 # shellcheck disable=SC1091
+source "$ROOT_DIR/core/runtime.sh"
+# shellcheck disable=SC1091
 source "$ROOT_DIR/core/self_update.sh"
 # shellcheck disable=SC1091
 source "$ROOT_DIR/core/uninstall.sh"

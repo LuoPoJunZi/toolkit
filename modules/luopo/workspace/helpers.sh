@@ -2,7 +2,7 @@
 set -euo pipefail
 
 luopo_workspace_bootstrap() {
-  ensure_luopo_vendor_loaded
+  return 0
 }
 
 luopo_workspace_finish() {
