@@ -1,10 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-luopo_ldnmp_launch_compat() {
-  run_luopo_compat_menu linux_ldnmp
-}
-
 luopo_ldnmp_install_all() {
   ldnmp_install_status_one
   ldnmp_install_all
@@ -182,6 +178,46 @@ luopo_ldnmp_install_dujiaoka() {
   echo "sed -i 's/ADMIN_HTTPS=false/ADMIN_HTTPS=true/g' /home/web/html/$yuming/dujiaoka/.env"
 }
 
+luopo_ldnmp_install_flarum() {
+  clear
+  local webname="Flarum论坛"
+  send_stats "安装$webname"
+  echo "开始部署 $webname"
+  add_yuming
+  repeat_add_yuming
+  ldnmp_install_status
+  install_ssltls
+  certs_status
+  add_db
+
+  wget -O /home/web/conf.d/map.conf "${gh_proxy}raw.githubusercontent.com/kejilion/nginx/main/map.conf"
+  wget -O "/home/web/conf.d/$yuming.conf" "${gh_proxy}raw.githubusercontent.com/kejilion/nginx/main/flarum.com.conf"
+  sed -i "s/yuming.com/$yuming/g" "/home/web/conf.d/$yuming.conf"
+  nginx_http_on
+
+  docker exec php rm -f /usr/local/etc/php/conf.d/optimized_php.ini
+  mkdir -p "/home/web/html/$yuming"
+
+  docker exec php sh -c "php -r \"copy('https://getcomposer.org/installer', 'composer-setup.php');\""
+  docker exec php sh -c "php composer-setup.php"
+  docker exec php sh -c "php -r \"unlink('composer-setup.php');\""
+  docker exec php sh -c "mv composer.phar /usr/local/bin/composer"
+
+  docker exec php composer create-project flarum/flarum "/var/www/html/$yuming"
+  docker exec php sh -c "cd /var/www/html/$yuming && composer require flarum-lang/chinese-simplified"
+  docker exec php sh -c "cd /var/www/html/$yuming && composer require 'flarum/extension-manager:*'"
+  docker exec php sh -c "cd /var/www/html/$yuming && composer require fof/polls fof/sitemap fof/oauth 'fof/best-answer:*' fof/upload fof/gamification 'fof/byobu:*' v17development/flarum-seo clarkwinkelmann/flarum-ext-emojionearea"
+
+  restart_ldnmp
+  ldnmp_web_on
+  echo "数据库地址: mysql"
+  echo "数据库名: $dbname"
+  echo "用户名: $dbuse"
+  echo "密码: $dbusepasswd"
+  echo "表前缀: flarum_"
+  echo "管理员信息自行设置"
+}
+
 luopo_ldnmp_install_typecho() {
   clear
   local webname="Typecho"
@@ -247,6 +283,134 @@ luopo_ldnmp_install_linkstack() {
   echo "数据库名: $dbname"
   echo "用户名: $dbuse"
   echo "密码: $dbusepasswd"
+}
+
+luopo_ldnmp_custom_dynamic_site() {
+  clear
+  local webname="PHP动态站点"
+  send_stats "安装$webname"
+  echo "开始部署 $webname"
+  add_yuming
+  repeat_add_yuming
+  ldnmp_install_status
+  install_ssltls
+  certs_status
+  add_db
+
+  wget -O /home/web/conf.d/map.conf "${gh_proxy}raw.githubusercontent.com/kejilion/nginx/main/map.conf"
+  wget -O "/home/web/conf.d/$yuming.conf" "${gh_proxy}raw.githubusercontent.com/kejilion/nginx/main/index_php.conf"
+  sed -i "s/yuming.com/$yuming/g" "/home/web/conf.d/$yuming.conf"
+  nginx_http_on
+
+  mkdir -p "/home/web/html/$yuming"
+  cd "/home/web/html/$yuming"
+
+  clear
+  echo -e "[${gl_huang}1/6${gl_bai}] 上传 PHP 源码"
+  echo "-------------"
+  echo "目前只允许上传 zip 格式源码包，请将源码包放到 /home/web/html/${yuming} 目录下"
+  read -r -p "也可以输入下载链接，远程下载源码包，直接回车将跳过远程下载: " url_download
+
+  if [[ -n "$url_download" ]]; then
+    wget "$url_download"
+  fi
+
+  local latest_zip
+  latest_zip="$(ls -t ./*.zip 2>/dev/null | head -1)"
+  if [[ -n "$latest_zip" ]]; then
+    unzip "$latest_zip"
+    rm -f "$latest_zip"
+  else
+    echo "未检测到 zip 源码包，将继续配置站点目录。"
+  fi
+
+  clear
+  echo -e "[${gl_huang}2/6${gl_bai}] index.php 所在路径"
+  echo "-------------"
+  find "$(realpath .)" -name "index.php" -print | xargs -r -I {} dirname {}
+  read -r -p "请输入 index.php 的路径，类似 /home/web/html/$yuming/wordpress/: " index_lujing
+
+  sed -i "s#root /var/www/html/$yuming/#root $index_lujing#g" "/home/web/conf.d/$yuming.conf"
+  sed -i "s#/home/web/#/var/www/#g" "/home/web/conf.d/$yuming.conf"
+
+  clear
+  echo -e "[${gl_huang}3/6${gl_bai}] 请选择 PHP 版本"
+  echo "-------------"
+  local PHP_Version="php"
+  read -r -p "1. php最新版 | 2. php7.4 : " pho_v
+  case "$pho_v" in
+    2)
+      sed -i "s#php:9000#php74:9000#g" "/home/web/conf.d/$yuming.conf"
+      PHP_Version="php74"
+      ;;
+    *)
+      PHP_Version="php"
+      ;;
+  esac
+
+  clear
+  echo -e "[${gl_huang}4/6${gl_bai}] 安装指定扩展"
+  echo "-------------"
+  echo "已经安装的扩展"
+  docker exec php php -m
+  read -r -p "输入需要安装的扩展名称，如 SourceGuardian imap ftp 等。直接回车将跳过安装: " php_extensions
+  if [[ -n "$php_extensions" ]]; then
+    docker exec "$PHP_Version" install-php-extensions $php_extensions
+  fi
+
+  clear
+  echo -e "[${gl_huang}5/6${gl_bai}] 编辑站点配置"
+  echo "-------------"
+  echo "即将打开站点配置，可按需设置伪静态等内容。"
+  install nano
+  nano "/home/web/conf.d/$yuming.conf"
+
+  clear
+  echo -e "[${gl_huang}6/6${gl_bai}] 数据库管理"
+  echo "-------------"
+  read -r -p "1. 我搭建新站        2. 我搭建老站有数据库备份: " use_db
+  case "$use_db" in
+    2)
+      echo "数据库备份必须是 .gz 结尾的压缩包。请放到 /home/ 目录下，支持宝塔/1Panel 备份数据导入。"
+      read -r -p "也可以输入下载链接，远程下载备份数据，直接回车将跳过远程下载: " url_download_db
+
+      cd /home/
+      if [[ -n "$url_download_db" ]]; then
+        wget "$url_download_db"
+      fi
+
+      local latest_gz latest_sql dbrootpasswd
+      latest_gz="$(ls -t ./*.gz 2>/dev/null | head -1)"
+      if [[ -n "$latest_gz" ]]; then
+        gunzip "$latest_gz"
+        latest_sql="$(ls -t ./*.sql 2>/dev/null | head -1)"
+        if [[ -n "$latest_sql" ]]; then
+          dbrootpasswd="$(grep -oP 'MYSQL_ROOT_PASSWORD:\s*\K.*' /home/web/docker-compose.yml | tr -d '[:space:]')"
+          docker exec -i mysql mysql -u root -p"$dbrootpasswd" "$dbname" < "$latest_sql"
+          echo "数据库导入的表数据"
+          docker exec -i mysql mysql -u root -p"$dbrootpasswd" -e "USE $dbname; SHOW TABLES;"
+          rm -f "$latest_sql"
+          echo "数据库导入完成"
+        else
+          echo "未找到可导入的 SQL 文件。"
+        fi
+      else
+        echo "未找到 .gz 数据库备份。"
+      fi
+      ;;
+  esac
+
+  docker exec php rm -f /usr/local/etc/php/conf.d/optimized_php.ini
+  restart_ldnmp
+  ldnmp_web_on
+  local prefix
+  prefix="web$(shuf -i 10-99 -n 1)_"
+  echo "数据库地址: mysql"
+  echo "数据库名: $dbname"
+  echo "用户名: $dbuse"
+  echo "密码: $dbusepasswd"
+  echo "表前缀: $prefix"
+  echo "管理员登录信息自行设置"
 }
 
 luopo_ldnmp_install_nginx_only() {
@@ -675,8 +839,10 @@ luopo_ldnmp_dispatch_choice() {
     4) luopo_ldnmp_install_kodbox ;;
     5) luopo_ldnmp_install_maccms ;;
     6) luopo_ldnmp_install_dujiaoka ;;
+    7) luopo_ldnmp_install_flarum ;;
     8) luopo_ldnmp_install_typecho ;;
     9) luopo_ldnmp_install_linkstack ;;
+    20) luopo_ldnmp_custom_dynamic_site ;;
     21) luopo_ldnmp_install_nginx_only ;;
     22) luopo_ldnmp_redirect_site ;;
     23) luopo_ldnmp_reverse_proxy_ip_port ;;
@@ -696,8 +862,7 @@ luopo_ldnmp_dispatch_choice() {
     37) luopo_ldnmp_update_menu ;;
     38) luopo_ldnmp_uninstall ;;
     *)
-      echo "该功能当前仍使用兼容实现，请在打开后再次选择编号: $choice"
-      luopo_ldnmp_launch_compat
+      luopo_ldnmp_invalid_choice
       ;;
   esac
   return 0
