@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.28
+- Auto release: v0.7.28
+- feat: add native compose app marketplace entries (7a343af)
+
 ## 0.7.27
 - Auto release: v0.7.27
 - feat: add native core app marketplace entries (e94ea0d)
