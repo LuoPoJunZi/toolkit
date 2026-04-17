@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.25
+- Auto release: v0.7.25
+- feat: add more native app marketplace entries (41f2e70)
+
 ## 0.7.24
 - Auto release: v0.7.24
 - refactor: complete native ldnmp routing (b79aaee)
