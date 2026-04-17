@@ -14,6 +14,77 @@ luopo_ldnmp_install_wordpress() {
   ldnmp_wp
 }
 
+luopo_ldnmp_install_discuz() {
+  clear
+  local webname="Discuz论坛"
+  send_stats "安装$webname"
+  echo "开始部署 $webname"
+  add_yuming
+  repeat_add_yuming
+  ldnmp_install_status
+  install_ssltls
+  certs_status
+  add_db
+
+  wget -O /home/web/conf.d/map.conf "${gh_proxy}raw.githubusercontent.com/kejilion/nginx/main/map.conf"
+  wget -O "/home/web/conf.d/$yuming.conf" "${gh_proxy}raw.githubusercontent.com/kejilion/nginx/main/discuz.com.conf"
+  sed -i "s/yuming.com/$yuming/g" "/home/web/conf.d/$yuming.conf"
+  nginx_http_on
+
+  mkdir -p "/home/web/html/$yuming"
+  cd "/home/web/html/$yuming"
+  wget -O latest.zip "${gh_proxy}github.com/kejilion/Website_source_code/raw/main/Discuz_X3.5_SC_UTF8_20250901.zip"
+  unzip -o latest.zip
+  rm -f latest.zip
+
+  restart_ldnmp
+  ldnmp_web_on
+  echo "数据库地址: mysql"
+  echo "数据库名: $dbname"
+  echo "用户名: $dbuse"
+  echo "密码: $dbusepasswd"
+  echo "表前缀: discuz_"
+}
+
+luopo_ldnmp_install_kodbox() {
+  clear
+  local webname="可道云桌面"
+  send_stats "安装$webname"
+  echo "开始部署 $webname"
+  add_yuming
+  repeat_add_yuming
+  ldnmp_install_status
+  install_ssltls
+  certs_status
+  add_db
+
+  wget -O /home/web/conf.d/map.conf "${gh_proxy}raw.githubusercontent.com/kejilion/nginx/main/map.conf"
+  wget -O "/home/web/conf.d/$yuming.conf" "${gh_proxy}raw.githubusercontent.com/kejilion/nginx/main/kdy.com.conf"
+  sed -i "s/yuming.com/$yuming/g" "/home/web/conf.d/$yuming.conf"
+  nginx_http_on
+
+  mkdir -p "/home/web/html/$yuming"
+  cd "/home/web/html/$yuming"
+  wget -O latest.zip "${gh_proxy}github.com/kalcaddle/kodbox/archive/refs/tags/1.50.02.zip"
+  unzip -o latest.zip
+  rm -f latest.zip
+
+  local extracted_dir
+  extracted_dir="$(find "/home/web/html/$yuming" -maxdepth 1 -type d -name 'kodbox*' ! -name kodbox | head -1)"
+  if [[ -n "$extracted_dir" ]]; then
+    rm -rf "/home/web/html/$yuming/kodbox"
+    mv "$extracted_dir" "/home/web/html/$yuming/kodbox"
+  fi
+
+  restart_ldnmp
+  ldnmp_web_on
+  echo "数据库地址: mysql"
+  echo "用户名: $dbuse"
+  echo "密码: $dbusepasswd"
+  echo "数据库名: $dbname"
+  echo "redis主机: redis"
+}
+
 luopo_ldnmp_install_typecho() {
   clear
   local webname="Typecho"
@@ -503,6 +574,8 @@ luopo_ldnmp_dispatch_choice() {
     0) return 1 ;;
     1) luopo_ldnmp_install_all ;;
     2) luopo_ldnmp_install_wordpress ;;
+    3) luopo_ldnmp_install_discuz ;;
+    4) luopo_ldnmp_install_kodbox ;;
     8) luopo_ldnmp_install_typecho ;;
     9) luopo_ldnmp_install_linkstack ;;
     21) luopo_ldnmp_install_nginx_only ;;

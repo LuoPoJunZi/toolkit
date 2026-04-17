@@ -4,8 +4,8 @@ set -euo pipefail
 LUOPO_LDNMP_ITEMS=(
   "1|安装LDNMP环境 ★|luopo_ldnmp_install_all"
   "2|安装WordPress ★|luopo_ldnmp_install_wordpress"
-  "3|安装Discuz论坛|luopo_ldnmp_launch_compat"
-  "4|安装可道云桌面|luopo_ldnmp_launch_compat"
+  "3|安装Discuz论坛|luopo_ldnmp_install_discuz"
+  "4|安装可道云桌面|luopo_ldnmp_install_kodbox"
   "5|安装苹果CMS影视站|luopo_ldnmp_launch_compat"
   "6|安装独角数发卡网|luopo_ldnmp_launch_compat"
   "7|安装flarum论坛网站|luopo_ldnmp_launch_compat"
