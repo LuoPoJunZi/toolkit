@@ -548,3 +548,181 @@ luopo_app_marketplace_filebrowser_menu() {
     "luopo_app_marketplace_filebrowser_uninstall" \
     "luopo_app_marketplace_filebrowser_post_install"
 }
+
+luopo_app_marketplace_searxng_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/searxng
+  docker rm -f searxng >/dev/null 2>&1 || true
+  docker run -d \
+    --name searxng \
+    --restart=always \
+    -p "${app_port}:8080" \
+    -v /home/docker/searxng:/etc/searxng \
+    searxng/searxng
+}
+
+luopo_app_marketplace_searxng_update() {
+  local app_port="$1"
+  docker rm -f searxng >/dev/null 2>&1 || true
+  docker rmi -f searxng/searxng >/dev/null 2>&1 || true
+  luopo_app_marketplace_searxng_install "$app_port"
+}
+
+luopo_app_marketplace_searxng_uninstall() {
+  docker rm -f searxng >/dev/null 2>&1 || true
+  docker rmi -f searxng/searxng >/dev/null 2>&1 || true
+  rm -rf /home/docker/searxng
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_searxng_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "29" \
+    "searxng聚合搜索站" \
+    "searxng" \
+    "searxng/searxng" \
+    "8029" \
+    "searxng 是一个私有、注重隐私的聚合搜索引擎。" \
+    "官网介绍: https://docs.searxng.org/" \
+    "luopo_app_marketplace_searxng_install" \
+    "luopo_app_marketplace_searxng_update" \
+    "luopo_app_marketplace_searxng_uninstall"
+}
+
+luopo_app_marketplace_komari_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/komari
+  docker rm -f komari >/dev/null 2>&1 || true
+  docker run -d \
+    --name komari \
+    -p "${app_port}:25774" \
+    -v /home/docker/komari:/app/data \
+    -e ADMIN_USERNAME=admin \
+    -e ADMIN_PASSWORD=1212156 \
+    -e TZ=Asia/Shanghai \
+    --restart=always \
+    ghcr.io/komari-monitor/komari:latest
+}
+
+luopo_app_marketplace_komari_update() {
+  local app_port="$1"
+  docker rm -f komari >/dev/null 2>&1 || true
+  docker rmi -f ghcr.io/komari-monitor/komari:latest >/dev/null 2>&1 || true
+  luopo_app_marketplace_komari_install "$app_port"
+}
+
+luopo_app_marketplace_komari_uninstall() {
+  docker rm -f komari >/dev/null 2>&1 || true
+  docker rmi -f ghcr.io/komari-monitor/komari:latest >/dev/null 2>&1 || true
+  rm -rf /home/docker/komari
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_komari_post_install() {
+  echo "默认账号: admin"
+  echo "默认密码: 1212156"
+}
+
+luopo_app_marketplace_komari_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "83" \
+    "komari服务器监控工具" \
+    "komari" \
+    "ghcr.io/komari-monitor/komari:latest" \
+    "8083" \
+    "Komari 是轻量级的自托管服务器监控工具。" \
+    "官网介绍: https://github.com/komari-monitor/komari" \
+    "luopo_app_marketplace_komari_install" \
+    "luopo_app_marketplace_komari_update" \
+    "luopo_app_marketplace_komari_uninstall" \
+    "luopo_app_marketplace_komari_post_install"
+}
+
+luopo_app_marketplace_jellyfin_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/jellyfin/config /home/docker/jellyfin/cache /home/docker/jellyfin/media
+  chmod -R 777 /home/docker/jellyfin
+  docker rm -f jellyfin >/dev/null 2>&1 || true
+  docker run -d \
+    --name jellyfin \
+    --user root \
+    --volume /home/docker/jellyfin/config:/config \
+    --volume /home/docker/jellyfin/cache:/cache \
+    --mount type=bind,source=/home/docker/jellyfin/media,target=/media \
+    -p "${app_port}:8096" \
+    -p 7359:7359/udp \
+    --restart=always \
+    jellyfin/jellyfin
+}
+
+luopo_app_marketplace_jellyfin_update() {
+  local app_port="$1"
+  docker rm -f jellyfin >/dev/null 2>&1 || true
+  docker rmi -f jellyfin/jellyfin >/dev/null 2>&1 || true
+  luopo_app_marketplace_jellyfin_install "$app_port"
+}
+
+luopo_app_marketplace_jellyfin_uninstall() {
+  docker rm -f jellyfin >/dev/null 2>&1 || true
+  docker rmi -f jellyfin/jellyfin >/dev/null 2>&1 || true
+  rm -rf /home/docker/jellyfin
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_jellyfin_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "86" \
+    "jellyfin媒体管理系统" \
+    "jellyfin" \
+    "jellyfin/jellyfin" \
+    "8086" \
+    "Jellyfin 是一款开源媒体服务器软件。" \
+    "官网介绍: https://jellyfin.org/" \
+    "luopo_app_marketplace_jellyfin_install" \
+    "luopo_app_marketplace_jellyfin_update" \
+    "luopo_app_marketplace_jellyfin_uninstall"
+}
+
+luopo_app_marketplace_zfile_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/zfile/db /home/docker/zfile/logs /home/docker/zfile/file
+  touch /home/docker/zfile/application.properties
+  docker rm -f zfile >/dev/null 2>&1 || true
+  docker run -d \
+    --name=zfile \
+    --restart=always \
+    -p "${app_port}:8080" \
+    -v /home/docker/zfile/db:/root/.zfile-v4/db \
+    -v /home/docker/zfile/logs:/root/.zfile-v4/logs \
+    -v /home/docker/zfile/file:/data/file \
+    -v /home/docker/zfile/application.properties:/root/.zfile-v4/application.properties \
+    zhaojun1998/zfile:latest
+}
+
+luopo_app_marketplace_zfile_update() {
+  local app_port="$1"
+  docker rm -f zfile >/dev/null 2>&1 || true
+  docker rmi -f zhaojun1998/zfile:latest >/dev/null 2>&1 || true
+  luopo_app_marketplace_zfile_install "$app_port"
+}
+
+luopo_app_marketplace_zfile_uninstall() {
+  docker rm -f zfile >/dev/null 2>&1 || true
+  docker rmi -f zhaojun1998/zfile:latest >/dev/null 2>&1 || true
+  rm -rf /home/docker/zfile
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_zfile_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "109" \
+    "ZFile在线网盘" \
+    "zfile" \
+    "zhaojun1998/zfile:latest" \
+    "8109" \
+    "ZFile 是适合个人或小团队的在线网盘程序。" \
+    "官网介绍: https://github.com/zfile-dev/zfile" \
+    "luopo_app_marketplace_zfile_install" \
+    "luopo_app_marketplace_zfile_update" \
+    "luopo_app_marketplace_zfile_uninstall"
+}

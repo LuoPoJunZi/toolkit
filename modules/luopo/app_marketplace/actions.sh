@@ -29,6 +29,10 @@ luopo_app_marketplace_dispatch_choice() {
       luopo_app_marketplace_memos_menu
       return 0
       ;;
+    29)
+      luopo_app_marketplace_searxng_menu
+      return 0
+      ;;
     67)
       luopo_app_marketplace_ddns_go_menu
       return 0
@@ -41,8 +45,20 @@ luopo_app_marketplace_dispatch_choice() {
       luopo_app_marketplace_beszel_menu
       return 0
       ;;
+    83)
+      luopo_app_marketplace_komari_menu
+      return 0
+      ;;
+    86)
+      luopo_app_marketplace_jellyfin_menu
+      return 0
+      ;;
     92)
       luopo_app_marketplace_filebrowser_menu
+      return 0
+      ;;
+    109)
+      luopo_app_marketplace_zfile_menu
       return 0
       ;;
   esac
