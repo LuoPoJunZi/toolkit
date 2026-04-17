@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.30
+- Auto release: v0.7.30
+- feat: complete native app marketplace entries (95eed6c)
+
 ## 0.7.29
 - Auto release: v0.7.29
 - feat: add native ai and ops app entries (55e3cb4)
