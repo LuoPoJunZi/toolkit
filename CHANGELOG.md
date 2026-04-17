@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.19
+- Auto release: v0.7.19
+- refactor: route system tools bbr shortcut natively (a7be9d5)
+
 ## 0.7.18
 - Auto release: v0.7.18
 - refactor: deepen native ldnmp operations (4203549)
