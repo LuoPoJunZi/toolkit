@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.18
+- Auto release: v0.7.18
+- refactor: deepen native ldnmp operations (4203549)
+
 ## 0.7.17
 - Auto release: v0.7.17
 - feat: expand native app marketplace coverage (43c3424)
