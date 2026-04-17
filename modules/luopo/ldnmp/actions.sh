@@ -85,6 +85,103 @@ luopo_ldnmp_install_kodbox() {
   echo "redis主机: redis"
 }
 
+luopo_ldnmp_install_maccms() {
+  clear
+  local webname="苹果CMS"
+  send_stats "安装$webname"
+  echo "开始部署 $webname"
+  add_yuming
+  repeat_add_yuming
+  ldnmp_install_status
+  install_ssltls
+  certs_status
+  add_db
+
+  wget -O /home/web/conf.d/map.conf "${gh_proxy}raw.githubusercontent.com/kejilion/nginx/main/map.conf"
+  wget -O "/home/web/conf.d/$yuming.conf" "${gh_proxy}raw.githubusercontent.com/kejilion/nginx/main/maccms.com.conf"
+  sed -i "s/yuming.com/$yuming/g" "/home/web/conf.d/$yuming.conf"
+  nginx_http_on
+
+  mkdir -p "/home/web/html/$yuming"
+  cd "/home/web/html/$yuming"
+  wget -O maccms10.zip "${gh_proxy}github.com/magicblack/maccms_down/raw/master/maccms10.zip"
+  unzip -o maccms10.zip
+  local maccms_dir
+  maccms_dir="$(find . -maxdepth 1 -type d -name 'maccms10-*' | head -1)"
+  if [[ -n "$maccms_dir" ]]; then
+    cp -a "$maccms_dir"/. .
+    rm -rf "$maccms_dir"
+  fi
+  rm -f maccms10.zip
+
+  cd "/home/web/html/$yuming/template/"
+  wget -O DYXS2.zip "${gh_proxy}github.com/kejilion/Website_source_code/raw/main/DYXS2.zip"
+  unzip -o DYXS2.zip
+  rm -f DYXS2.zip
+
+  cp "/home/web/html/$yuming/template/DYXS2/asset/admin/Dyxs2.php" "/home/web/html/$yuming/application/admin/controller"
+  cp "/home/web/html/$yuming/template/DYXS2/asset/admin/dycms.html" "/home/web/html/$yuming/application/admin/view/system"
+  [[ -f "/home/web/html/$yuming/admin.php" ]] && mv -f "/home/web/html/$yuming/admin.php" "/home/web/html/$yuming/vip.php"
+  wget -O "/home/web/html/$yuming/application/extra/maccms.php" "${gh_proxy}raw.githubusercontent.com/kejilion/Website_source_code/main/maccms.php"
+
+  restart_ldnmp
+  ldnmp_web_on
+  echo "数据库地址: mysql"
+  echo "数据库端口: 3306"
+  echo "数据库名: $dbname"
+  echo "用户名: $dbuse"
+  echo "密码: $dbusepasswd"
+  echo "数据库前缀: mac_"
+  echo "------------------------"
+  echo "安装成功后登录后台地址"
+  echo "https://$yuming/vip.php"
+}
+
+luopo_ldnmp_install_dujiaoka() {
+  clear
+  local webname="独角数卡"
+  send_stats "安装$webname"
+  echo "开始部署 $webname"
+  add_yuming
+  repeat_add_yuming
+  ldnmp_install_status
+  install_ssltls
+  certs_status
+  add_db
+
+  wget -O /home/web/conf.d/map.conf "${gh_proxy}raw.githubusercontent.com/kejilion/nginx/main/map.conf"
+  wget -O "/home/web/conf.d/$yuming.conf" "${gh_proxy}raw.githubusercontent.com/kejilion/nginx/main/dujiaoka.com.conf"
+  sed -i "s/yuming.com/$yuming/g" "/home/web/conf.d/$yuming.conf"
+  nginx_http_on
+
+  mkdir -p "/home/web/html/$yuming"
+  cd "/home/web/html/$yuming"
+  wget -O dujiaoka.tar.gz "${gh_proxy}github.com/assimon/dujiaoka/releases/download/2.0.6/2.0.6-antibody.tar.gz"
+  tar -zxvf dujiaoka.tar.gz
+  rm -f dujiaoka.tar.gz
+
+  restart_ldnmp
+  ldnmp_web_on
+  echo "数据库地址: mysql"
+  echo "数据库端口: 3306"
+  echo "数据库名: $dbname"
+  echo "用户名: $dbuse"
+  echo "密码: $dbusepasswd"
+  echo
+  echo "redis地址: redis"
+  echo "redis密码: 默认不填写"
+  echo "redis端口: 6379"
+  echo
+  echo "网站url: https://$yuming"
+  echo "后台登录路径: /admin"
+  echo "------------------------"
+  echo "用户名: admin"
+  echo "密码: admin"
+  echo "------------------------"
+  echo "登录时右上角如果出现红色 error0，请使用如下命令:"
+  echo "sed -i 's/ADMIN_HTTPS=false/ADMIN_HTTPS=true/g' /home/web/html/$yuming/dujiaoka/.env"
+}
+
 luopo_ldnmp_install_typecho() {
   clear
   local webname="Typecho"
@@ -576,6 +673,8 @@ luopo_ldnmp_dispatch_choice() {
     2) luopo_ldnmp_install_wordpress ;;
     3) luopo_ldnmp_install_discuz ;;
     4) luopo_ldnmp_install_kodbox ;;
+    5) luopo_ldnmp_install_maccms ;;
+    6) luopo_ldnmp_install_dujiaoka ;;
     8) luopo_ldnmp_install_typecho ;;
     9) luopo_ldnmp_install_linkstack ;;
     21) luopo_ldnmp_install_nginx_only ;;
