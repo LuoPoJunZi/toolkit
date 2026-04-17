@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.27
+- Auto release: v0.7.27
+- feat: add native core app marketplace entries (e94ea0d)
+
 ## 0.7.26
 - Auto release: v0.7.26
 - refactor: narrow app marketplace scope (f293bdd)
