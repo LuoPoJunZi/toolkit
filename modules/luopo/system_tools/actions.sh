@@ -4,6 +4,9 @@ set -euo pipefail
 LUOPO_SYSTEM_TOOLS_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 ROOT_DIR="$(cd "$LUOPO_SYSTEM_TOOLS_DIR/../../.." && pwd)"
 
+# shellcheck disable=SC1091
+source "$ROOT_DIR/modules/luopo/bbr_management/menu.sh"
+
 luopo_system_tools_set_shortcut() {
   while true; do
     clear
@@ -858,7 +861,7 @@ luopo_system_tools_dispatch_choice() {
     12) luopo_system_tools_swap_menu ;;
     14) luopo_system_tools_generate_credentials ;;
     15) luopo_system_tools_timezone_menu ;;
-    16) run_luopo_compat_menu linux_bbr ;;
+    16) luopo_bbr_management_menu ;;
     17) iptables_panel ;;
     24) sshkey_panel ;;
     25) luopo_system_tools_tg_monitor_menu ;;
