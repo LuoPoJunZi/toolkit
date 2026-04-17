@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.24
+- Auto release: v0.7.24
+- refactor: complete native ldnmp routing (b79aaee)
+
 ## 0.7.23
 - Auto release: v0.7.23
 - refactor: add native ldnmp commerce installers (83fc9dc)
