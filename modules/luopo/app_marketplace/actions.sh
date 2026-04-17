@@ -29,8 +29,24 @@ luopo_app_marketplace_dispatch_choice() {
       luopo_app_marketplace_memos_menu
       return 0
       ;;
+    28)
+      luopo_app_marketplace_librespeed_menu
+      return 0
+      ;;
     29)
       luopo_app_marketplace_searxng_menu
+      return 0
+      ;;
+    31)
+      luopo_app_marketplace_stirling_pdf_menu
+      return 0
+      ;;
+    32)
+      luopo_app_marketplace_drawio_menu
+      return 0
+      ;;
+    64)
+      luopo_app_marketplace_it_tools_menu
       return 0
       ;;
     67)
@@ -55,6 +71,14 @@ luopo_app_marketplace_dispatch_choice() {
       ;;
     92)
       luopo_app_marketplace_filebrowser_menu
+      return 0
+      ;;
+    93)
+      luopo_app_marketplace_dufs_menu
+      return 0
+      ;;
+    100)
+      luopo_app_marketplace_syncthing_menu
       return 0
       ;;
     109)

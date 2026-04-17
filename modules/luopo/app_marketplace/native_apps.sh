@@ -726,3 +726,244 @@ luopo_app_marketplace_zfile_menu() {
     "luopo_app_marketplace_zfile_update" \
     "luopo_app_marketplace_zfile_uninstall"
 }
+
+luopo_app_marketplace_librespeed_install() {
+  local app_port="$1"
+  docker rm -f speedtest >/dev/null 2>&1 || true
+  docker run -d \
+    --name speedtest \
+    --restart=always \
+    -p "${app_port}:8080" \
+    ghcr.io/librespeed/speedtest
+}
+
+luopo_app_marketplace_librespeed_update() {
+  local app_port="$1"
+  docker rm -f speedtest >/dev/null 2>&1 || true
+  docker rmi -f ghcr.io/librespeed/speedtest >/dev/null 2>&1 || true
+  luopo_app_marketplace_librespeed_install "$app_port"
+}
+
+luopo_app_marketplace_librespeed_uninstall() {
+  docker rm -f speedtest >/dev/null 2>&1 || true
+  docker rmi -f ghcr.io/librespeed/speedtest >/dev/null 2>&1 || true
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_librespeed_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "28" \
+    "LibreSpeed测速工具" \
+    "speedtest" \
+    "ghcr.io/librespeed/speedtest" \
+    "8028" \
+    "LibreSpeed 是用 JavaScript 实现的轻量级测速工具，即开即用。" \
+    "官网介绍: https://github.com/librespeed/speedtest" \
+    "luopo_app_marketplace_librespeed_install" \
+    "luopo_app_marketplace_librespeed_update" \
+    "luopo_app_marketplace_librespeed_uninstall"
+}
+
+luopo_app_marketplace_stirling_pdf_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/s-pdf/trainingData /home/docker/s-pdf/extraConfigs /home/docker/s-pdf/logs
+  docker rm -f s-pdf >/dev/null 2>&1 || true
+  docker run -d \
+    --name s-pdf \
+    --restart=always \
+    -p "${app_port}:8080" \
+    -v /home/docker/s-pdf/trainingData:/usr/share/tesseract-ocr/5/tessdata \
+    -v /home/docker/s-pdf/extraConfigs:/configs \
+    -v /home/docker/s-pdf/logs:/logs \
+    -e DOCKER_ENABLE_SECURITY=false \
+    frooodle/s-pdf:latest
+}
+
+luopo_app_marketplace_stirling_pdf_update() {
+  local app_port="$1"
+  docker rm -f s-pdf >/dev/null 2>&1 || true
+  docker rmi -f frooodle/s-pdf:latest >/dev/null 2>&1 || true
+  luopo_app_marketplace_stirling_pdf_install "$app_port"
+}
+
+luopo_app_marketplace_stirling_pdf_uninstall() {
+  docker rm -f s-pdf >/dev/null 2>&1 || true
+  docker rmi -f frooodle/s-pdf:latest >/dev/null 2>&1 || true
+  rm -rf /home/docker/s-pdf
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_stirling_pdf_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "31" \
+    "StirlingPDF工具大全" \
+    "s-pdf" \
+    "frooodle/s-pdf:latest" \
+    "8031" \
+    "强大的本地托管 PDF 操作工具，支持拆分、合并、转换、压缩等。" \
+    "官网介绍: https://github.com/Stirling-Tools/Stirling-PDF" \
+    "luopo_app_marketplace_stirling_pdf_install" \
+    "luopo_app_marketplace_stirling_pdf_update" \
+    "luopo_app_marketplace_stirling_pdf_uninstall"
+}
+
+luopo_app_marketplace_drawio_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/drawio
+  docker rm -f drawio >/dev/null 2>&1 || true
+  docker run -d \
+    --name drawio \
+    --restart=always \
+    -p "${app_port}:8080" \
+    -v /home/docker/drawio:/var/lib/drawio \
+    jgraph/drawio
+}
+
+luopo_app_marketplace_drawio_update() {
+  local app_port="$1"
+  docker rm -f drawio >/dev/null 2>&1 || true
+  docker rmi -f jgraph/drawio >/dev/null 2>&1 || true
+  luopo_app_marketplace_drawio_install "$app_port"
+}
+
+luopo_app_marketplace_drawio_uninstall() {
+  docker rm -f drawio >/dev/null 2>&1 || true
+  docker rmi -f jgraph/drawio >/dev/null 2>&1 || true
+  rm -rf /home/docker/drawio
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_drawio_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "32" \
+    "drawio免费的在线图表软件" \
+    "drawio" \
+    "jgraph/drawio" \
+    "8032" \
+    "强大的在线图表绘制软件，支持思维导图、拓扑图和流程图。" \
+    "官网介绍: https://www.drawio.com/" \
+    "luopo_app_marketplace_drawio_install" \
+    "luopo_app_marketplace_drawio_update" \
+    "luopo_app_marketplace_drawio_uninstall"
+}
+
+luopo_app_marketplace_it_tools_install() {
+  local app_port="$1"
+  docker rm -f it-tools >/dev/null 2>&1 || true
+  docker run -d \
+    --name it-tools \
+    --restart=always \
+    -p "${app_port}:80" \
+    corentinth/it-tools:latest
+}
+
+luopo_app_marketplace_it_tools_update() {
+  local app_port="$1"
+  docker rm -f it-tools >/dev/null 2>&1 || true
+  docker rmi -f corentinth/it-tools:latest >/dev/null 2>&1 || true
+  luopo_app_marketplace_it_tools_install "$app_port"
+}
+
+luopo_app_marketplace_it_tools_uninstall() {
+  docker rm -f it-tools >/dev/null 2>&1 || true
+  docker rmi -f corentinth/it-tools:latest >/dev/null 2>&1 || true
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_it_tools_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "64" \
+    "it-tools工具箱" \
+    "it-tools" \
+    "corentinth/it-tools:latest" \
+    "8064" \
+    "面向开发者和 IT 工作者的实用工具合集。" \
+    "官网介绍: https://github.com/CorentinTh/it-tools" \
+    "luopo_app_marketplace_it_tools_install" \
+    "luopo_app_marketplace_it_tools_update" \
+    "luopo_app_marketplace_it_tools_uninstall"
+}
+
+luopo_app_marketplace_dufs_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/dufs
+  docker rm -f dufs >/dev/null 2>&1 || true
+  docker run -d \
+    --name dufs \
+    --restart=always \
+    -v /home/docker/dufs:/data \
+    -p "${app_port}:5000" \
+    sigoden/dufs /data -A
+}
+
+luopo_app_marketplace_dufs_update() {
+  local app_port="$1"
+  docker rm -f dufs >/dev/null 2>&1 || true
+  docker rmi -f sigoden/dufs >/dev/null 2>&1 || true
+  luopo_app_marketplace_dufs_install "$app_port"
+}
+
+luopo_app_marketplace_dufs_uninstall() {
+  docker rm -f dufs >/dev/null 2>&1 || true
+  docker rmi -f sigoden/dufs >/dev/null 2>&1 || true
+  rm -rf /home/docker/dufs
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_dufs_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "93" \
+    "Dufs极简静态文件服务器" \
+    "dufs" \
+    "sigoden/dufs" \
+    "8093" \
+    "极简静态文件服务器，支持文件上传和下载。" \
+    "官网介绍: https://github.com/sigoden/dufs" \
+    "luopo_app_marketplace_dufs_install" \
+    "luopo_app_marketplace_dufs_update" \
+    "luopo_app_marketplace_dufs_uninstall"
+}
+
+luopo_app_marketplace_syncthing_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/syncthing
+  docker rm -f syncthing >/dev/null 2>&1 || true
+  docker run -d \
+    --name=syncthing \
+    --hostname=my-syncthing \
+    --restart=always \
+    -p "${app_port}:8384" \
+    -p 22000:22000/tcp \
+    -p 22000:22000/udp \
+    -p 21027:21027/udp \
+    -v /home/docker/syncthing:/var/syncthing \
+    syncthing/syncthing:latest
+}
+
+luopo_app_marketplace_syncthing_update() {
+  local app_port="$1"
+  docker rm -f syncthing >/dev/null 2>&1 || true
+  docker rmi -f syncthing/syncthing:latest >/dev/null 2>&1 || true
+  luopo_app_marketplace_syncthing_install "$app_port"
+}
+
+luopo_app_marketplace_syncthing_uninstall() {
+  docker rm -f syncthing >/dev/null 2>&1 || true
+  docker rmi -f syncthing/syncthing:latest >/dev/null 2>&1 || true
+  rm -rf /home/docker/syncthing
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_syncthing_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "100" \
+    "Syncthing点对点文件同步工具" \
+    "syncthing" \
+    "syncthing/syncthing:latest" \
+    "8100" \
+    "开源点对点文件同步工具，完全去中心化。" \
+    "官网介绍: https://github.com/syncthing/syncthing" \
+    "luopo_app_marketplace_syncthing_install" \
+    "luopo_app_marketplace_syncthing_update" \
+    "luopo_app_marketplace_syncthing_uninstall"
+}
