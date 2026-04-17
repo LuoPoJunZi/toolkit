@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.29
+- Auto release: v0.7.29
+- feat: add native ai and ops app entries (55e3cb4)
+
 ## 0.7.28
 - Auto release: v0.7.28
 - feat: add native compose app marketplace entries (7a343af)
