@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.21
+- Auto release: v0.7.21
+- refactor: add native ldnmp blog installers (90b5b1b)
+
 ## 0.7.20
 - Auto release: v0.7.20
 - refactor: add native ldnmp site utilities (54f0c90)
