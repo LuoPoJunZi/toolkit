@@ -68,6 +68,10 @@ luopo_app_marketplace_dispatch_choice() {
       luopo_app_marketplace_restore_all
       return 0
       ;;
+    3)
+      luopo_app_marketplace_onepanel_menu
+      return 0
+      ;;
     4)
       luopo_app_marketplace_npm_menu
       return 0
@@ -76,12 +80,20 @@ luopo_app_marketplace_dispatch_choice() {
       luopo_app_marketplace_openlist_menu
       return 0
       ;;
+    7)
+      luopo_app_marketplace_nezha_menu
+      return 0
+      ;;
     12)
       luopo_app_marketplace_qinglong_menu
       return 0
       ;;
     17)
       luopo_app_marketplace_adguardhome_menu
+      return 0
+      ;;
+    19)
+      luopo_app_marketplace_safeline_menu
       return 0
       ;;
     20)
@@ -124,6 +136,30 @@ luopo_app_marketplace_dispatch_choice() {
       luopo_app_marketplace_myip_menu
       return 0
       ;;
+    43)
+      luopo_app_marketplace_rustdesk_hbbs_menu
+      return 0
+      ;;
+    44)
+      luopo_app_marketplace_rustdesk_hbbr_menu
+      return 0
+      ;;
+    55)
+      luopo_app_marketplace_frps_menu
+      return 0
+      ;;
+    56)
+      luopo_app_marketplace_frpc_menu
+      return 0
+      ;;
+    58)
+      luopo_app_marketplace_dify_menu
+      return 0
+      ;;
+    59)
+      luopo_app_marketplace_newapi_menu
+      return 0
+      ;;
     63)
       luopo_app_marketplace_openwebui_menu
       return 0
@@ -158,6 +194,10 @@ luopo_app_marketplace_dispatch_choice() {
       ;;
     79)
       luopo_app_marketplace_beszel_menu
+      return 0
+      ;;
+    80)
+      luopo_app_marketplace_linkwarden_menu
       return 0
       ;;
     83)
@@ -213,11 +253,6 @@ luopo_app_marketplace_dispatch_choice() {
       return 0
       ;;
   esac
-
-  if [[ "$choice" =~ ^[0-9]+$ ]] && luopo_app_marketplace_find_item "$choice" >/dev/null; then
-    run_luopo_compat_menu linux_panel "$choice"
-    return 0
-  fi
 
   luopo_app_marketplace_invalid_choice
   return 0

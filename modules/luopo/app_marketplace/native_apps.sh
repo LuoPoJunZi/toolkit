@@ -263,6 +263,61 @@ luopo_app_marketplace_native_docker_app_menu() {
   done
 }
 
+luopo_app_marketplace_native_container_action_menu() {
+  local app_id="$1"
+  local app_name="$2"
+  local container_name="$3"
+  local description="$4"
+  local url="$5"
+  local install_fn="$6"
+  local update_fn="$7"
+  local uninstall_fn="$8"
+  local post_fn="${9:-}"
+  local choice state
+
+  luopo_app_marketplace_bootstrap || return 1
+  while true; do
+    clear
+    state="$(luopo_app_marketplace_native_app_state "$container_name")"
+    echo "${app_name} ${state}"
+    echo "$description"
+    echo "$url"
+    echo
+    echo "------------------------"
+    echo "1. 安装              2. 更新            3. 卸载"
+    echo "------------------------"
+    echo "0. 返回上一级选单"
+    echo "------------------------"
+    read -r -p "请输入你的选择: " choice
+
+    case "$choice" in
+      1)
+        luopo_app_marketplace_native_install_docker_runtime
+        "$install_fn"
+        luopo_app_marketplace_native_add_app_id "$app_id"
+        [[ -n "$post_fn" ]] && "$post_fn"
+        ;;
+      2)
+        luopo_app_marketplace_native_install_docker_runtime
+        "$update_fn"
+        luopo_app_marketplace_native_add_app_id "$app_id"
+        [[ -n "$post_fn" ]] && "$post_fn"
+        ;;
+      3)
+        "$uninstall_fn"
+        luopo_app_marketplace_native_remove_app_id "$app_id"
+        ;;
+      0)
+        return 0
+        ;;
+      *)
+        echo "无效的输入!"
+        ;;
+    esac
+    break_end
+  done
+}
+
 luopo_app_marketplace_portainer_install() {
   local app_port="$1"
   docker rm -f portainer >/dev/null 2>&1 || true
@@ -1789,4 +1844,448 @@ luopo_app_marketplace_immich_menu() {
     "luopo_app_marketplace_immich_install" \
     "luopo_app_marketplace_immich_update" \
     "luopo_app_marketplace_immich_uninstall"
+}
+
+luopo_app_marketplace_onepanel_state() {
+  command -v 1pctl >/dev/null 2>&1 && echo "已安装" || echo "未安装"
+}
+
+luopo_app_marketplace_onepanel_menu() {
+  local choice state
+  luopo_app_marketplace_bootstrap || return 1
+  while true; do
+    clear
+    state="$(luopo_app_marketplace_onepanel_state)"
+    echo "1Panel新一代管理面板 ${state}"
+    echo "现代化 Linux 服务器运维管理面板。"
+    echo "官网介绍: https://github.com/1Panel-dev/1Panel"
+    echo
+    echo "------------------------"
+    echo "1. 安装/更新          2. 查看面板信息      3. 卸载"
+    echo "------------------------"
+    echo "0. 返回上一级选单"
+    echo "------------------------"
+    read -r -p "请输入你的选择: " choice
+
+    case "$choice" in
+      1)
+        install bash curl
+        bash -c "$(curl -sSL https://resource.fit2cloud.com/1panel/package/v2/quick_start.sh)"
+        luopo_app_marketplace_native_add_app_id "3"
+        ;;
+      2)
+        if command -v 1pctl >/dev/null 2>&1; then
+          1pctl user-info
+        else
+          echo "未检测到 1Panel，请先安装。"
+        fi
+        ;;
+      3)
+        if command -v 1pctl >/dev/null 2>&1; then
+          1pctl uninstall
+        else
+          echo "未检测到 1Panel。"
+        fi
+        luopo_app_marketplace_native_remove_app_id "3"
+        ;;
+      0) return 0 ;;
+      *) echo "无效的输入!" ;;
+    esac
+    break_end
+  done
+}
+
+luopo_app_marketplace_nezha_install() {
+  install curl unzip jq
+  curl -sL "${gh_proxy}raw.githubusercontent.com/nezhahq/scripts/refs/heads/main/install.sh" -o /tmp/nezha.sh
+  chmod +x /tmp/nezha.sh
+  /tmp/nezha.sh
+}
+
+luopo_app_marketplace_nezha_update() {
+  luopo_app_marketplace_nezha_install
+}
+
+luopo_app_marketplace_nezha_uninstall() {
+  luopo_app_marketplace_nezha_install
+}
+
+luopo_app_marketplace_nezha_menu() {
+  luopo_app_marketplace_native_container_action_menu \
+    "7" \
+    "哪吒探针VPS监控面板" \
+    "nezha-dashboard" \
+    "轻量服务器监控面板，支持多节点状态、告警与流量监控。" \
+    "官网介绍: https://github.com/nezhahq/nezha" \
+    "luopo_app_marketplace_nezha_install" \
+    "luopo_app_marketplace_nezha_update" \
+    "luopo_app_marketplace_nezha_uninstall"
+}
+
+luopo_app_marketplace_safeline_install() {
+  bash -c "$(curl -fsSLk https://waf-ce.chaitin.cn/release/latest/setup.sh)"
+  docker exec safeline-mgt resetadmin || true
+}
+
+luopo_app_marketplace_safeline_update() {
+  bash -c "$(curl -fsSLk https://waf-ce.chaitin.cn/release/latest/upgrade.sh)"
+}
+
+luopo_app_marketplace_safeline_uninstall() {
+  if [[ -d /data/safeline ]]; then
+    cd /data/safeline && docker compose down --rmi all
+  fi
+  rm -rf /data/safeline
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_safeline_post_install() {
+  echo "如需重置管理员密码，可进入容器后执行: docker exec safeline-mgt resetadmin"
+}
+
+luopo_app_marketplace_safeline_menu() {
+  luopo_app_marketplace_native_container_action_menu \
+    "19" \
+    "雷池WAF防火墙面板" \
+    "safeline-mgt" \
+    "雷池 SafeLine 社区版 Web 应用防火墙。" \
+    "官网介绍: https://github.com/chaitin/SafeLine" \
+    "luopo_app_marketplace_safeline_install" \
+    "luopo_app_marketplace_safeline_update" \
+    "luopo_app_marketplace_safeline_uninstall" \
+    "luopo_app_marketplace_safeline_post_install"
+}
+
+luopo_app_marketplace_rustdesk_hbbs_install() {
+  mkdir -p /home/docker/hbbs/data
+  docker rm -f hbbs >/dev/null 2>&1 || true
+  docker run -d \
+    --name hbbs \
+    --restart=always \
+    --network host \
+    -v /home/docker/hbbs/data:/root \
+    rustdesk/rustdesk-server hbbs
+}
+
+luopo_app_marketplace_rustdesk_hbbs_update() {
+  docker rm -f hbbs >/dev/null 2>&1 || true
+  docker rmi -f rustdesk/rustdesk-server >/dev/null 2>&1 || true
+  luopo_app_marketplace_rustdesk_hbbs_install
+}
+
+luopo_app_marketplace_rustdesk_hbbs_uninstall() {
+  docker rm -f hbbs >/dev/null 2>&1 || true
+  docker rmi -f rustdesk/rustdesk-server >/dev/null 2>&1 || true
+  rm -rf /home/docker/hbbs
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_rustdesk_hbbs_post_install() {
+  echo "RustDesk 服务端日志:"
+  docker logs hbbs 2>/dev/null || true
+}
+
+luopo_app_marketplace_rustdesk_hbbs_menu() {
+  luopo_app_marketplace_native_container_action_menu \
+    "43" \
+    "RustDesk远程桌面服务端" \
+    "hbbs" \
+    "RustDesk ID 注册服务器，建议与中继端配套使用。" \
+    "官网介绍: https://github.com/rustdesk/rustdesk-server" \
+    "luopo_app_marketplace_rustdesk_hbbs_install" \
+    "luopo_app_marketplace_rustdesk_hbbs_update" \
+    "luopo_app_marketplace_rustdesk_hbbs_uninstall" \
+    "luopo_app_marketplace_rustdesk_hbbs_post_install"
+}
+
+luopo_app_marketplace_rustdesk_hbbr_install() {
+  mkdir -p /home/docker/hbbr/data
+  docker rm -f hbbr >/dev/null 2>&1 || true
+  docker run -d \
+    --name hbbr \
+    --restart=always \
+    --network host \
+    -v /home/docker/hbbr/data:/root \
+    rustdesk/rustdesk-server hbbr
+}
+
+luopo_app_marketplace_rustdesk_hbbr_update() {
+  docker rm -f hbbr >/dev/null 2>&1 || true
+  docker rmi -f rustdesk/rustdesk-server >/dev/null 2>&1 || true
+  luopo_app_marketplace_rustdesk_hbbr_install
+}
+
+luopo_app_marketplace_rustdesk_hbbr_uninstall() {
+  docker rm -f hbbr >/dev/null 2>&1 || true
+  docker rmi -f rustdesk/rustdesk-server >/dev/null 2>&1 || true
+  rm -rf /home/docker/hbbr
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_rustdesk_hbbr_menu() {
+  luopo_app_marketplace_native_container_action_menu \
+    "44" \
+    "RustDesk远程桌面中继端" \
+    "hbbr" \
+    "RustDesk 中继服务器，用于改善远程桌面连接质量。" \
+    "官网介绍: https://github.com/rustdesk/rustdesk-server" \
+    "luopo_app_marketplace_rustdesk_hbbr_install" \
+    "luopo_app_marketplace_rustdesk_hbbr_update" \
+    "luopo_app_marketplace_rustdesk_hbbr_uninstall"
+}
+
+luopo_app_marketplace_frps_write_config() {
+  local token dashboard_user dashboard_pwd
+  token="$(openssl rand -hex 16)"
+  dashboard_user="admin"
+  dashboard_pwd="$(openssl rand -hex 8)"
+  mkdir -p /home/frp
+  cat > /home/frp/frps.toml <<EOF
+[common]
+bind_port = 8055
+authentication_method = token
+token = ${token}
+dashboard_port = 8056
+dashboard_user = ${dashboard_user}
+dashboard_pwd = ${dashboard_pwd}
+EOF
+  echo "FRP 服务端 token: ${token}"
+  echo "Dashboard 用户名: ${dashboard_user}"
+  echo "Dashboard 密码: ${dashboard_pwd}"
+}
+
+luopo_app_marketplace_frps_install() {
+  install openssl
+  [[ -f /home/frp/frps.toml ]] || luopo_app_marketplace_frps_write_config
+  docker rm -f frps >/dev/null 2>&1 || true
+  docker run -d \
+    --name frps \
+    --restart=always \
+    --network host \
+    -v /home/frp/frps.toml:/frp/frps.toml \
+    kjlion/frp:alpine /frp/frps -c /frp/frps.toml
+  open_port 8055 8056 || true
+}
+
+luopo_app_marketplace_frps_update() {
+  docker rm -f frps >/dev/null 2>&1 || true
+  docker rmi -f kjlion/frp:alpine >/dev/null 2>&1 || true
+  luopo_app_marketplace_frps_install
+}
+
+luopo_app_marketplace_frps_uninstall() {
+  docker rm -f frps >/dev/null 2>&1 || true
+  docker rmi -f kjlion/frp:alpine >/dev/null 2>&1 || true
+  rm -f /home/frp/frps.toml
+  rmdir /home/frp 2>/dev/null || true
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_frps_menu() {
+  luopo_app_marketplace_native_container_action_menu \
+    "55" \
+    "FRP内网穿透服务端" \
+    "frps" \
+    "FRP 服务端，默认监听 8055，Dashboard 端口 8056。" \
+    "官网介绍: https://github.com/fatedier/frp" \
+    "luopo_app_marketplace_frps_install" \
+    "luopo_app_marketplace_frps_update" \
+    "luopo_app_marketplace_frps_uninstall"
+}
+
+luopo_app_marketplace_frpc_write_config() {
+  local server_addr token
+  read -r -p "请输入 FRP 服务端 IP/域名: " server_addr
+  read -r -p "请输入 FRP 服务端 token: " token
+  mkdir -p /home/frp
+  cat > /home/frp/frpc.toml <<EOF
+[common]
+server_addr = ${server_addr}
+server_port = 8055
+authentication_method = token
+token = ${token}
+EOF
+}
+
+luopo_app_marketplace_frpc_install() {
+  [[ -f /home/frp/frpc.toml ]] || luopo_app_marketplace_frpc_write_config
+  docker rm -f frpc >/dev/null 2>&1 || true
+  docker run -d \
+    --name frpc \
+    --restart=always \
+    --network host \
+    -v /home/frp/frpc.toml:/frp/frpc.toml \
+    kjlion/frp:alpine /frp/frpc -c /frp/frpc.toml
+}
+
+luopo_app_marketplace_frpc_update() {
+  docker rm -f frpc >/dev/null 2>&1 || true
+  docker rmi -f kjlion/frp:alpine >/dev/null 2>&1 || true
+  luopo_app_marketplace_frpc_install
+}
+
+luopo_app_marketplace_frpc_uninstall() {
+  docker rm -f frpc >/dev/null 2>&1 || true
+  docker rmi -f kjlion/frp:alpine >/dev/null 2>&1 || true
+  rm -f /home/frp/frpc.toml
+  rmdir /home/frp 2>/dev/null || true
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_frpc_menu() {
+  luopo_app_marketplace_native_container_action_menu \
+    "56" \
+    "FRP内网穿透客户端" \
+    "frpc" \
+    "FRP 客户端，连接服务端后可配置内网穿透规则。" \
+    "官网介绍: https://github.com/fatedier/frp" \
+    "luopo_app_marketplace_frpc_install" \
+    "luopo_app_marketplace_frpc_update" \
+    "luopo_app_marketplace_frpc_uninstall"
+}
+
+luopo_app_marketplace_dify_install() {
+  local app_port="$1"
+  install git
+  rm -rf /home/docker/dify
+  git clone "${gh_proxy}github.com/langgenius/dify.git" /home/docker/dify
+  cd /home/docker/dify/docker
+  cp .env.example .env
+  sed -i \
+    -e "s/^EXPOSE_NGINX_PORT=.*/EXPOSE_NGINX_PORT=${app_port}/" \
+    -e "s/^EXPOSE_NGINX_SSL_PORT=.*/EXPOSE_NGINX_SSL_PORT=8858/" \
+    .env
+  docker compose up -d
+  chown -R 1001:1001 /home/docker/dify/docker/volumes/app/storage 2>/dev/null || true
+  chmod -R 755 /home/docker/dify/docker/volumes/app/storage 2>/dev/null || true
+}
+
+luopo_app_marketplace_dify_update() {
+  local app_port="$1"
+  if [[ -d /home/docker/dify/docker ]]; then
+    cd /home/docker/dify/docker && docker compose down
+  fi
+  luopo_app_marketplace_dify_install "$app_port"
+}
+
+luopo_app_marketplace_dify_uninstall() {
+  if [[ -d /home/docker/dify/docker ]]; then
+    cd /home/docker/dify/docker && docker compose down --rmi all
+  fi
+  rm -rf /home/docker/dify
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_dify_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "58" \
+    "Dify大模型知识库" \
+    "docker-nginx-1" \
+    "dify" \
+    "8058" \
+    "开源 LLM 应用开发平台，支持知识库、工作流与 Agent。" \
+    "官网介绍: https://github.com/langgenius/dify" \
+    "luopo_app_marketplace_dify_install" \
+    "luopo_app_marketplace_dify_update" \
+    "luopo_app_marketplace_dify_uninstall"
+}
+
+luopo_app_marketplace_newapi_install() {
+  local app_port="$1"
+  install git
+  rm -rf /home/docker/new-api
+  git clone "${gh_proxy}github.com/Calcium-Ion/new-api.git" /home/docker/new-api
+  cd /home/docker/new-api
+  sed -i \
+    -e "s/- \"3000:3000\"/- \"${app_port}:3000\"/g" \
+    -e 's/container_name: redis/container_name: redis-new-api/g' \
+    -e 's/container_name: mysql/container_name: mysql-new-api/g' \
+    docker-compose.yml
+  docker compose up -d
+}
+
+luopo_app_marketplace_newapi_update() {
+  local app_port="$1"
+  if [[ -d /home/docker/new-api ]]; then
+    cd /home/docker/new-api && docker compose down
+  fi
+  luopo_app_marketplace_newapi_install "$app_port"
+}
+
+luopo_app_marketplace_newapi_uninstall() {
+  if [[ -d /home/docker/new-api ]]; then
+    cd /home/docker/new-api && docker compose down --rmi all
+  fi
+  rm -rf /home/docker/new-api
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_newapi_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "59" \
+    "NewAPI大模型资产管理" \
+    "new-api" \
+    "calciumion/new-api" \
+    "8059" \
+    "OpenAI API 分发与额度管理面板。" \
+    "官网介绍: https://github.com/Calcium-Ion/new-api" \
+    "luopo_app_marketplace_newapi_install" \
+    "luopo_app_marketplace_newapi_update" \
+    "luopo_app_marketplace_newapi_uninstall"
+}
+
+luopo_app_marketplace_linkwarden_install() {
+  local app_port="$1"
+  local admin_password nextauth_secret postgres_password
+  install curl openssl
+  mkdir -p /home/docker/linkwarden
+  cd /home/docker/linkwarden
+  curl -fsSL "${gh_proxy}raw.githubusercontent.com/linkwarden/linkwarden/refs/heads/main/docker-compose.yml" -o docker-compose.yml
+  curl -fsSL "${gh_proxy}raw.githubusercontent.com/linkwarden/linkwarden/refs/heads/main/.env.sample" -o .env
+  admin_password="$(openssl rand -hex 8)"
+  nextauth_secret="$(openssl rand -base64 32)"
+  postgres_password="$(openssl rand -base64 16)"
+  sed -i "s/3000:3000/${app_port}:3000/g" docker-compose.yml
+  cat >> .env <<EOF
+
+NEXTAUTH_URL=http://localhost:${app_port}
+NEXTAUTH_SECRET=${nextauth_secret}
+POSTGRES_PASSWORD=${postgres_password}
+NEXT_PUBLIC_CREDENTIALS_ENABLED=true
+ADMIN_EMAIL=admin@example.com
+ADMIN_PASSWORD=${admin_password}
+EOF
+  docker compose up -d
+  echo "默认管理员: admin@example.com"
+  echo "默认密码: ${admin_password}"
+}
+
+luopo_app_marketplace_linkwarden_update() {
+  local app_port="$1"
+  if [[ -d /home/docker/linkwarden ]]; then
+    cd /home/docker/linkwarden && docker compose down
+  fi
+  luopo_app_marketplace_linkwarden_install "$app_port"
+}
+
+luopo_app_marketplace_linkwarden_uninstall() {
+  if [[ -d /home/docker/linkwarden ]]; then
+    cd /home/docker/linkwarden && docker compose down --rmi all
+  fi
+  rm -rf /home/docker/linkwarden
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_linkwarden_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "80" \
+    "linkwarden书签管理" \
+    "linkwarden-linkwarden-1" \
+    "linkwarden" \
+    "8080" \
+    "团队与个人书签归档管理工具。" \
+    "官网介绍: https://github.com/linkwarden/linkwarden" \
+    "luopo_app_marketplace_linkwarden_install" \
+    "luopo_app_marketplace_linkwarden_update" \
+    "luopo_app_marketplace_linkwarden_uninstall"
 }
