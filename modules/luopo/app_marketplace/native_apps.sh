@@ -1611,3 +1611,182 @@ luopo_app_marketplace_lucky_menu() {
     "luopo_app_marketplace_lucky_uninstall" \
     "luopo_app_marketplace_lucky_post_install"
 }
+
+luopo_app_marketplace_openwebui_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/open-webui
+  docker rm -f open-webui >/dev/null 2>&1 || true
+  docker run -d \
+    --name open-webui \
+    --restart=always \
+    -p "${app_port}:8080" \
+    -v /home/docker/open-webui:/app/backend/data \
+    ghcr.io/open-webui/open-webui:main
+}
+
+luopo_app_marketplace_openwebui_update() {
+  local app_port="$1"
+  docker rm -f open-webui >/dev/null 2>&1 || true
+  docker rmi -f ghcr.io/open-webui/open-webui:main >/dev/null 2>&1 || true
+  luopo_app_marketplace_openwebui_install "$app_port"
+}
+
+luopo_app_marketplace_openwebui_uninstall() {
+  docker rm -f open-webui >/dev/null 2>&1 || true
+  docker rmi -f ghcr.io/open-webui/open-webui:main >/dev/null 2>&1 || true
+  rm -rf /home/docker/open-webui
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_openwebui_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "63" \
+    "OpenWebUI自托管AI平台" \
+    "open-webui" \
+    "ghcr.io/open-webui/open-webui:main" \
+    "8063" \
+    "自托管大语言模型 Web UI，支持各类模型 API 接入。" \
+    "官网介绍: https://github.com/open-webui/open-webui" \
+    "luopo_app_marketplace_openwebui_install" \
+    "luopo_app_marketplace_openwebui_update" \
+    "luopo_app_marketplace_openwebui_uninstall"
+}
+
+luopo_app_marketplace_n8n_install() {
+  local app_port="$1"
+  add_yuming
+  mkdir -p /home/docker/n8n
+  chmod -R 777 /home/docker/n8n
+  docker rm -f n8n >/dev/null 2>&1 || true
+  docker run -d \
+    --name n8n \
+    --restart=always \
+    -p "${app_port}:5678" \
+    -v /home/docker/n8n:/home/node/.n8n \
+    -e N8N_HOST="${yuming}" \
+    -e N8N_PORT=5678 \
+    -e N8N_PROTOCOL=https \
+    -e WEBHOOK_URL="https://${yuming}/" \
+    docker.n8n.io/n8nio/n8n
+  ldnmp_Proxy "${yuming}" 127.0.0.1 "${app_port}"
+  block_container_port n8n "$ipv4_address"
+}
+
+luopo_app_marketplace_n8n_update() {
+  local app_port="$1"
+  docker rm -f n8n >/dev/null 2>&1 || true
+  docker rmi -f docker.n8n.io/n8nio/n8n >/dev/null 2>&1 || true
+  luopo_app_marketplace_n8n_install "$app_port"
+}
+
+luopo_app_marketplace_n8n_uninstall() {
+  docker rm -f n8n >/dev/null 2>&1 || true
+  docker rmi -f docker.n8n.io/n8nio/n8n >/dev/null 2>&1 || true
+  rm -rf /home/docker/n8n
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_n8n_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "65" \
+    "n8n自动化工作流平台" \
+    "n8n" \
+    "docker.n8n.io/n8nio/n8n" \
+    "8065" \
+    "强大的自动化工作流平台，适合自动化编排与 webhook 流程。" \
+    "官网介绍: https://github.com/n8n-io/n8n" \
+    "luopo_app_marketplace_n8n_install" \
+    "luopo_app_marketplace_n8n_update" \
+    "luopo_app_marketplace_n8n_uninstall"
+}
+
+luopo_app_marketplace_allinssl_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/allinssl/data
+  docker rm -f allinssl >/dev/null 2>&1 || true
+  docker run -d \
+    --name allinssl \
+    --restart=always \
+    -p "${app_port}:8888" \
+    -v /home/docker/allinssl/data:/www/allinssl/data \
+    -e ALLINSSL_USER=allinssl \
+    -e ALLINSSL_PWD=allinssldocker \
+    -e ALLINSSL_URL=allinssl \
+    allinssl/allinssl:latest
+}
+
+luopo_app_marketplace_allinssl_update() {
+  local app_port="$1"
+  docker rm -f allinssl >/dev/null 2>&1 || true
+  docker rmi -f allinssl/allinssl:latest >/dev/null 2>&1 || true
+  luopo_app_marketplace_allinssl_install "$app_port"
+}
+
+luopo_app_marketplace_allinssl_uninstall() {
+  docker rm -f allinssl >/dev/null 2>&1 || true
+  docker rmi -f allinssl/allinssl:latest >/dev/null 2>&1 || true
+  rm -rf /home/docker/allinssl
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_allinssl_post_install() {
+  echo "安全入口: /allinssl"
+  echo "用户名: allinssl"
+  echo "密码: allinssldocker"
+}
+
+luopo_app_marketplace_allinssl_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "68" \
+    "AllinSSL证书管理平台" \
+    "allinssl" \
+    "allinssl/allinssl:latest" \
+    "8068" \
+    "开源免费的 SSL 证书自动化管理平台。" \
+    "官网介绍: https://allinssl.com" \
+    "luopo_app_marketplace_allinssl_install" \
+    "luopo_app_marketplace_allinssl_update" \
+    "luopo_app_marketplace_allinssl_uninstall" \
+    "luopo_app_marketplace_allinssl_post_install"
+}
+
+luopo_app_marketplace_immich_install() {
+  local app_port="$1"
+  install git openssl wget
+  mkdir -p /home/docker/immich_server
+  cd /home/docker/immich_server
+  wget -O docker-compose.yml "${gh_proxy}github.com/immich-app/immich/releases/latest/download/docker-compose.yml"
+  wget -O .env "${gh_proxy}github.com/immich-app/immich/releases/latest/download/example.env"
+  sed -i "s/2283:2283/${app_port}:2283/g" docker-compose.yml
+  docker compose up -d
+}
+
+luopo_app_marketplace_immich_update() {
+  local app_port="$1"
+  if [[ -d /home/docker/immich_server ]]; then
+    cd /home/docker/immich_server && docker compose down --rmi all
+  fi
+  luopo_app_marketplace_immich_install "$app_port"
+}
+
+luopo_app_marketplace_immich_uninstall() {
+  if [[ -d /home/docker/immich_server ]]; then
+    cd /home/docker/immich_server && docker compose down --rmi all
+  fi
+  rm -rf /home/docker/immich_server
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_immich_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "85" \
+    "immich图片视频管理器" \
+    "immich_server" \
+    "immich" \
+    "8085" \
+    "高性能自托管照片和视频管理解决方案。" \
+    "官网介绍: https://github.com/immich-app/immich" \
+    "luopo_app_marketplace_immich_install" \
+    "luopo_app_marketplace_immich_update" \
+    "luopo_app_marketplace_immich_uninstall"
+}

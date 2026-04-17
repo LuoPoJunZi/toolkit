@@ -124,12 +124,24 @@ luopo_app_marketplace_dispatch_choice() {
       luopo_app_marketplace_myip_menu
       return 0
       ;;
+    63)
+      luopo_app_marketplace_openwebui_menu
+      return 0
+      ;;
     64)
       luopo_app_marketplace_it_tools_menu
       return 0
       ;;
+    65)
+      luopo_app_marketplace_n8n_menu
+      return 0
+      ;;
     67)
       luopo_app_marketplace_ddns_go_menu
+      return 0
+      ;;
+    68)
+      luopo_app_marketplace_allinssl_menu
       return 0
       ;;
     71)
@@ -150,6 +162,10 @@ luopo_app_marketplace_dispatch_choice() {
       ;;
     83)
       luopo_app_marketplace_komari_menu
+      return 0
+      ;;
+    85)
+      luopo_app_marketplace_immich_menu
       return 0
       ;;
     86)
