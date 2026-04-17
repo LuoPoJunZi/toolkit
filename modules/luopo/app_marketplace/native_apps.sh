@@ -1295,3 +1295,319 @@ luopo_app_marketplace_bitwarden_menu() {
     "luopo_app_marketplace_bitwarden_update" \
     "luopo_app_marketplace_bitwarden_uninstall"
 }
+
+luopo_app_marketplace_gpt_load_install() {
+  local app_port="$1"
+  local app_passwd
+  read -r -p "设置 gpt-load 登录密钥（建议 sk- 开头）: " app_passwd
+  mkdir -p /home/docker/gpt-load/data
+  docker rm -f gpt-load >/dev/null 2>&1 || true
+  docker run -d \
+    --name gpt-load \
+    --restart=always \
+    -p "${app_port}:3001" \
+    -e AUTH_KEY="${app_passwd}" \
+    -v /home/docker/gpt-load/data:/app/data \
+    tbphp/gpt-load:latest
+}
+
+luopo_app_marketplace_gpt_load_update() {
+  local app_port="$1"
+  docker rm -f gpt-load >/dev/null 2>&1 || true
+  docker rmi -f tbphp/gpt-load:latest >/dev/null 2>&1 || true
+  luopo_app_marketplace_gpt_load_install "$app_port"
+}
+
+luopo_app_marketplace_gpt_load_uninstall() {
+  docker rm -f gpt-load >/dev/null 2>&1 || true
+  docker rmi -f tbphp/gpt-load:latest >/dev/null 2>&1 || true
+  rm -rf /home/docker/gpt-load
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_gpt_load_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "82" \
+    "gpt-load高性能AI透明代理" \
+    "gpt-load" \
+    "tbphp/gpt-load:latest" \
+    "8082" \
+    "高性能 AI 接口透明代理服务。" \
+    "官网介绍: https://www.gpt-load.com/" \
+    "luopo_app_marketplace_gpt_load_install" \
+    "luopo_app_marketplace_gpt_load_update" \
+    "luopo_app_marketplace_gpt_load_uninstall"
+}
+
+luopo_app_marketplace_gitea_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/gitea/gitea /home/docker/gitea/data /home/docker/gitea/postgres
+  cd /home/docker/gitea
+  curl -fsSL -o docker-compose.yml "${gh_proxy}raw.githubusercontent.com/kejilion/docker/main/gitea-docker-compose.yml"
+  sed -i "s/3000:3000/${app_port}:3000/g" docker-compose.yml
+  docker compose up -d
+}
+
+luopo_app_marketplace_gitea_update() {
+  local app_port="$1"
+  if [[ -d /home/docker/gitea ]]; then
+    cd /home/docker/gitea && docker compose down --rmi all
+  fi
+  luopo_app_marketplace_gitea_install "$app_port"
+}
+
+luopo_app_marketplace_gitea_uninstall() {
+  if [[ -d /home/docker/gitea ]]; then
+    cd /home/docker/gitea && docker compose down --rmi all
+  fi
+  rm -rf /home/docker/gitea
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_gitea_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "91" \
+    "gitea私有代码仓库" \
+    "gitea" \
+    "gitea" \
+    "8091" \
+    "轻量私有代码托管平台，提供接近 GitHub 的使用体验。" \
+    "官网介绍: https://github.com/go-gitea/gitea" \
+    "luopo_app_marketplace_gitea_install" \
+    "luopo_app_marketplace_gitea_update" \
+    "luopo_app_marketplace_gitea_uninstall"
+}
+
+luopo_app_marketplace_paperless_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/paperless/export /home/docker/paperless/consume
+  cd /home/docker/paperless
+  curl -fsSL -o docker-compose.yml "${gh_proxy}raw.githubusercontent.com/paperless-ngx/paperless-ngx/refs/heads/main/docker/compose/docker-compose.postgres-tika.yml"
+  curl -fsSL -o docker-compose.env "${gh_proxy}raw.githubusercontent.com/paperless-ngx/paperless-ngx/refs/heads/main/docker/compose/.env"
+  sed -i "s/8000:8000/${app_port}:8000/g" docker-compose.yml
+  docker compose up -d
+}
+
+luopo_app_marketplace_paperless_update() {
+  local app_port="$1"
+  if [[ -d /home/docker/paperless ]]; then
+    cd /home/docker/paperless && docker compose down --rmi all
+  fi
+  luopo_app_marketplace_paperless_install "$app_port"
+}
+
+luopo_app_marketplace_paperless_uninstall() {
+  if [[ -d /home/docker/paperless ]]; then
+    cd /home/docker/paperless && docker compose down --rmi all
+  fi
+  rm -rf /home/docker/paperless
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_paperless_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "95" \
+    "paperless文档管理平台" \
+    "paperless-webserver-1" \
+    "paperless" \
+    "8095" \
+    "开源电子文档管理系统，适合纸质文件数字化与归档。" \
+    "官网介绍: https://docs.paperless-ngx.com/" \
+    "luopo_app_marketplace_paperless_install" \
+    "luopo_app_marketplace_paperless_update" \
+    "luopo_app_marketplace_paperless_uninstall"
+}
+
+luopo_app_marketplace_umami_install() {
+  local app_port="$1"
+  install git
+  rm -rf /home/docker/umami
+  mkdir -p /home/docker
+  cd /home/docker
+  git clone "${gh_proxy}github.com/umami-software/umami.git" umami
+  cd /home/docker/umami
+  sed -i "s/3000:3000/${app_port}:3000/g" docker-compose.yml
+  docker compose up -d
+}
+
+luopo_app_marketplace_umami_update() {
+  local app_port="$1"
+  if [[ -d /home/docker/umami ]]; then
+    cd /home/docker/umami && docker compose down --rmi all
+    git pull origin main >/dev/null 2>&1 || true
+    sed -i "s/[0-9]\\+:3000/${app_port}:3000/g" docker-compose.yml
+    docker compose up -d
+  else
+    luopo_app_marketplace_umami_install "$app_port"
+  fi
+}
+
+luopo_app_marketplace_umami_uninstall() {
+  if [[ -d /home/docker/umami ]]; then
+    cd /home/docker/umami && docker compose down --rmi all
+  fi
+  rm -rf /home/docker/umami
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_umami_post_install() {
+  echo "初始用户名: admin"
+  echo "初始密码: umami"
+}
+
+luopo_app_marketplace_umami_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "103" \
+    "Umami网站统计工具" \
+    "umami-umami-1" \
+    "umami" \
+    "8103" \
+    "开源、轻量、隐私友好的网站分析工具。" \
+    "官网介绍: https://github.com/umami-software/umami" \
+    "luopo_app_marketplace_umami_install" \
+    "luopo_app_marketplace_umami_update" \
+    "luopo_app_marketplace_umami_uninstall" \
+    "luopo_app_marketplace_umami_post_install"
+}
+
+luopo_app_marketplace_siyuan_install() {
+  local app_port="$1"
+  local app_passwd
+  read -r -p "设置思源笔记登录密码: " app_passwd
+  mkdir -p /home/docker/siyuan/workspace
+  docker rm -f siyuan >/dev/null 2>&1 || true
+  docker run -d \
+    --name siyuan \
+    --restart=always \
+    -v /home/docker/siyuan/workspace:/siyuan/workspace \
+    -p "${app_port}:6806" \
+    -e PUID=1001 \
+    -e PGID=1002 \
+    b3log/siyuan \
+    --workspace=/siyuan/workspace/ \
+    --accessAuthCode="${app_passwd}"
+}
+
+luopo_app_marketplace_siyuan_update() {
+  local app_port="$1"
+  docker rm -f siyuan >/dev/null 2>&1 || true
+  docker rmi -f b3log/siyuan >/dev/null 2>&1 || true
+  luopo_app_marketplace_siyuan_install "$app_port"
+}
+
+luopo_app_marketplace_siyuan_uninstall() {
+  docker rm -f siyuan >/dev/null 2>&1 || true
+  docker rmi -f b3log/siyuan >/dev/null 2>&1 || true
+  rm -rf /home/docker/siyuan
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_siyuan_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "105" \
+    "思源笔记" \
+    "siyuan" \
+    "b3log/siyuan" \
+    "8105" \
+    "隐私优先的知识管理系统。" \
+    "官网介绍: https://github.com/siyuan-note/siyuan" \
+    "luopo_app_marketplace_siyuan_install" \
+    "luopo_app_marketplace_siyuan_update" \
+    "luopo_app_marketplace_siyuan_uninstall"
+}
+
+luopo_app_marketplace_karakeep_install() {
+  local app_port="$1"
+  install git
+  rm -rf /home/docker/karakeep
+  mkdir -p /home/docker
+  cd /home/docker
+  git clone "${gh_proxy}github.com/karakeep-app/karakeep.git" karakeep
+  cd /home/docker/karakeep/docker
+  cp .env.sample .env
+  sed -i "s/3000:3000/${app_port}:3000/g" docker-compose.yml
+  docker compose up -d
+}
+
+luopo_app_marketplace_karakeep_update() {
+  local app_port="$1"
+  if [[ -d /home/docker/karakeep/docker ]]; then
+    cd /home/docker/karakeep/docker && docker compose down --rmi all
+    cd /home/docker/karakeep && git pull origin main >/dev/null 2>&1 || true
+    sed -i "s/[0-9]\\+:3000/${app_port}:3000/g" /home/docker/karakeep/docker/docker-compose.yml
+    cd /home/docker/karakeep/docker && docker compose up -d
+  else
+    luopo_app_marketplace_karakeep_install "$app_port"
+  fi
+}
+
+luopo_app_marketplace_karakeep_uninstall() {
+  if [[ -d /home/docker/karakeep/docker ]]; then
+    cd /home/docker/karakeep/docker && docker compose down --rmi all
+  fi
+  rm -rf /home/docker/karakeep
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_karakeep_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "110" \
+    "Karakeep书签管理" \
+    "docker-web-1" \
+    "karakeep" \
+    "8110" \
+    "自托管书签应用，带有 AI 辅助能力。" \
+    "官网介绍: https://github.com/karakeep-app/karakeep" \
+    "luopo_app_marketplace_karakeep_install" \
+    "luopo_app_marketplace_karakeep_update" \
+    "luopo_app_marketplace_karakeep_uninstall"
+}
+
+luopo_app_marketplace_lucky_install() {
+  local app_port="$1"
+  mkdir -p /home/docker/lucky/conf
+  docker rm -f lucky >/dev/null 2>&1 || true
+  docker run -d \
+    --name=lucky \
+    --restart=always \
+    --network host \
+    -v /home/docker/lucky/conf:/app/conf \
+    -v /var/run/docker.sock:/var/run/docker.sock \
+    gdy666/lucky:v2
+  echo "正在等待 Lucky 初始化..."
+  sleep 10
+  docker exec lucky /app/lucky -rSetHttpAdminPort "${app_port}" || true
+}
+
+luopo_app_marketplace_lucky_update() {
+  local app_port="$1"
+  docker rm -f lucky >/dev/null 2>&1 || true
+  docker rmi -f gdy666/lucky:v2 >/dev/null 2>&1 || true
+  luopo_app_marketplace_lucky_install "$app_port"
+}
+
+luopo_app_marketplace_lucky_uninstall() {
+  docker rm -f lucky >/dev/null 2>&1 || true
+  docker rmi -f gdy666/lucky:v2 >/dev/null 2>&1 || true
+  rm -rf /home/docker/lucky
+  echo "应用已卸载"
+}
+
+luopo_app_marketplace_lucky_post_install() {
+  echo "默认账号密码: 666"
+}
+
+luopo_app_marketplace_lucky_menu() {
+  luopo_app_marketplace_native_docker_app_menu \
+    "112" \
+    "Lucky大内网穿透工具" \
+    "lucky" \
+    "gdy666/lucky:v2" \
+    "8112" \
+    "大内网穿透及端口转发管理工具，支持 DDNS、反向代理、WOL 等功能。" \
+    "官网介绍: https://github.com/gdy666/lucky" \
+    "luopo_app_marketplace_lucky_install" \
+    "luopo_app_marketplace_lucky_update" \
+    "luopo_app_marketplace_lucky_uninstall" \
+    "luopo_app_marketplace_lucky_post_install"
+}

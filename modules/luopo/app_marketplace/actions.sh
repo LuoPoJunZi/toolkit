@@ -140,6 +140,10 @@ luopo_app_marketplace_dispatch_choice() {
       luopo_app_marketplace_bitwarden_menu
       return 0
       ;;
+    82)
+      luopo_app_marketplace_gpt_load_menu
+      return 0
+      ;;
     79)
       luopo_app_marketplace_beszel_menu
       return 0
@@ -152,6 +156,10 @@ luopo_app_marketplace_dispatch_choice() {
       luopo_app_marketplace_jellyfin_menu
       return 0
       ;;
+    91)
+      luopo_app_marketplace_gitea_menu
+      return 0
+      ;;
     92)
       luopo_app_marketplace_filebrowser_menu
       return 0
@@ -160,12 +168,32 @@ luopo_app_marketplace_dispatch_choice() {
       luopo_app_marketplace_dufs_menu
       return 0
       ;;
+    95)
+      luopo_app_marketplace_paperless_menu
+      return 0
+      ;;
     100)
       luopo_app_marketplace_syncthing_menu
       return 0
       ;;
+    103)
+      luopo_app_marketplace_umami_menu
+      return 0
+      ;;
+    105)
+      luopo_app_marketplace_siyuan_menu
+      return 0
+      ;;
     109)
       luopo_app_marketplace_zfile_menu
+      return 0
+      ;;
+    110)
+      luopo_app_marketplace_karakeep_menu
+      return 0
+      ;;
+    112)
+      luopo_app_marketplace_lucky_menu
       return 0
       ;;
   esac
