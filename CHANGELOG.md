@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.7.17
+- Auto release: v0.7.17
+- feat: expand native app marketplace coverage (43c3424)
+
 ## 0.7.16
 - Auto release: v0.7.16
 - refactor: complete native system tools routing (7a62790)
