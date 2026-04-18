@@ -21,11 +21,12 @@ luopo_render_ldnmp_menu() {
       continue
     fi
     IFS='|' read -r left right <<<"$row"
-    printf "%-52s" "$(luopo_ldnmp_render_cell "$left")"
+    luopo_ldnmp_render_cell "$left"
+    printf '\n'
     if [[ -n "${right:-}" ]]; then
       luopo_ldnmp_render_cell "$right"
+      printf '\n'
     fi
-    printf '\n'
   done
   echo -e "${gl_huang}------------------------"
   echo -e "${gl_huang}0.   ${gl_bai}返回主菜单"
