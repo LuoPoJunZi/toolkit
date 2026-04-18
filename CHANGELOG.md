@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.2
+- Auto release: v0.9.2
+- fix: remove dangling system tools declarations (8ccdfc7)
+- docs: refresh architecture documentation (741a2b8)
+
 ## 0.9.1
 - Auto release: v0.9.1
 - chore: keep retired menu drafts local (7c2070c)
