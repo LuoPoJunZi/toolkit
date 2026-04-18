@@ -58,15 +58,25 @@ luopo_app_marketplace_native_app_store_port() {
 
 luopo_app_marketplace_native_add_app_id() {
   local app_id="$1"
+  local legacy_app_id
   mkdir -p /home/docker
   touch /home/docker/appno.txt
+  while IFS= read -r legacy_app_id; do
+    [[ -z "$legacy_app_id" ]] && continue
+    sed -i "/\b${legacy_app_id}\b/d" /home/docker/appno.txt
+  done < <(luopo_app_marketplace_legacy_numbers "$app_id")
   grep -qxF "$app_id" /home/docker/appno.txt || printf '%s\n' "$app_id" >> /home/docker/appno.txt
 }
 
 luopo_app_marketplace_native_remove_app_id() {
   local app_id="$1"
+  local legacy_app_id
   if [[ -f /home/docker/appno.txt ]]; then
     sed -i "/\b${app_id}\b/d" /home/docker/appno.txt
+    while IFS= read -r legacy_app_id; do
+      [[ -z "$legacy_app_id" ]] && continue
+      sed -i "/\b${legacy_app_id}\b/d" /home/docker/appno.txt
+    done < <(luopo_app_marketplace_legacy_numbers "$app_id")
   fi
 }
 
@@ -373,7 +383,7 @@ luopo_app_marketplace_portainer_uninstall() {
 
 luopo_app_marketplace_portainer_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "8" \
+    "6" \
     "portainer容器管理面板" \
     "portainer" \
     "portainer/portainer" \
@@ -451,7 +461,7 @@ luopo_app_marketplace_memos_uninstall() {
 
 luopo_app_marketplace_memos_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "20" \
+    "61" \
     "Memos网页备忘录" \
     "memos" \
     "neosmemo/memos:stable" \
@@ -490,7 +500,7 @@ luopo_app_marketplace_ddns_go_uninstall() {
 
 luopo_app_marketplace_ddns_go_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "46" \
+    "28" \
     "ddns-go动态DNS管理工具" \
     "ddns-go" \
     "jeessy/ddns-go" \
@@ -533,7 +543,7 @@ luopo_app_marketplace_navidrome_uninstall() {
 
 luopo_app_marketplace_navidrome_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "48" \
+    "51" \
     "Navidrome私有音乐服务器" \
     "navidrome" \
     "deluan/navidrome:latest" \
@@ -573,7 +583,7 @@ luopo_app_marketplace_beszel_uninstall() {
 
 luopo_app_marketplace_beszel_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "60" \
+    "9" \
     "Beszel服务器监控" \
     "beszel" \
     "henrygd/beszel" \
@@ -618,7 +628,7 @@ luopo_app_marketplace_filebrowser_post_install() {
 
 luopo_app_marketplace_filebrowser_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "67" \
+    "12" \
     "FileBrowser文件管理器" \
     "filebrowser" \
     "hurlenko/filebrowser" \
@@ -659,7 +669,7 @@ luopo_app_marketplace_searxng_uninstall() {
 
 luopo_app_marketplace_searxng_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "23" \
+    "22" \
     "searxng聚合搜索站" \
     "searxng" \
     "searxng/searxng" \
@@ -707,7 +717,7 @@ luopo_app_marketplace_komari_post_install() {
 
 luopo_app_marketplace_komari_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "63" \
+    "10" \
     "komari服务器监控工具" \
     "komari" \
     "ghcr.io/komari-monitor/komari:latest" \
@@ -753,7 +763,7 @@ luopo_app_marketplace_jellyfin_uninstall() {
 
 luopo_app_marketplace_jellyfin_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "65" \
+    "52" \
     "jellyfin媒体管理系统" \
     "jellyfin" \
     "jellyfin/jellyfin" \
@@ -797,7 +807,7 @@ luopo_app_marketplace_zfile_uninstall() {
 
 luopo_app_marketplace_zfile_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "83" \
+    "17" \
     "ZFile在线网盘" \
     "zfile" \
     "zhaojun1998/zfile:latest" \
@@ -834,7 +844,7 @@ luopo_app_marketplace_librespeed_uninstall() {
 
 luopo_app_marketplace_librespeed_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "22" \
+    "69" \
     "LibreSpeed测速工具" \
     "speedtest" \
     "ghcr.io/librespeed/speedtest" \
@@ -877,7 +887,7 @@ luopo_app_marketplace_stirling_pdf_uninstall() {
 
 luopo_app_marketplace_stirling_pdf_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "24" \
+    "67" \
     "StirlingPDF工具大全" \
     "s-pdf" \
     "frooodle/s-pdf:latest" \
@@ -917,7 +927,7 @@ luopo_app_marketplace_drawio_uninstall() {
 
 luopo_app_marketplace_drawio_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "25" \
+    "68" \
     "drawio免费的在线图表软件" \
     "drawio" \
     "jgraph/drawio" \
@@ -954,7 +964,7 @@ luopo_app_marketplace_it_tools_uninstall() {
 
 luopo_app_marketplace_it_tools_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "44" \
+    "66" \
     "it-tools工具箱" \
     "it-tools" \
     "corentinth/it-tools:latest" \
@@ -994,7 +1004,7 @@ luopo_app_marketplace_dufs_uninstall() {
 
 luopo_app_marketplace_dufs_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "68" \
+    "13" \
     "Dufs极简静态文件服务器" \
     "dufs" \
     "sigoden/dufs" \
@@ -1038,7 +1048,7 @@ luopo_app_marketplace_syncthing_uninstall() {
 
 luopo_app_marketplace_syncthing_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "80" \
+    "14" \
     "Syncthing点对点文件同步工具" \
     "syncthing" \
     "syncthing/syncthing:latest" \
@@ -1122,7 +1132,7 @@ luopo_app_marketplace_openlist_uninstall() {
 
 luopo_app_marketplace_openlist_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "3" \
+    "11" \
     "OpenList多存储文件列表程序" \
     "openlist" \
     "openlistteam/openlist:latest-aria2" \
@@ -1163,7 +1173,7 @@ luopo_app_marketplace_qinglong_uninstall() {
 
 luopo_app_marketplace_qinglong_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "5" \
+    "4" \
     "青龙面板定时任务管理平台" \
     "qinglong" \
     "whyour/qinglong:latest" \
@@ -1206,7 +1216,7 @@ luopo_app_marketplace_adguardhome_uninstall() {
 
 luopo_app_marketplace_adguardhome_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "6" \
+    "21" \
     "AdGuardHome去广告软件" \
     "adguardhome" \
     "adguard/adguardhome" \
@@ -1246,7 +1256,7 @@ luopo_app_marketplace_vscode_uninstall() {
 
 luopo_app_marketplace_vscode_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "9" \
+    "8" \
     "VScode网页版" \
     "vscode-web" \
     "codercom/code-server" \
@@ -1289,7 +1299,7 @@ luopo_app_marketplace_dockge_uninstall() {
 
 luopo_app_marketplace_dockge_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "21" \
+    "7" \
     "Dockge容器堆栈管理面板" \
     "dockge" \
     "louislam/dockge" \
@@ -1326,7 +1336,7 @@ luopo_app_marketplace_myip_uninstall() {
 
 luopo_app_marketplace_myip_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "26" \
+    "23" \
     "MyIP工具箱" \
     "myip" \
     "jason5ng32/myip:latest" \
@@ -1366,7 +1376,7 @@ luopo_app_marketplace_bitwarden_uninstall() {
 
 luopo_app_marketplace_bitwarden_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "49" \
+    "30" \
     "bitwarden密码管理器" \
     "bitwarden" \
     "vaultwarden/server" \
@@ -1409,7 +1419,7 @@ luopo_app_marketplace_gpt_load_uninstall() {
 
 luopo_app_marketplace_gpt_load_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "62" \
+    "45" \
     "gpt-load高性能AI透明代理" \
     "gpt-load" \
     "tbphp/gpt-load:latest" \
@@ -1448,7 +1458,7 @@ luopo_app_marketplace_gitea_uninstall() {
 
 luopo_app_marketplace_gitea_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "66" \
+    "71" \
     "gitea私有代码仓库" \
     "gitea" \
     "gitea" \
@@ -1488,7 +1498,7 @@ luopo_app_marketplace_paperless_uninstall() {
 
 luopo_app_marketplace_paperless_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "69" \
+    "15" \
     "paperless文档管理平台" \
     "paperless-webserver-1" \
     "paperless" \
@@ -1539,7 +1549,7 @@ luopo_app_marketplace_umami_post_install() {
 
 luopo_app_marketplace_umami_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "81" \
+    "63" \
     "Umami网站统计工具" \
     "umami-umami-1" \
     "umami" \
@@ -1586,7 +1596,7 @@ luopo_app_marketplace_siyuan_uninstall() {
 
 luopo_app_marketplace_siyuan_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "82" \
+    "64" \
     "思源笔记" \
     "siyuan" \
     "b3log/siyuan" \
@@ -1633,7 +1643,7 @@ luopo_app_marketplace_karakeep_uninstall() {
 
 luopo_app_marketplace_karakeep_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "84" \
+    "65" \
     "Karakeep书签管理" \
     "docker-web-1" \
     "karakeep" \
@@ -1681,7 +1691,7 @@ luopo_app_marketplace_lucky_post_install() {
 
 luopo_app_marketplace_lucky_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "85" \
+    "31" \
     "Lucky大内网穿透工具" \
     "lucky" \
     "gdy666/lucky:v2" \
@@ -1770,7 +1780,7 @@ luopo_app_marketplace_n8n_uninstall() {
 
 luopo_app_marketplace_n8n_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "45" \
+    "44" \
     "n8n自动化工作流平台" \
     "n8n" \
     "docker.n8n.io/n8nio/n8n" \
@@ -1819,7 +1829,7 @@ luopo_app_marketplace_allinssl_post_install() {
 
 luopo_app_marketplace_allinssl_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "47" \
+    "29" \
     "AllinSSL证书管理平台" \
     "allinssl" \
     "allinssl/allinssl:latest" \
@@ -1861,7 +1871,7 @@ luopo_app_marketplace_immich_uninstall() {
 
 luopo_app_marketplace_immich_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "64" \
+    "16" \
     "immich图片视频管理器" \
     "immich_server" \
     "immich" \
@@ -1945,9 +1955,9 @@ luopo_app_marketplace_nezha_install() {
 
 luopo_app_marketplace_nezha_refresh_record() {
   if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -qx "nezha-dashboard"; then
-    luopo_app_marketplace_native_add_app_id "4"
+    luopo_app_marketplace_native_add_app_id "3"
   else
-    luopo_app_marketplace_native_remove_app_id "4"
+    luopo_app_marketplace_native_remove_app_id "3"
   fi
 }
 
@@ -2040,13 +2050,13 @@ luopo_app_marketplace_safeline_menu() {
       1)
         luopo_app_marketplace_native_install_docker_runtime
         luopo_app_marketplace_safeline_install
-        luopo_app_marketplace_native_add_app_id "7"
+        luopo_app_marketplace_native_add_app_id "5"
         luopo_app_marketplace_safeline_post_install
         ;;
       2)
         luopo_app_marketplace_native_install_docker_runtime
         luopo_app_marketplace_safeline_update
-        luopo_app_marketplace_native_add_app_id "7"
+        luopo_app_marketplace_native_add_app_id "5"
         ;;
       3)
         docker exec safeline-mgt resetadmin 2>/dev/null || echo "未检测到 safeline-mgt 容器。"
@@ -2059,7 +2069,7 @@ luopo_app_marketplace_safeline_menu() {
         ;;
       6)
         luopo_app_marketplace_safeline_uninstall
-        luopo_app_marketplace_native_remove_app_id "7"
+        luopo_app_marketplace_native_remove_app_id "5"
         ;;
       0)
         return 0
@@ -2123,13 +2133,13 @@ luopo_app_marketplace_rustdesk_hbbs_menu() {
       1)
         luopo_app_marketplace_native_install_docker_runtime
         luopo_app_marketplace_rustdesk_hbbs_install
-        luopo_app_marketplace_native_add_app_id "27"
+        luopo_app_marketplace_native_add_app_id "24"
         luopo_app_marketplace_rustdesk_hbbs_post_install
         ;;
       2)
         luopo_app_marketplace_native_install_docker_runtime
         luopo_app_marketplace_rustdesk_hbbs_update
-        luopo_app_marketplace_native_add_app_id "27"
+        luopo_app_marketplace_native_add_app_id "24"
         ;;
       3)
         if [[ -f /home/docker/hbbs/data/id_ed25519.pub ]]; then
@@ -2146,7 +2156,7 @@ luopo_app_marketplace_rustdesk_hbbs_menu() {
         ;;
       6)
         luopo_app_marketplace_rustdesk_hbbs_uninstall
-        luopo_app_marketplace_native_remove_app_id "27"
+        luopo_app_marketplace_native_remove_app_id "24"
         ;;
       0)
         return 0
@@ -2205,12 +2215,12 @@ luopo_app_marketplace_rustdesk_hbbr_menu() {
       1)
         luopo_app_marketplace_native_install_docker_runtime
         luopo_app_marketplace_rustdesk_hbbr_install
-        luopo_app_marketplace_native_add_app_id "28"
+        luopo_app_marketplace_native_add_app_id "25"
         ;;
       2)
         luopo_app_marketplace_native_install_docker_runtime
         luopo_app_marketplace_rustdesk_hbbr_update
-        luopo_app_marketplace_native_add_app_id "28"
+        luopo_app_marketplace_native_add_app_id "25"
         ;;
       3)
         docker ps -a --filter name=hbbr --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
@@ -2220,7 +2230,7 @@ luopo_app_marketplace_rustdesk_hbbr_menu() {
         ;;
       5)
         luopo_app_marketplace_rustdesk_hbbr_uninstall
-        luopo_app_marketplace_native_remove_app_id "28"
+        luopo_app_marketplace_native_remove_app_id "25"
         ;;
       0)
         return 0
@@ -2303,12 +2313,12 @@ luopo_app_marketplace_frps_menu() {
       1)
         luopo_app_marketplace_native_install_docker_runtime
         luopo_app_marketplace_frps_install
-        luopo_app_marketplace_native_add_app_id "29"
+        luopo_app_marketplace_native_add_app_id "26"
         ;;
       2)
         luopo_app_marketplace_native_install_docker_runtime
         luopo_app_marketplace_frps_update
-        luopo_app_marketplace_native_add_app_id "29"
+        luopo_app_marketplace_native_add_app_id "26"
         ;;
       3)
         [[ -f /home/frp/frps.toml ]] && cat /home/frp/frps.toml || echo "未找到 /home/frp/frps.toml"
@@ -2317,7 +2327,7 @@ luopo_app_marketplace_frps_menu() {
         rm -f /home/frp/frps.toml
         luopo_app_marketplace_frps_write_config
         luopo_app_marketplace_frps_update
-        luopo_app_marketplace_native_add_app_id "29"
+        luopo_app_marketplace_native_add_app_id "26"
         ;;
       5)
         docker ps -a --filter name=frps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
@@ -2327,7 +2337,7 @@ luopo_app_marketplace_frps_menu() {
         ;;
       7)
         luopo_app_marketplace_frps_uninstall
-        luopo_app_marketplace_native_remove_app_id "29"
+        luopo_app_marketplace_native_remove_app_id "26"
         ;;
       0)
         return 0
@@ -2402,12 +2412,12 @@ luopo_app_marketplace_frpc_menu() {
       1)
         luopo_app_marketplace_native_install_docker_runtime
         luopo_app_marketplace_frpc_install
-        luopo_app_marketplace_native_add_app_id "40"
+        luopo_app_marketplace_native_add_app_id "27"
         ;;
       2)
         luopo_app_marketplace_native_install_docker_runtime
         luopo_app_marketplace_frpc_update
-        luopo_app_marketplace_native_add_app_id "40"
+        luopo_app_marketplace_native_add_app_id "27"
         ;;
       3)
         [[ -f /home/frp/frpc.toml ]] && cat /home/frp/frpc.toml || echo "未找到 /home/frp/frpc.toml"
@@ -2416,7 +2426,7 @@ luopo_app_marketplace_frpc_menu() {
         rm -f /home/frp/frpc.toml
         luopo_app_marketplace_frpc_write_config
         luopo_app_marketplace_frpc_update
-        luopo_app_marketplace_native_add_app_id "40"
+        luopo_app_marketplace_native_add_app_id "27"
         ;;
       5)
         docker ps -a --filter name=frpc --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
@@ -2426,7 +2436,7 @@ luopo_app_marketplace_frpc_menu() {
         ;;
       7)
         luopo_app_marketplace_frpc_uninstall
-        luopo_app_marketplace_native_remove_app_id "40"
+        luopo_app_marketplace_native_remove_app_id "27"
         ;;
       0)
         return 0
@@ -2574,7 +2584,7 @@ luopo_app_marketplace_linkwarden_uninstall() {
 
 luopo_app_marketplace_linkwarden_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "61" \
+    "62" \
     "linkwarden书签管理" \
     "linkwarden-linkwarden-1" \
     "linkwarden" \

@@ -107,7 +107,65 @@ luopo_app_marketplace_installed_numbers() {
 
 luopo_app_marketplace_is_installed() {
   local number="$1"
-  luopo_app_marketplace_installed_numbers | grep -q "^${number}$"
+  local legacy_number
+  if luopo_app_marketplace_installed_numbers | grep -q "^${number}$"; then
+    return 0
+  fi
+  while IFS= read -r legacy_number; do
+    [[ -z "$legacy_number" ]] && continue
+    if luopo_app_marketplace_installed_numbers | grep -q "^${legacy_number}$"; then
+      return 0
+    fi
+  done < <(luopo_app_marketplace_legacy_numbers "$number")
+  return 1
+}
+
+luopo_app_marketplace_legacy_numbers() {
+  local number="$1"
+  case "$number" in
+    3) echo "4" ;;
+    4) echo "5" ;;
+    5) echo "7" ;;
+    6) echo "8" ;;
+    7) echo "21" ;;
+    8) echo "9" ;;
+    9) echo "60" ;;
+    10) echo "63" ;;
+    11) echo "3" ;;
+    12) echo "67" ;;
+    13) echo "68" ;;
+    14) echo "80" ;;
+    15) echo "69" ;;
+    16) echo "64" ;;
+    17) echo "83" ;;
+    21) echo "6" ;;
+    22) echo "23" ;;
+    23) echo "26" ;;
+    24) echo "27" ;;
+    25) echo "28" ;;
+    26) echo "29" ;;
+    27) echo "30" ;;
+    28) echo "45" ;;
+    29) echo "46" ;;
+    30) echo "48" ;;
+    31) echo "85" ;;
+    41) echo "40" ;;
+    42) echo "41" ;;
+    43) echo "42" ;;
+    45) echo "62" ;;
+    51) echo "47" ;;
+    52) echo "65" ;;
+    61) echo "20" ;;
+    62) echo "61" ;;
+    63) echo "81" ;;
+    64) echo "82" ;;
+    65) echo "84" ;;
+    66) echo "43" ;;
+    67) echo "24" ;;
+    68) echo "25" ;;
+    69) echo "22" ;;
+    71) echo "66" ;;
+  esac
 }
 
 luopo_app_marketplace_find_item() {

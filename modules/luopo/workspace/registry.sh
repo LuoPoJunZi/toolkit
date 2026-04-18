@@ -17,7 +17,7 @@ LUOPO_WORKSPACE_ITEMS=(
   "8|8号工作区|luopo_workspace_open_work8|fixed"
   "9|9号工作区|luopo_workspace_open_work9|fixed"
   "10|10号工作区|luopo_workspace_open_work10|fixed"
-  "21|SSH常驻模式 ★|luopo_workspace_manage_ssh_mode|manage"
+  "21|SSH常驻模式|luopo_workspace_manage_ssh_mode|manage"
   "22|创建/进入工作区|luopo_workspace_enter_custom|manage"
   "23|注入命令到后台工作区|luopo_workspace_inject_command|manage"
   "24|删除指定工作区|luopo_workspace_remove_custom|manage"

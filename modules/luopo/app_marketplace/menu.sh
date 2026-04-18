@@ -14,10 +14,15 @@ luopo_render_app_marketplace_menu() {
   echo "应用市场"
   echo -e "${gl_kjlan}-------------------------${gl_bai}"
 
-  local row left right
+  local row left title
   for row in "${LUOPO_APP_MARKETPLACE_LAYOUT[@]}"; do
     if [[ "$row" == "---" ]]; then
       echo -e "${gl_kjlan}-------------------------${gl_bai}"
+      continue
+    fi
+    if [[ "$row" == "##|"* ]]; then
+      IFS='|' read -r _ title <<<"$row"
+      echo -e "${gl_kjlan}[ ${title} ]${gl_bai}"
       continue
     fi
 

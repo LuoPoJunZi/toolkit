@@ -2,8 +2,8 @@
 set -euo pipefail
 
 LUOPO_LDNMP_ITEMS=(
-  "1|安装LDNMP环境 ★|luopo_ldnmp_install_all"
-  "2|安装WordPress ★|luopo_ldnmp_install_wordpress"
+  "1|安装LDNMP环境|luopo_ldnmp_install_all"
+  "2|安装WordPress|luopo_ldnmp_install_wordpress"
   "3|安装Discuz论坛|luopo_ldnmp_install_discuz"
   "4|安装可道云桌面|luopo_ldnmp_install_kodbox"
   "5|安装苹果CMS影视站|luopo_ldnmp_install_maccms"
@@ -12,9 +12,9 @@ LUOPO_LDNMP_ITEMS=(
   "8|安装typecho轻量博客网站|luopo_ldnmp_install_typecho"
   "9|安装LinkStack共享链接平台|luopo_ldnmp_install_linkstack"
   "10|自定义动态站点|luopo_ldnmp_custom_dynamic_site"
-  "21|仅安装nginx ★|luopo_ldnmp_install_nginx_only"
+  "21|仅安装nginx|luopo_ldnmp_install_nginx_only"
   "22|站点重定向|luopo_ldnmp_redirect_site"
-  "23|站点反向代理-IP+端口 ★|luopo_ldnmp_reverse_proxy_ip_port"
+  "23|站点反向代理-IP+端口|luopo_ldnmp_reverse_proxy_ip_port"
   "24|站点反向代理-域名|luopo_ldnmp_reverse_proxy_domain"
   "25|安装Bitwarden密码管理平台|luopo_ldnmp_install_bitwarden"
   "26|安装Halo博客网站|luopo_ldnmp_install_halo"
@@ -22,7 +22,7 @@ LUOPO_LDNMP_ITEMS=(
   "28|站点反向代理-负载均衡|luopo_ldnmp_reverse_proxy_load_balance"
   "29|Stream四层代理转发|luopo_ldnmp_stream_proxy"
   "30|自定义静态站点|luopo_ldnmp_custom_static_site"
-  "31|站点数据管理 ★|luopo_ldnmp_site_status"
+  "31|站点数据管理|luopo_ldnmp_site_status"
   "32|备份全站数据|luopo_ldnmp_backup_all"
   "33|定时远程备份|luopo_ldnmp_scheduled_remote_backup"
   "34|还原全站数据|luopo_ldnmp_restore_all"
