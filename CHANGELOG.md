@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.3
+- Auto release: v0.9.3
+- style: simplify ldnmp menu layout (94c0005)
+
 ## 0.9.2
 - Auto release: v0.9.2
 - fix: remove dangling system tools declarations (8ccdfc7)
