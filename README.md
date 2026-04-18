@@ -173,6 +173,7 @@ bash tests/smoke_menu.sh
 
 - `VERSION` + `CHANGELOG.md` 管理版本历史。
 - GitHub Actions 执行 `ci` 与 `release` 工作流。
+- 自动发布只递增 patch 小版本；minor/major 版本由维护者手动控制。
 - Release 页面：<https://github.com/LuoPoJunZi/toolkit/releases>
 - 当前目录结构说明：[docs/DIRECTORY_STRUCTURE.md](docs/DIRECTORY_STRUCTURE.md)
 - 结构优化记录：[docs/STRUCTURE_OPTIMIZATION_LOG.md](docs/STRUCTURE_OPTIMIZATION_LOG.md)

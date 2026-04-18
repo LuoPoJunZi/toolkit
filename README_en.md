@@ -173,6 +173,7 @@ Version and release:
 
 - Version history is managed by `VERSION` + `CHANGELOG.md`.
 - GitHub Actions runs `ci` and `release` workflows.
+- Auto release only increments the patch version; minor/major versions are controlled manually by the maintainer.
 - Release page: <https://github.com/LuoPoJunZi/toolkit/releases>
 - Current directory structure: [docs/DIRECTORY_STRUCTURE.md](docs/DIRECTORY_STRUCTURE.md)
 - Structure optimization log: [docs/STRUCTURE_OPTIMIZATION_LOG.md](docs/STRUCTURE_OPTIMIZATION_LOG.md)

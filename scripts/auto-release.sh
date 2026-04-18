@@ -15,25 +15,12 @@ is_core_file() {
   return 1
 }
 
-is_big_change_file() {
-  local f="$1"
-  [[ "$f" == "core/menu.sh" ]] && return 0
-  [[ "$f" == "core/ui.sh" ]] && return 0
-  [[ "$f" == "toolkit.sh" ]] && return 0
-  return 1
-}
-
-head_msg="$(git log -1 --pretty=%B)"
 mapfile -t changed_files < <(git diff-tree --no-commit-id --name-only -r HEAD)
 
 core_changed=0
-big_changed=0
 for f in "${changed_files[@]:-}"; do
   if is_core_file "$f"; then
     core_changed=1
-  fi
-  if is_big_change_file "$f"; then
-    big_changed=1
   fi
 done
 
@@ -66,24 +53,10 @@ major="${major:-0}"
 minor="${minor:-0}"
 patch="${patch:-0}"
 
-# Version bump policy:
-# - [major] in commit message OR big change file touched => bump minor (0.1.3 -> 0.2.0)
-# - otherwise bump patch (0.1.3 -> 0.1.4)
-bump_type="patch"
-if [[ "$head_msg" =~ \[major\] ]] || [[ "$head_msg" =~ BREAKING ]] || [[ "$big_changed" -eq 1 ]]; then
-  bump_type="minor"
-fi
-if [[ "$head_msg" =~ \[patch\] ]]; then
-  bump_type="patch"
-fi
-
-if [[ "$bump_type" == "minor" ]]; then
-  next_minor=$((minor + 1))
-  next_version="${major}.${next_minor}.0"
-else
-  next_patch=$((patch + 1))
-  next_version="${major}.${minor}.${next_patch}"
-fi
+# Auto release only increments the patch version.
+# Minor/major releases are intentionally manual and controlled by the maintainer.
+next_patch=$((patch + 1))
+next_version="${major}.${minor}.${next_patch}"
 next_tag="v${next_version}"
 
 if git rev-parse "$next_tag" >/dev/null 2>&1; then
