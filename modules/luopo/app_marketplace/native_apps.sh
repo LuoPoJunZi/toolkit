@@ -422,7 +422,7 @@ luopo_app_marketplace_uptime_kuma_uninstall() {
 
 luopo_app_marketplace_uptime_kuma_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "10" \
+    "9" \
     "UptimeKuma监控工具" \
     "uptime-kuma" \
     "louislam/uptime-kuma:latest" \
@@ -583,7 +583,7 @@ luopo_app_marketplace_beszel_uninstall() {
 
 luopo_app_marketplace_beszel_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "9" \
+    "10" \
     "Beszel服务器监控" \
     "beszel" \
     "henrygd/beszel" \
@@ -628,7 +628,7 @@ luopo_app_marketplace_filebrowser_post_install() {
 
 luopo_app_marketplace_filebrowser_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "12" \
+    "13" \
     "FileBrowser文件管理器" \
     "filebrowser" \
     "hurlenko/filebrowser" \
@@ -717,7 +717,7 @@ luopo_app_marketplace_komari_post_install() {
 
 luopo_app_marketplace_komari_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "10" \
+    "11" \
     "komari服务器监控工具" \
     "komari" \
     "ghcr.io/komari-monitor/komari:latest" \
@@ -807,7 +807,7 @@ luopo_app_marketplace_zfile_uninstall() {
 
 luopo_app_marketplace_zfile_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "17" \
+    "18" \
     "ZFile在线网盘" \
     "zfile" \
     "zhaojun1998/zfile:latest" \
@@ -1004,7 +1004,7 @@ luopo_app_marketplace_dufs_uninstall() {
 
 luopo_app_marketplace_dufs_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "13" \
+    "14" \
     "Dufs极简静态文件服务器" \
     "dufs" \
     "sigoden/dufs" \
@@ -1048,7 +1048,7 @@ luopo_app_marketplace_syncthing_uninstall() {
 
 luopo_app_marketplace_syncthing_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "14" \
+    "15" \
     "Syncthing点对点文件同步工具" \
     "syncthing" \
     "syncthing/syncthing:latest" \
@@ -1132,7 +1132,7 @@ luopo_app_marketplace_openlist_uninstall() {
 
 luopo_app_marketplace_openlist_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "11" \
+    "12" \
     "OpenList多存储文件列表程序" \
     "openlist" \
     "openlistteam/openlist:latest-aria2" \
@@ -1498,7 +1498,7 @@ luopo_app_marketplace_paperless_uninstall() {
 
 luopo_app_marketplace_paperless_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "15" \
+    "16" \
     "paperless文档管理平台" \
     "paperless-webserver-1" \
     "paperless" \
@@ -1871,7 +1871,7 @@ luopo_app_marketplace_immich_uninstall() {
 
 luopo_app_marketplace_immich_menu() {
   luopo_app_marketplace_native_docker_app_menu \
-    "16" \
+    "17" \
     "immich图片视频管理器" \
     "immich_server" \
     "immich" \

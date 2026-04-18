@@ -101,38 +101,42 @@ luopo_app_marketplace_dispatch_choice() {
       return 0
       ;;
     9)
-      luopo_app_marketplace_beszel_menu
+      luopo_app_marketplace_uptime_kuma_menu
       return 0
       ;;
     10)
-      luopo_app_marketplace_komari_menu
+      luopo_app_marketplace_beszel_menu
       return 0
       ;;
     11)
-      luopo_app_marketplace_openlist_menu
+      luopo_app_marketplace_komari_menu
       return 0
       ;;
     12)
-      luopo_app_marketplace_filebrowser_menu
+      luopo_app_marketplace_openlist_menu
       return 0
       ;;
     13)
-      luopo_app_marketplace_dufs_menu
+      luopo_app_marketplace_filebrowser_menu
       return 0
       ;;
     14)
-      luopo_app_marketplace_syncthing_menu
+      luopo_app_marketplace_dufs_menu
       return 0
       ;;
     15)
-      luopo_app_marketplace_paperless_menu
+      luopo_app_marketplace_syncthing_menu
       return 0
       ;;
     16)
-      luopo_app_marketplace_immich_menu
+      luopo_app_marketplace_paperless_menu
       return 0
       ;;
     17)
+      luopo_app_marketplace_immich_menu
+      return 0
+      ;;
+    18)
       luopo_app_marketplace_zfile_menu
       return 0
       ;;
