@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.8.1
+- Auto release: v0.8.1
+- refactor: reduce luopo legacy fallbacks (170d0f0)
+
 ## 0.8.0
 - Manual release: v0.8.0
 - refactor: deepen native ldnmp and system tools structure
