@@ -1,10 +1,10 @@
 # Vendor Dependency Audit
 
 ## Purpose
-- Track which `modules/luopo/*` modules still depend on the legacy vendor runtime.
-- Separate **shared runtime dependencies** from **module-specific business dependencies**.
-- Provide a concrete execution order for `P1: 去 Vendor 运行时依赖`.
-- Keep `vendor/luopo.sh` as backup/reference while migrating active runtime paths into native modules.
+- Record the completed migration away from the legacy vendor runtime in active paths.
+- Document which shared helpers moved into `core/` or native module helper files.
+- Keep an audit trail for `P1: 去 Vendor 运行时依赖`.
+- Keep `vendor/luopo.sh` as backup/reference while active runtime paths live in native modules.
 
 ## Current Snapshot
 - `modules/compat/` has been removed from the active code path.

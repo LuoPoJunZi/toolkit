@@ -78,6 +78,29 @@ z en
 - Upstream source and local adaptation notes are documented in [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md).
 - Local adaptations currently include disabling upstream telemetry, disabling upstream self-install side effects, migrating active menus into native `modules/luopo/` modules, and keeping `vendor/luopo.sh` only as backup/source reference.
 
+## Current Architecture Status
+
+- Main entry: `toolkit.sh`
+- Main menu: `core/menu.sh`
+- Main menu registry: `core/menu_registry.sh`
+- Main menu dispatcher: `core/menu_dispatcher.sh`
+- Active feature modules: `modules/luopo/`
+- One-click script index: `integrations/index.json`
+- Upstream reference backup: `vendor/luopo.sh`
+
+The active runtime path no longer depends on:
+
+- `modules/compat/`
+- `legacy_bridge.sh`
+- `ensure_luopo_vendor_loaded`
+- `run_luopo_compat_menu`
+
+Retired menu drafts are kept locally and no longer uploaded to GitHub:
+
+- `modules/menus/`
+- `modules/extended_menus.sh`
+- `modules/singbox.sh`
+
 ## Submenu Capabilities
 
 | Menu | Highlights |
@@ -151,6 +174,8 @@ Version and release:
 - Version history is managed by `VERSION` + `CHANGELOG.md`.
 - GitHub Actions runs `ci` and `release` workflows.
 - Release page: <https://github.com/LuoPoJunZi/toolkit/releases>
+- Current directory structure: [docs/DIRECTORY_STRUCTURE.md](docs/DIRECTORY_STRUCTURE.md)
+- Structure optimization log: [docs/STRUCTURE_OPTIMIZATION_LOG.md](docs/STRUCTURE_OPTIMIZATION_LOG.md)
 
 ## License
 

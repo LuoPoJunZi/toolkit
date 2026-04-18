@@ -78,6 +78,29 @@ z en
 - 上游来源与本地适配说明见：[docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md)。
 - 当前本地适配主要包括：关闭上游遥测、关闭上游自安装副作用、将活动菜单迁移到 `modules/luopo/` 原生模块，`vendor/luopo.sh` 仅作为备份与来源参考保留。
 
+## 当前架构状态
+
+- 主入口：`toolkit.sh`
+- 主菜单：`core/menu.sh`
+- 主菜单注册：`core/menu_registry.sh`
+- 主菜单分发：`core/menu_dispatcher.sh`
+- 活动功能模块：`modules/luopo/`
+- 一键脚本索引：`integrations/index.json`
+- 上游参考备份：`vendor/luopo.sh`
+
+当前活动运行路径不再依赖：
+
+- `modules/compat/`
+- `legacy_bridge.sh`
+- `ensure_luopo_vendor_loaded`
+- `run_luopo_compat_menu`
+
+旧菜单草稿已本地保留、不再上传 GitHub：
+
+- `modules/menus/`
+- `modules/extended_menus.sh`
+- `modules/singbox.sh`
+
 ## 子菜单能力概览
 
 | 菜单 | 主要能力 |
@@ -151,6 +174,8 @@ bash tests/smoke_menu.sh
 - `VERSION` + `CHANGELOG.md` 管理版本历史。
 - GitHub Actions 执行 `ci` 与 `release` 工作流。
 - Release 页面：<https://github.com/LuoPoJunZi/toolkit/releases>
+- 当前目录结构说明：[docs/DIRECTORY_STRUCTURE.md](docs/DIRECTORY_STRUCTURE.md)
+- 结构优化记录：[docs/STRUCTURE_OPTIMIZATION_LOG.md](docs/STRUCTURE_OPTIMIZATION_LOG.md)
 
 ## 开源协议
 
