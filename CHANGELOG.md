@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.5
+- Auto release: v0.9.5
+- style: normalize submenu numbering and layout (4e7de1a)
+- chore: make auto release patch only (105eb12)
+
 ## 0.9.4
 - Auto release: v0.9.4
 - style: align long submenu columns (e6a00ff)
