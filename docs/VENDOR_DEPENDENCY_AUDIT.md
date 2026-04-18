@@ -7,9 +7,8 @@
 - Keep `vendor/luopo.sh` as backup/reference while migrating active runtime paths into native modules.
 
 ## Current Snapshot
-- `modules/compat/` currently contains:
-  - `common.sh`
-  - `load.sh`
+- `modules/compat/` has been removed from the active code path.
+- `vendor/luopo.sh` remains in the repository only as backup/reference material.
 - `core/runtime.sh` now exists and already absorbs the first shared runtime slice:
   - color variables
   - `send_stats`
@@ -24,9 +23,9 @@
   - `add_sshpasswd`
 - No native module now requires `ensure_luopo_vendor_loaded` for normal bootstrap.
 - `app_marketplace` now uses native bootstrap by default and its reverse-proxy creation path has also been moved onto native `ldnmp` helpers.
-- `system_tools` now uses native bootstrap by default and only keeps a narrow on-demand fallback wrapper for legacy-heavy operational actions.
-- `ldnmp` now uses native bootstrap by default and keeps a broad current-shell on-demand fallback for legacy site-management actions.
-- Remaining fallback logic is now isolated in dedicated `legacy_bridge.sh` files instead of being mixed into native helper files, except `app_marketplace` which no longer needs its own bridge.
+- `system_tools` now uses native module code for its active menu path.
+- `ldnmp` now uses native module code for its active menu path.
+- Module-local `legacy_bridge.sh` files have been removed from the active `modules/luopo/*` tree.
 - `docker` is already comparatively isolated and does not rely on a `helpers.sh` bootstrap.
 - `basic_tools` and `network_test` have already been detached from vendor bootstrap.
 - `workspace`, `bbr_management`, and `oracle_cloud` have now also been detached from vendor bootstrap.
@@ -38,7 +37,6 @@
 These are not business features. They are the common runtime pieces repeatedly borrowed from the vendor layer.
 
 Confirmed recurring dependencies:
-- `ensure_luopo_vendor_loaded`
 - `press_enter`
 - `break_end`
 - `send_stats`
@@ -52,8 +50,8 @@ Confirmed recurring dependencies:
   - `gl_lv`
 
 Practical meaning:
-- Many modules only keep vendor around for these helper/runtime utilities.
-- This is the best first extraction target because it unlocks multiple modules at once.
+- Shared runtime helpers now live in `core/runtime.sh` and module-local helpers.
+- The previous vendor loader is no longer part of normal menu execution.
 
 Recommended destination:
 - `core/runtime.sh` or split into:
@@ -103,13 +101,12 @@ Still vendor-backed or vendor-influenced:
     - `ip_address`
     - container firewall allow/block
     - proxy-domain config removal
-  - remaining on-demand vendor fallback:
-    - `ldnmp_Proxy`
+  - LDNMP proxy creation now uses native `luopo_ldnmp_proxy_site`
 
 Assessment:
 - Structurally advanced.
 - No longer requires vendor for normal bootstrap.
-- Still depends on a narrow vendor fallback when creating LDNMP reverse proxies.
+- No longer depends on a vendor fallback when creating LDNMP reverse proxies.
 
 Priority:
 - `P1-A` narrowed to reverse-proxy fallback removal
@@ -187,12 +184,12 @@ Priority:
 Status:
 - Largest remaining structural debt
 - Native bootstrap path is active by default
-- Business actions still lean heavily on legacy implementation via current-shell on-demand loading
+- Business actions have been migrated into native module files for the active menu path.
 
 Confirmed direct dependencies include:
 - `ldnmp_install_status_one`
-- `ldnmp_install_all`
-- `ldnmp_wp`
+- native `luopo_ldnmp_install_all`
+- native `luopo_ldnmp_install_wordpress`
 - `add_yuming`
 - `repeat_add_yuming`
 - `ldnmp_install_status`
@@ -202,16 +199,16 @@ Confirmed direct dependencies include:
 - `nginx_http_on`
 - `restart_ldnmp`
 - `ldnmp_web_on`
-- `nginx_install_all`
-- `ldnmp_Proxy`
+- native `luopo_ldnmp_install_nginx_only`
+- native `luopo_ldnmp_proxy_site`
 - `ip_address`
 - `nginx_install_status`
 - `nginx_web_on`
-- `ldnmp_Proxy_backend`
-- `stream_panel`
-- `ldnmp_web_status`
-- `web_security`
-- `web_optimization`
+- native load-balance reverse proxy menu
+- native Stream proxy menu
+- native site data/status menu
+- native Fail2ban-based protection menu
+- native LDNMP optimization menu
 - `check_crontab_installed`
 - `root_use`
 - `install_dependency`
@@ -225,11 +222,11 @@ Confirmed direct dependencies include:
 Assessment:
 - This is the heaviest vendor-dependent module in the project.
 - Bootstrap coupling is no longer the blocker.
-- Remaining work is business-action extraction, not another menu/bootstrap refactor.
+- Remaining work is hardening and splitting large native files, not vendor fallback removal.
 - Internal structure is now split into site installs, proxy/site operations, and maintenance flows.
 
 Priority:
-- `P1-8` narrowed to legacy business fallback reduction
+- `P1-8` active-path vendor fallback removed
 
 ### network_test
 Status:
@@ -277,7 +274,7 @@ Priority:
 ### system_tools
 Status:
 - Native bootstrap path is active by default
-- Still aggregates many legacy operational actions through an explicit on-demand wrapper
+- Active menu path is native.
 
 Confirmed direct dependencies include:
 - Shared runtime:
@@ -303,14 +300,12 @@ Confirmed direct dependencies include:
   - `f2b_install_sshd`
   - `k_info`
 - Remaining on-demand vendor fallback actions:
-  - SSH/user actions
-  - swap/mirror/firewall actions
-  - package/security/file/log/env helper menus
+  - none in the active `system_tools` module path
 
 Assessment:
 - Structurally no longer blocked by vendor bootstrap.
 - Active path is now native-first.
-- Remaining work is action-by-action extraction, not another bootstrap refactor.
+- Remaining work is mostly file-size cleanup and further submodule splitting.
 - Internal structure is now split into access actions, operational actions, and misc/maintenance actions.
 
 Priority:
@@ -392,7 +387,7 @@ Recommended execution order:
 `P1` can be considered complete when:
 - No `modules/luopo/*/helpers.sh` requires `ensure_luopo_vendor_loaded` for normal bootstrap
 - `modules/compat/load.sh` is no longer required for normal native module execution
-- Vendor loading is limited to explicit legacy fallback paths only
+- Vendor loading is not used by active native menu paths
 
 ## Notes
 - This audit is intentionally pragmatic, not a perfect parser-generated truth table.
@@ -434,11 +429,49 @@ Status:
   - system language menu
   - command favorites launcher
   - system backup / restore / delete menu
+  - file manager
+  - trash / safe-delete helper
+  - rsync remote sync manager and cron runner
+  - ClamAV Docker-based scan menu
+  - SSH remote connection manager
+  - disk partition manager
+  - reinstall system menu
+  - ELRepo kernel manager
+  - kernel parameter optimization menu
 
 Remaining fallback wrappers:
-- mirror / reinstall / kernel optimization class actions
-- file / trash / SSH-manager / disk / rsync class actions
+- none
 
 Assessment:
-- Runtime path is increasingly native-first.
-- Remaining work is action-by-action extraction, not another loader refactor.
+- `system_tools` is native-only in the active module path.
+- `vendor/luopo.sh` remains available as repository backup/reference, but `system_tools` no longer sources a module-local legacy bridge.
+
+## 2026-04-18 Update 2
+
+### Active vendor fallback
+Status:
+- Removed `modules/compat/` from the active bootstrap path.
+- Removed module-local `legacy_bridge.sh` files from `ldnmp` and `system_tools`.
+- Confirmed no `modules/luopo/*` file calls:
+  - `ensure_luopo_vendor_loaded`
+  - `run_luopo_compat_menu`
+  - `luopo_*_require_vendor_runtime`
+
+### ldnmp
+Status:
+- Migrated remaining active fallback actions to native implementations:
+  - install LDNMP environment
+  - install WordPress
+  - install nginx only
+  - restore full site data
+  - update LDNMP environment
+  - load-balance reverse proxy
+  - Stream four-layer proxy
+  - site data/status management
+  - Fail2ban-based protection menu
+  - LDNMP optimization menu
+
+Assessment:
+- `ldnmp` no longer uses module-local legacy bridge loading in the active menu path.
+- Proxy, Stream, site-status, security, optimization, install/runtime/site helpers have been split into smaller focused files.
+- Remaining optional cleanup is mostly cosmetic/file-size oriented, not active vendor fallback removal.

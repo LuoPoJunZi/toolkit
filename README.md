@@ -73,10 +73,10 @@ z en
 
 ## 复刻说明
 
-- 当前 `5-15` 主菜单已切换为 `kejilion/sh` 的 `4-14` 功能复刻层。
-- 复刻层优先保留上游菜单结构、子菜单层级、外部脚本调用方式与运行习惯，便于后续继续二次开发。
+- 当前 `5-15` 主菜单基于 `kejilion/sh` 的 `4-14` 功能体系做了本地模块化复刻。
+- 本地模块优先保留上游菜单结构、子菜单层级、外部脚本调用方式与运行习惯，便于后续继续二次开发。
 - 上游来源与本地适配说明见：[docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md)。
-- 当前本地适配主要包括：关闭上游遥测、关闭上游自安装副作用、改造成可由 `LuoPo VPS Toolkit` 主菜单安全加载的库模式。
+- 当前本地适配主要包括：关闭上游遥测、关闭上游自安装副作用、将活动菜单迁移到 `modules/luopo/` 原生模块，`vendor/luopo.sh` 仅作为备份与来源参考保留。
 
 ## 子菜单能力概览
 
@@ -155,4 +155,4 @@ bash tests/smoke_menu.sh
 ## 开源协议
 
 - 本项目基于 [GPL-3.0 License](LICENSE) 开源。
-- `5-15` 复刻层包含来自 `kejilion/sh` 的 Apache-2.0 授权代码与适配修改，详细说明见 [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md)。
+- `5-15` 模块化复刻层包含来自 `kejilion/sh` 的 Apache-2.0 授权代码与适配修改，详细说明见 [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md)。

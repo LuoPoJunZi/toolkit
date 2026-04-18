@@ -73,10 +73,10 @@ z en
 
 ## Clone Layer Notes
 
-- Main menu `5-15` now mirrors the `4-14` feature set from `kejilion/sh`.
-- This compatibility layer intentionally keeps the upstream menu structure, submenu depth, external-script integrations, and operating style as close as possible for later second-stage customization.
+- Main menu `5-15` is now a local modular mirror of the `4-14` feature set from `kejilion/sh`.
+- These local modules intentionally keep the upstream menu structure, submenu depth, external-script integrations, and operating style as close as possible for later second-stage customization.
 - Upstream source and local adaptation notes are documented in [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md).
-- Local adaptations currently include disabling upstream telemetry, disabling upstream self-install side effects, and wrapping the upstream script as a safely loadable library under `LuoPo VPS Toolkit`.
+- Local adaptations currently include disabling upstream telemetry, disabling upstream self-install side effects, migrating active menus into native `modules/luopo/` modules, and keeping `vendor/luopo.sh` only as backup/source reference.
 
 ## Submenu Capabilities
 
@@ -155,4 +155,4 @@ Version and release:
 ## License
 
 - This project is released under the [GPL-3.0 License](LICENSE).
-- The mirrored `5-15` compatibility layer includes Apache-2.0 licensed upstream code from `kejilion/sh` plus local adaptations. See [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md).
+- The mirrored modular `5-15` layer includes Apache-2.0 licensed upstream code from `kejilion/sh` plus local adaptations. See [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md).

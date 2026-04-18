@@ -254,9 +254,73 @@ Completed:
   - system language switching helpers
   - command favorites launcher
   - system backup / restore / delete menu
+  - file manager
+  - trash / safe-delete helper
+  - rsync remote sync manager and cron runner
+  - mirror switching fallback removed from legacy bridge
+  - ClamAV Docker-based scan menu
+  - SSH remote connection manager
+  - disk partition manager
+  - reinstall system menu
+  - ELRepo kernel manager
+  - kernel parameter optimization menu
+
+Result:
+- `modules/luopo/system_tools` no longer depends on a module-local legacy bridge.
+- `modules/luopo/system_tools/legacy_bridge.sh` was removed after all wrappers were migrated.
 - Updated smoke assertions so legacy-backed routes are explicit and native routes stay native-first
 
 Remaining after round:
 - `ldnmp` still has selected heavy actions that intentionally load the vendor backup on demand
-- `system_tools` still has selected heavy wrappers for reinstall/kernel/file/SSH-manager class flows
+- `system_tools` no longer has active legacy fallback wrappers
 - `vendor/luopo.sh` remains as the backup/reference layer, not the active primary implementation
+
+### 2026-04-18 - Round 13
+Completed:
+- Migrated the remaining active `ldnmp` vendor-backed menu actions into native module code:
+  - full LDNMP install
+  - WordPress install
+  - nginx-only install
+  - load-balance reverse proxy
+  - Stream four-layer proxy
+  - site data/status management
+  - Fail2ban-based protection menu
+  - LDNMP optimization menu
+  - restore/update flows now use native install/update helpers
+- Added native LDNMP install/runtime helpers:
+  - `root_use`
+  - `ldnmp_install_status_one`
+  - `check_port`
+  - `check_disk_space`
+  - `check_swap`
+  - `install_dependency`
+  - `default_server_ssl`
+  - `install_ldnmp_conf`
+  - `install_ldnmp`
+  - `install_certbot`
+  - `nginx_upgrade`
+  - `patch_wp_url`
+- Removed `modules/luopo/ldnmp/legacy_bridge.sh`.
+- Removed `modules/compat/` from active bootstrap and deleted its bridge files.
+- Removed the unused compat source from `warp_management`.
+- Expanded smoke checks to assert that active modules no longer load compat/legacy bridge paths.
+- Split LDNMP proxy/ops actions into focused files:
+  - `actions_proxy_core.sh`
+  - `actions_stream.sh`
+  - `actions_site_status.sh`
+  - `actions_security.sh`
+  - `actions_optimization.sh`
+- Split LDNMP helper layers into focused files:
+  - `helpers_install.sh`
+  - `helpers_runtime.sh`
+  - `helpers_site.sh`
+
+Result:
+- `modules/luopo/*` no longer calls the vendor loader in active menu code.
+- `vendor/luopo.sh` remains as backup/reference only.
+
+Remaining after round:
+- Optional future cleanup:
+  - split `modules/luopo/ldnmp/actions_sites.sh` by site family if it keeps growing
+  - split `modules/luopo/system_tools/actions_misc.sh` by maintenance family if it keeps growing
+- Linux runtime validation should still be performed on a VPS because this Windows workspace does not provide Bash.

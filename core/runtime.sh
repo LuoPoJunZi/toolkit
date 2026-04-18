@@ -2,7 +2,9 @@
 set -euo pipefail
 
 gl_lv='\033[32m'
+gl_hong='\033[31m'
 gl_huang='\033[33m'
+gl_hui='\033[90m'
 gl_bai='\033[0m'
 gl_kjlan='\033[96m'
 

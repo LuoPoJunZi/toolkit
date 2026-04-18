@@ -70,7 +70,7 @@ luopo_system_tools_switch_mirror_menu() {
         ;;
       4)
         send_stats "智能切换更新源"
-        switch_mirror false false
+        bash <(curl -sSL https://linuxmirrors.cn/main.sh)
         ;;
       0)
         return 0

@@ -24,8 +24,6 @@ source "$ROOT_DIR/modules/system_cleanup.sh"
 # shellcheck disable=SC1091
 source "$ROOT_DIR/modules/scripts_hub.sh"
 # shellcheck disable=SC1091
-source "$ROOT_DIR/modules/compat/load.sh"
-# shellcheck disable=SC1091
 source "$ROOT_DIR/modules/entries.sh"
 # shellcheck disable=SC1091
 source "$ROOT_DIR/core/menu_registry.sh"

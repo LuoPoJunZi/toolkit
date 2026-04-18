@@ -1,6 +1,6 @@
 # Upstream Attribution
 
-This repository now includes a compatibility layer derived from the following upstream project:
+This repository includes locally modularized functionality derived from the following upstream project:
 
 - Project: [kejilion/sh](https://github.com/kejilion/sh)
 - Upstream script source: `kejilion.sh`
@@ -10,23 +10,23 @@ This repository now includes a compatibility layer derived from the following up
 
 ## Local Adaptations
 
-The vendored compatibility layer in [`vendor/luopo.sh`](../vendor/luopo.sh) is not a byte-for-byte copy. It includes local changes required to make the code safely usable inside `LuoPo VPS Toolkit`:
+The vendored reference snapshot in [`vendor/luopo.sh`](../vendor/luopo.sh) is not a byte-for-byte copy. It includes local changes that were used during the migration into `LuoPo VPS Toolkit`:
 
 - disabled upstream telemetry by forcing `ENABLE_STATS="false"`
 - disabled upstream self-install / launcher-copy side effects when loaded as a library
 - added `KEJILION_LIBRARY_MODE` guards so the upstream script can be sourced without auto-running its own main menu
 - changed the upstream `kejilion()` return path so selecting `0` inside cloned menus exits back to the LuoPo Toolkit host menu when executed inside a subshell bridge
+- migrated active menu execution into native `modules/luopo/` files
 
 ## Integration Layout
 
-- host bridge loader: [`modules/compat/load.sh`](../modules/compat/load.sh)
-- host bridge runtime helpers: [`modules/compat/common.sh`](../modules/compat/common.sh)
 - LuoPo-native menu entry layer: [`modules/entries.sh`](../modules/entries.sh)
 - LuoPo-native feature modules: [`modules/luopo/`](../modules/luopo/)
-- vendored upstream snapshot: [`vendor/luopo.sh`](../vendor/luopo.sh)
+- vendored upstream reference/backup snapshot: [`vendor/luopo.sh`](../vendor/luopo.sh)
 - LuoPo host menu entry wiring: [`core/menu.sh`](../core/menu.sh)
 
 ## Notes
 
 - `LuoPo VPS Toolkit` remains licensed under GPL-3.0 as declared in the repository [`LICENSE`](../LICENSE).
-- The mirrored compatibility layer now acts primarily as a shared upstream runtime/helper source, while menu entry routing lives in LuoPo-native modules.
+- Active menu routing and business logic now live in LuoPo-native modules.
+- `vendor/luopo.sh` is retained as attribution, audit trail, and emergency reference material rather than a normal runtime dependency.

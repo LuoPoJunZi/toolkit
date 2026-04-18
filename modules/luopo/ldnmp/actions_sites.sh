@@ -2,12 +2,51 @@
 set -euo pipefail
 
 luopo_ldnmp_install_all() {
+  cd ~ || return 1
+  send_stats "安装LDNMP环境"
+  root_use || return 1
+  clear
+  echo -e "${gl_huang}LDNMP环境未安装，开始安装LDNMP环境...${gl_bai}"
+  check_disk_space 3 /home || return 1
   ldnmp_install_status_one
-  ldnmp_install_all
+  install_dependency
+  install_docker
+  install_certbot
+  install_ldnmp_conf
+  install_ldnmp
 }
 
 luopo_ldnmp_install_wordpress() {
-  ldnmp_wp
+  clear
+  webname="WordPress"
+  yuming="${1:-}"
+  send_stats "安装$webname"
+  echo "开始部署 $webname"
+  [[ -n "$yuming" ]] || add_yuming
+  repeat_add_yuming
+  ldnmp_install_status || return 1
+  install_ssltls || return 1
+  certs_status || return 1
+  add_db || return 1
+
+  luopo_ldnmp_write_domain_conf "${gh_proxy}raw.githubusercontent.com/kejilion/nginx/main/wordpress.com.conf"
+  nginx_http_on
+
+  mkdir -p "/home/web/html/$yuming"
+  cd "/home/web/html/$yuming"
+  wget -O latest.zip "${gh_proxy}github.com/kejilion/Website_source_code/raw/refs/heads/main/wp-latest.zip"
+  unzip -o latest.zip
+  rm -f latest.zip
+  echo "define('FS_METHOD', 'direct'); define('WP_REDIS_HOST', 'redis'); define('WP_REDIS_PORT', '6379'); define('WP_REDIS_MAXTTL', 86400); define('WP_CACHE_KEY_SALT', '${yuming}_');" >> "/home/web/html/$yuming/wordpress/wp-config-sample.php"
+  sed -i "s|database_name_here|$dbname|g" "/home/web/html/$yuming/wordpress/wp-config-sample.php"
+  sed -i "s|username_here|$dbuse|g" "/home/web/html/$yuming/wordpress/wp-config-sample.php"
+  sed -i "s|password_here|$dbusepasswd|g" "/home/web/html/$yuming/wordpress/wp-config-sample.php"
+  sed -i "s|localhost|mysql|g" "/home/web/html/$yuming/wordpress/wp-config-sample.php"
+  patch_wp_url "https://$yuming" "https://$yuming"
+  cp "/home/web/html/$yuming/wordpress/wp-config-sample.php" "/home/web/html/$yuming/wordpress/wp-config.php"
+
+  restart_ldnmp
+  nginx_web_on
 }
 
 luopo_ldnmp_install_discuz() {
@@ -360,8 +399,23 @@ luopo_ldnmp_custom_dynamic_site() {
 }
 
 luopo_ldnmp_install_nginx_only() {
+  cd ~ || return 1
+  send_stats "安装nginx环境"
+  root_use || return 1
+  clear
+  echo -e "${gl_huang}nginx未安装，开始安装nginx环境...${gl_bai}"
   ldnmp_install_status_one
-  nginx_install_all
+  install_dependency
+  install_docker
+  install_certbot
+  install_ldnmp_conf
+  nginx_upgrade
+  clear
+  local nginx_version
+  nginx_version="$(docker exec nginx nginx -v 2>&1 | grep -oP 'nginx/\K[0-9]+\.[0-9]+\.[0-9]+' || true)"
+  echo "nginx已安装完成"
+  echo -e "当前版本: ${gl_huang}v${nginx_version:-N/A}${gl_bai}"
+  echo
 }
 
 
