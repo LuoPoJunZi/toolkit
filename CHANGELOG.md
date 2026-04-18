@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.0
+- Auto release: v0.9.0
+- refactor: complete native module migration (8b7255b)
+
 ## 0.8.1
 - Auto release: v0.8.1
 - refactor: reduce luopo legacy fallbacks (170d0f0)
