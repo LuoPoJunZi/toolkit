@@ -12,11 +12,10 @@ source "$LUOPO_LDNMP_DIR/actions_maintenance.sh"
 
 luopo_ldnmp_dispatch_choice() {
   local choice="$1"
-  [[ "$choice" == "0" ]] || luopo_ldnmp_require_vendor_runtime || return 1
   case "$choice" in
     0) return 1 ;;
-    1) luopo_ldnmp_install_all ;;
-    2) luopo_ldnmp_install_wordpress ;;
+    1) luopo_ldnmp_require_vendor_runtime && luopo_ldnmp_install_all ;;
+    2) luopo_ldnmp_require_vendor_runtime && luopo_ldnmp_install_wordpress ;;
     3) luopo_ldnmp_install_discuz ;;
     4) luopo_ldnmp_install_kodbox ;;
     5) luopo_ldnmp_install_maccms ;;
@@ -25,23 +24,23 @@ luopo_ldnmp_dispatch_choice() {
     8) luopo_ldnmp_install_typecho ;;
     9) luopo_ldnmp_install_linkstack ;;
     20) luopo_ldnmp_custom_dynamic_site ;;
-    21) luopo_ldnmp_install_nginx_only ;;
+    21) luopo_ldnmp_require_vendor_runtime && luopo_ldnmp_install_nginx_only ;;
     22) luopo_ldnmp_redirect_site ;;
     23) luopo_ldnmp_reverse_proxy_ip_port ;;
     24) luopo_ldnmp_reverse_proxy_domain ;;
     25) luopo_ldnmp_install_bitwarden ;;
     26) luopo_ldnmp_install_halo ;;
     27) luopo_ldnmp_install_ai_prompt_generator ;;
-    28) luopo_ldnmp_reverse_proxy_load_balance ;;
-    29) luopo_ldnmp_stream_proxy ;;
+    28) luopo_ldnmp_require_vendor_runtime && luopo_ldnmp_reverse_proxy_load_balance ;;
+    29) luopo_ldnmp_require_vendor_runtime && luopo_ldnmp_stream_proxy ;;
     30) luopo_ldnmp_custom_static_site ;;
-    31) luopo_ldnmp_site_status ;;
+    31) luopo_ldnmp_require_vendor_runtime && luopo_ldnmp_site_status ;;
     32) luopo_ldnmp_backup_all ;;
     33) luopo_ldnmp_scheduled_remote_backup ;;
-    34) luopo_ldnmp_restore_all ;;
-    35) luopo_ldnmp_security ;;
-    36) luopo_ldnmp_optimization ;;
-    37) luopo_ldnmp_update_menu ;;
+    34) luopo_ldnmp_require_vendor_runtime && luopo_ldnmp_restore_all ;;
+    35) luopo_ldnmp_require_vendor_runtime && luopo_ldnmp_security ;;
+    36) luopo_ldnmp_require_vendor_runtime && luopo_ldnmp_optimization ;;
+    37) luopo_ldnmp_require_vendor_runtime && luopo_ldnmp_update_menu ;;
     38) luopo_ldnmp_uninstall ;;
     *)
       luopo_ldnmp_invalid_choice

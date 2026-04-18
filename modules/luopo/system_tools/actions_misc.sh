@@ -119,6 +119,160 @@ luopo_system_tools_history_menu() {
   press_enter
 }
 
+luopo_system_tools_command_favorites() {
+  clear
+  send_stats "命令收藏夹"
+  echo "正在启动命令收藏夹安装/管理脚本..."
+  bash <(curl -fsSL "${gh_proxy}raw.githubusercontent.com/byJoey/cmdbox/refs/heads/main/install.sh")
+}
+
+luopo_system_tools_backup_list() {
+  local backup_dir="$1"
+  echo "可用备份："
+  if compgen -G "$backup_dir/*.tar.gz" >/dev/null; then
+    local file
+    for file in "$backup_dir"/*.tar.gz; do
+      basename "$file"
+    done
+  else
+    echo "暂无备份"
+  fi
+}
+
+luopo_system_tools_backup_create() {
+  local backup_dir="$1"
+  local input
+  local backup_paths=()
+  local valid_paths=()
+  local timestamp
+  local prefix=""
+  local backup_name
+
+  echo "创建备份示例："
+  echo "  - 备份单个目录: /var/www"
+  echo "  - 备份多个目录: /etc /home /var/log"
+  echo "  - 直接回车将使用默认目录 (/etc /usr /home)"
+  read -r -p "请输入要备份的目录（多个目录用空格分隔，直接回车则使用默认目录）: " input
+
+  if [[ -z "$input" ]]; then
+    backup_paths=(/etc /usr /home)
+  else
+    # shellcheck disable=SC2206
+    backup_paths=($input)
+  fi
+
+  for path in "${backup_paths[@]}"; do
+    if [[ ! -e "$path" ]]; then
+      echo "跳过不存在的路径: $path"
+      continue
+    fi
+    valid_paths+=("$path")
+    prefix+="$(basename "$path")_"
+  done
+
+  prefix="${prefix%_}"
+  if [[ -z "$prefix" ]]; then
+    echo "没有可备份的有效路径。"
+    return 1
+  fi
+
+  timestamp="$(date +"%Y%m%d%H%M%S")"
+  backup_name="${prefix}_${timestamp}.tar.gz"
+
+  echo "您选择的备份目录为："
+  for path in "${valid_paths[@]}"; do
+    echo "- $path"
+  done
+
+  install tar
+  echo "正在创建备份 $backup_name..."
+  tar -czvf "$backup_dir/$backup_name" "${valid_paths[@]}"
+  echo "备份创建成功: $backup_dir/$backup_name"
+}
+
+luopo_system_tools_backup_restore() {
+  local backup_dir="$1"
+  local backup_name
+
+  luopo_system_tools_backup_list "$backup_dir"
+  read -r -p "请输入要恢复的备份文件名: " backup_name
+  if [[ -z "$backup_name" || ! -f "$backup_dir/$backup_name" ]]; then
+    echo "备份文件不存在。"
+    return 1
+  fi
+
+  read -r -p "确认恢复到系统根目录 / ? 此操作会覆盖同名文件 (y/N): " confirm
+  case "$confirm" in
+    [Yy])
+      echo "正在恢复备份 $backup_name..."
+      tar -xzvf "$backup_dir/$backup_name" -C /
+      echo "备份恢复成功。"
+      ;;
+    *)
+      echo "已取消恢复。"
+      ;;
+  esac
+}
+
+luopo_system_tools_backup_delete() {
+  local backup_dir="$1"
+  local backup_name
+
+  luopo_system_tools_backup_list "$backup_dir"
+  read -r -p "请输入要删除的备份文件名: " backup_name
+  if [[ -z "$backup_name" || ! -f "$backup_dir/$backup_name" ]]; then
+    echo "备份文件不存在。"
+    return 1
+  fi
+
+  read -r -p "确认删除 $backup_name ? (y/N): " confirm
+  case "$confirm" in
+    [Yy])
+      rm -f "$backup_dir/$backup_name"
+      echo "备份删除成功。"
+      ;;
+    *)
+      echo "已取消删除。"
+      ;;
+  esac
+}
+
+luopo_system_tools_backup_menu() {
+  root_use
+  send_stats "系统备份功能"
+
+  local backup_dir="/backups"
+  mkdir -p "$backup_dir"
+
+  while true; do
+    clear
+    echo "系统备份功能"
+    echo "备份目录: $backup_dir"
+    echo "------------------------"
+    luopo_system_tools_backup_list "$backup_dir"
+    echo "------------------------"
+    echo "1. 创建备份"
+    echo "2. 恢复备份"
+    echo "3. 删除备份"
+    echo "------------------------"
+    echo "0. 返回上一级选单"
+    echo "------------------------"
+    read -r -p "请输入你的选择: " choice
+
+    case "$choice" in
+      1) luopo_system_tools_backup_create "$backup_dir" ;;
+      2) luopo_system_tools_backup_restore "$backup_dir" ;;
+      3) luopo_system_tools_backup_delete "$backup_dir" ;;
+      0) return 0 ;;
+      *)
+        luopo_system_tools_invalid_choice
+        continue
+        ;;
+    esac
+    break_end
+  done
+}
+
 luopo_system_tools_generate_credentials() {
   clear
   send_stats "用户信息生成器"

@@ -14,9 +14,15 @@ luopo_ldnmp_backup_all() {
     read -r -p "要传送备份数据到远程服务器吗？(Y/N): " choice
     case "$choice" in
       [Yy])
-        kj_ssh_read_host_port "请输入远端服务器IP:  " "目标服务器SSH端口 [默认22]: " "22"
-        local remote_ip="$KJ_SSH_HOST"
-        local target_port="$KJ_SSH_PORT"
+        local remote_ip
+        local target_port
+        read -r -p "请输入远端服务器IP: " remote_ip
+        read -r -p "目标服务器SSH端口 [默认22]: " target_port
+        target_port="${target_port:-22}"
+        if [[ -z "$remote_ip" ]]; then
+          echo "远端服务器IP不能为空，已取消传送。"
+          break
+        fi
         local latest_tar
         latest_tar="$(ls -t /home/*.tar.gz 2>/dev/null | head -1)"
         if [[ -n "$latest_tar" ]]; then

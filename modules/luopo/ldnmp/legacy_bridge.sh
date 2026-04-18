@@ -10,8 +10,3 @@ source "$ROOT_DIR/modules/compat/common.sh"
 luopo_ldnmp_require_vendor_runtime() {
   ensure_luopo_vendor_loaded
 }
-
-luopo_ldnmp_render_status_banner() {
-  luopo_ldnmp_require_vendor_runtime || return 1
-  ldnmp_tato
-}

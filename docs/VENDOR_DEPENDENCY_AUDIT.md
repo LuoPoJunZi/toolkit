@@ -398,3 +398,47 @@ Recommended execution order:
 - This audit is intentionally pragmatic, not a perfect parser-generated truth table.
 - The goal is migration planning, not formal static analysis.
 - If a module still runs but no longer needs vendor bootstrap, update this file together with the code.
+
+## 2026-04-18 Update
+
+### ldnmp
+Status:
+- Native-first action dispatch improved
+- Global legacy load on every non-zero action removed
+- Legacy runtime is now required only by selected heavy actions:
+  - full LDNMP install and WordPress/nginx-only bootstrap paths
+  - load-balance / stream proxy paths
+  - site status / restore / security / optimization / update paths
+
+Native helpers added or confirmed:
+- `ldnmp_v`
+- `luopo_ldnmp_render_status_banner`
+- `nginx_http_on`
+- `check_crontab_installed`
+- `save_iptables_rules`
+- `close_port`
+- `block_container_port`
+
+Assessment:
+- Normal menu bootstrap no longer depends on loading the vendor backup.
+- Remaining dependency is now explicit per-action fallback, which is acceptable until those heavy flows are migrated.
+
+### system_tools
+Status:
+- Reduced legacy wrapper surface
+- Native replacements added for:
+  - network card / interface menu
+  - log menu
+  - environment variable menu
+  - shell prompt theme menu
+  - system language menu
+  - command favorites launcher
+  - system backup / restore / delete menu
+
+Remaining fallback wrappers:
+- mirror / reinstall / kernel optimization class actions
+- file / trash / SSH-manager / disk / rsync class actions
+
+Assessment:
+- Runtime path is increasingly native-first.
+- Remaining work is action-by-action extraction, not another loader refactor.

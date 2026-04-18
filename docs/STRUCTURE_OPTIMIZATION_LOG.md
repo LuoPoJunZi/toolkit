@@ -233,3 +233,30 @@ Narrow fallback targets still using backup logic on demand:
 - Module no longer requires `ensure_luopo_vendor_loaded` during normal menu bootstrap
 - Module runtime dependencies come from `core/` or module-local helpers
 - Compat layer is only used for true legacy fallback paths
+
+### 2026-04-18 - Round 12
+Completed:
+- Reduced `ldnmp` legacy coupling from global action bootstrap to explicit per-action fallback
+- Moved common `ldnmp` runtime helpers into native module code:
+  - `ldnmp_v`
+  - `luopo_ldnmp_render_status_banner`
+  - `nginx_http_on`
+  - `check_crontab_installed`
+  - `save_iptables_rules`
+  - `close_port`
+  - `block_container_port`
+- Removed the status-banner wrapper from `modules/luopo/ldnmp/legacy_bridge.sh`
+- Replaced several remaining `system_tools` legacy menus with native module menus:
+  - network card / interface helpers
+  - log viewing helpers
+  - environment variable helpers
+  - shell prompt theme helpers
+  - system language switching helpers
+  - command favorites launcher
+  - system backup / restore / delete menu
+- Updated smoke assertions so legacy-backed routes are explicit and native routes stay native-first
+
+Remaining after round:
+- `ldnmp` still has selected heavy actions that intentionally load the vendor backup on demand
+- `system_tools` still has selected heavy wrappers for reinstall/kernel/file/SSH-manager class flows
+- `vendor/luopo.sh` remains as the backup/reference layer, not the active primary implementation
