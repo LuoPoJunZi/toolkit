@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.4
+- Auto release: v0.9.4
+- style: align long submenu columns (e6a00ff)
+
 ## 0.9.3
 - Auto release: v0.9.3
 - style: simplify ldnmp menu layout (94c0005)
