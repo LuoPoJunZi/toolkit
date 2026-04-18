@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.6
+- Auto release: v0.9.6
+- style: organize app market menu categories (c0b0713)
+
 ## 0.9.5
 - Auto release: v0.9.5
 - style: normalize submenu numbering and layout (4e7de1a)
