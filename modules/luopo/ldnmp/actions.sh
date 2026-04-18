@@ -23,7 +23,7 @@ luopo_ldnmp_dispatch_choice() {
     7) luopo_ldnmp_install_flarum ;;
     8) luopo_ldnmp_install_typecho ;;
     9) luopo_ldnmp_install_linkstack ;;
-    20) luopo_ldnmp_custom_dynamic_site ;;
+    10) luopo_ldnmp_custom_dynamic_site ;;
     21) luopo_ldnmp_install_nginx_only ;;
     22) luopo_ldnmp_redirect_site ;;
     23) luopo_ldnmp_reverse_proxy_ip_port ;;

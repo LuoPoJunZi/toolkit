@@ -8,8 +8,6 @@ source "$LUOPO_SYSTEM_TOOLS_DIR/helpers.sh"
 # shellcheck disable=SC1091
 source "$LUOPO_SYSTEM_TOOLS_DIR/registry.sh"
 # shellcheck disable=SC1091
-source "$LUOPO_SYSTEM_TOOLS_DIR/../menu_layout.sh"
-# shellcheck disable=SC1091
 source "$LUOPO_SYSTEM_TOOLS_DIR/actions.sh"
 
 luopo_render_system_tools_menu() {
@@ -23,13 +21,9 @@ luopo_render_system_tools_menu() {
       continue
     fi
 
-    IFS='|' read -r left right <<<"$row"
-    if [[ -n "${right:-}" ]]; then
-      luopo_print_two_column_cells "$(luopo_system_tools_render_cell "$left")" "$(luopo_system_tools_render_cell "$right")" 40
-    else
-      luopo_system_tools_render_cell "$left"
-      echo
-    fi
+    IFS='|' read -r left _ <<<"$row"
+    luopo_system_tools_render_cell "$left"
+    printf '\n'
   done
 
   echo -e "${gl_kjlan}------------------------${gl_bai}"

@@ -20,7 +20,7 @@ LUOPO_CLUSTER_ITEMS=(
   "16|设置1G虚拟内存|luopo_cluster_set_swap|tasks"
   "17|设置时区到上海|luopo_cluster_set_timezone|tasks"
   "18|开放所有端口|luopo_cluster_open_ports|tasks"
-  "51|自定义指令|luopo_cluster_custom_command|tasks"
+  "19|自定义指令|luopo_cluster_custom_command|tasks"
 )
 
 luopo_cluster_find_item() {

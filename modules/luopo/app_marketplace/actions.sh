@@ -60,195 +60,195 @@ luopo_app_marketplace_dispatch_choice() {
     0)
       return 1
       ;;
-    b)
+    90|b)
       luopo_app_marketplace_backup_all
       return 0
       ;;
-    r)
+    91|r)
       luopo_app_marketplace_restore_all
       return 0
       ;;
-    3)
+    1)
       luopo_app_marketplace_onepanel_menu
       return 0
       ;;
-    4)
+    2)
       luopo_app_marketplace_npm_menu
       return 0
       ;;
-    5)
+    3)
       luopo_app_marketplace_openlist_menu
       return 0
       ;;
-    7)
+    4)
       luopo_app_marketplace_nezha_menu
       return 0
       ;;
-    12)
+    5)
       luopo_app_marketplace_qinglong_menu
       return 0
       ;;
-    17)
+    6)
       luopo_app_marketplace_adguardhome_menu
       return 0
       ;;
-    19)
+    7)
       luopo_app_marketplace_safeline_menu
       return 0
       ;;
-    20)
+    8)
       luopo_app_marketplace_portainer_menu
       return 0
       ;;
-    21)
+    9)
       luopo_app_marketplace_vscode_menu
       return 0
       ;;
-    22)
+    10)
       luopo_app_marketplace_uptime_kuma_menu
       return 0
       ;;
-    23)
+    20)
       luopo_app_marketplace_memos_menu
       return 0
       ;;
-    27)
+    21)
       luopo_app_marketplace_dockge_menu
       return 0
       ;;
-    28)
+    22)
       luopo_app_marketplace_librespeed_menu
       return 0
       ;;
-    29)
+    23)
       luopo_app_marketplace_searxng_menu
       return 0
       ;;
-    31)
+    24)
       luopo_app_marketplace_stirling_pdf_menu
       return 0
       ;;
-    32)
+    25)
       luopo_app_marketplace_drawio_menu
       return 0
       ;;
-    37)
+    26)
       luopo_app_marketplace_myip_menu
       return 0
       ;;
-    43)
+    27)
       luopo_app_marketplace_rustdesk_hbbs_menu
       return 0
       ;;
-    44)
+    28)
       luopo_app_marketplace_rustdesk_hbbr_menu
       return 0
       ;;
-    55)
+    29)
       luopo_app_marketplace_frps_menu
       return 0
       ;;
-    56)
+    40)
       luopo_app_marketplace_frpc_menu
       return 0
       ;;
-    58)
+    41)
       luopo_app_marketplace_dify_menu
       return 0
       ;;
-    59)
+    42)
       luopo_app_marketplace_newapi_menu
       return 0
       ;;
-    63)
+    43)
       luopo_app_marketplace_openwebui_menu
       return 0
       ;;
-    64)
+    44)
       luopo_app_marketplace_it_tools_menu
       return 0
       ;;
-    65)
+    45)
       luopo_app_marketplace_n8n_menu
       return 0
       ;;
-    67)
+    46)
       luopo_app_marketplace_ddns_go_menu
       return 0
       ;;
-    68)
+    47)
       luopo_app_marketplace_allinssl_menu
       return 0
       ;;
-    71)
+    48)
       luopo_app_marketplace_navidrome_menu
       return 0
       ;;
-    72)
+    49)
       luopo_app_marketplace_bitwarden_menu
       return 0
       ;;
-    82)
+    62)
       luopo_app_marketplace_gpt_load_menu
       return 0
       ;;
-    79)
+    60)
       luopo_app_marketplace_beszel_menu
       return 0
       ;;
-    80)
+    61)
       luopo_app_marketplace_linkwarden_menu
       return 0
       ;;
-    83)
+    63)
       luopo_app_marketplace_komari_menu
       return 0
       ;;
-    85)
+    64)
       luopo_app_marketplace_immich_menu
       return 0
       ;;
-    86)
+    65)
       luopo_app_marketplace_jellyfin_menu
       return 0
       ;;
-    91)
+    66)
       luopo_app_marketplace_gitea_menu
       return 0
       ;;
-    92)
+    67)
       luopo_app_marketplace_filebrowser_menu
       return 0
       ;;
-    93)
+    68)
       luopo_app_marketplace_dufs_menu
       return 0
       ;;
-    95)
+    69)
       luopo_app_marketplace_paperless_menu
       return 0
       ;;
-    100)
+    80)
       luopo_app_marketplace_syncthing_menu
       return 0
       ;;
-    103)
+    81)
       luopo_app_marketplace_umami_menu
       return 0
       ;;
-    105)
+    82)
       luopo_app_marketplace_siyuan_menu
       return 0
       ;;
-    109)
+    83)
       luopo_app_marketplace_zfile_menu
       return 0
       ;;
-    110)
+    84)
       luopo_app_marketplace_karakeep_menu
       return 0
       ;;
-    112)
+    85)
       luopo_app_marketplace_lucky_menu
       return 0
       ;;

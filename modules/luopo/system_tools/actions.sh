@@ -60,11 +60,11 @@ luopo_system_tools_dispatch_choice() {
     41) luopo_system_tools_log_menu ;;
     42) luopo_system_tools_env_menu ;;
     61) luopo_system_tools_feedback ;;
-    66) luopo_system_tools_one_click_tune ;;
-    99) server_reboot ;;
-    100) luopo_system_tools_privacy_menu ;;
-    101) luopo_system_tools_command_help ;;
-    102) luopo_system_tools_uninstall_menu ;;
+    62) luopo_system_tools_one_click_tune ;;
+    63) server_reboot ;;
+    64) luopo_system_tools_privacy_menu ;;
+    65) luopo_system_tools_command_help ;;
+    66) luopo_system_tools_uninstall_menu ;;
     *) luopo_system_tools_invalid_choice ;;
   esac
   return 0
