@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.7
+- Auto release: v0.9.7
+- fix(ci): restore uptime kuma app market entry (15a9fea)
+- fix(ci): relax app market backup shortcut assertion (bb29d51)
+
 ## 0.9.6
 - Auto release: v0.9.6
 - style: organize app market menu categories (c0b0713)
