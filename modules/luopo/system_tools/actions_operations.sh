@@ -784,5 +784,3 @@ luopo_system_tools_language_menu() {
     break_end
   done
 }
-
-luopo_system_tools_fix_openssh() {

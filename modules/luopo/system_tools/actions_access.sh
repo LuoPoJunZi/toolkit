@@ -457,5 +457,3 @@ luopo_system_tools_sshkey_menu() {
     break_end
   done
 }
-
-luopo_system_tools_change_hostname_menu() {
