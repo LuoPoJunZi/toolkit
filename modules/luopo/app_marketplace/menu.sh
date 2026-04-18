@@ -8,6 +8,8 @@ source "$LUOPO_APP_MARKETPLACE_DIR/helpers.sh"
 # shellcheck disable=SC1091
 source "$LUOPO_APP_MARKETPLACE_DIR/registry.sh"
 # shellcheck disable=SC1091
+source "$LUOPO_APP_MARKETPLACE_DIR/../menu_layout.sh"
+# shellcheck disable=SC1091
 source "$LUOPO_APP_MARKETPLACE_DIR/actions.sh"
 
 luopo_render_app_marketplace_menu() {
@@ -23,9 +25,7 @@ luopo_render_app_marketplace_menu() {
 
     IFS='|' read -r left right <<<"$row"
     if [[ -n "${right:-}" ]]; then
-      printf "%-52s " "$(luopo_app_marketplace_render_cell "$left")"
-      luopo_app_marketplace_render_cell "$right"
-      echo
+      luopo_print_two_column_cells "$(luopo_app_marketplace_render_cell "$left")" "$(luopo_app_marketplace_render_cell "$right")" 44
     else
       luopo_app_marketplace_render_cell "$left"
       echo
@@ -33,9 +33,7 @@ luopo_render_app_marketplace_menu() {
   done
 
   echo -e "${gl_kjlan}-------------------------${gl_bai}"
-  printf "%-52s " "$(luopo_app_marketplace_render_cell "b")"
-  luopo_app_marketplace_render_cell "r"
-  echo
+  luopo_print_two_column_cells "$(luopo_app_marketplace_render_cell "b")" "$(luopo_app_marketplace_render_cell "r")" 44
   echo -e "${gl_kjlan}------------------------${gl_bai}"
   echo -e "${gl_kjlan}0.   ${gl_bai}返回主菜单"
   echo -e "${gl_kjlan}------------------------${gl_bai}"
