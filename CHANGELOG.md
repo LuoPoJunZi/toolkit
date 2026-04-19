@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.9.9
+- Auto release: v0.9.9
+- refactor: split large native module files (7a075f7)
+- fix(ci): guard fixed-string grep patterns (da6a8e9)
+
 ## 0.9.8
 - Auto release: v0.9.8
 - chore: keep vendor snapshot local only (74fc7ad)
