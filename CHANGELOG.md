@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.12
+- Auto release: v0.9.12
+- refactor: deepen native module splits (3a20538)
+
 ## 0.9.11
 - Auto release: v0.9.11
 - refactor: split ldnmp site actions (11c904a)
