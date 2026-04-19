@@ -80,7 +80,7 @@ assert_contains_fixed() {
   file="$1"
   text="$2"
   desc="$3"
-  grep -Fq "$text" "$file" || fail "$desc (missing: $text)"
+  grep -Fq -- "$text" "$file" || fail "$desc (missing: $text)"
 }
 
 assert_contains_regex() {
@@ -94,7 +94,7 @@ assert_not_contains_fixed() {
   file="$1"
   text="$2"
   desc="$3"
-  if grep -Fq "$text" "$file"; then
+  if grep -Fq -- "$text" "$file"; then
     fail "$desc (unexpected: $text)"
   fi
 }
