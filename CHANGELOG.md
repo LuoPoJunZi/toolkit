@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.8
+- Auto release: v0.9.8
+- chore: keep vendor snapshot local only (74fc7ad)
+
 ## 0.9.7
 - Auto release: v0.9.7
 - fix(ci): restore uptime kuma app market entry (15a9fea)
