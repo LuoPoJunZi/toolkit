@@ -61,6 +61,10 @@ toolkit/
 │     │  ├─ registry.sh
 │     │  ├─ actions.sh
 │     │  ├─ actions_sites.sh
+│     │  ├─ sites/
+│     │  │  ├─ environment.sh
+│     │  │  ├─ php_cms.sh
+│     │  │  └─ apps_static.sh
 │     │  ├─ actions_proxy.sh
 │     │  ├─ actions_proxy_core.sh
 │     │  ├─ actions_stream.sh

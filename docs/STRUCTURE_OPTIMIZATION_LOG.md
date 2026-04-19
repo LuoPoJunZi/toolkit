@@ -436,3 +436,22 @@ Result:
 Remaining after round:
 - Optional future cleanup:
   - Split `modules/luopo/system_tools/helpers.sh` by helper family if new helpers keep accumulating.
+
+### 2026-04-19 - Round 20
+Completed:
+- Split the LDNMP site installer actions into focused site-family files:
+  - `modules/luopo/ldnmp/sites/environment.sh`
+  - `modules/luopo/ldnmp/sites/php_cms.sh`
+  - `modules/luopo/ldnmp/sites/apps_static.sh`
+- Reduced `modules/luopo/ldnmp/actions_sites.sh` to a loader that only sources the focused site action files.
+- Updated smoke checks so LDNMP site action assertions scan the loader plus all split site-family files.
+- Updated directory documentation to show the new `ldnmp/sites/` layer.
+
+Result:
+- LDNMP site installers are no longer concentrated in a single large file.
+- Menu dispatch remains unchanged because `actions.sh` still sources `actions_sites.sh`.
+
+Remaining after round:
+- Optional future cleanup:
+  - Split `tests/smoke_menu.sh` into smaller smoke suites if it keeps growing.
+  - Continue small-file cleanup only when a native module crosses an uncomfortable size threshold.
