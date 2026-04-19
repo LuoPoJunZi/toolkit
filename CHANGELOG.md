@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.11
+- Auto release: v0.9.11
+- refactor: split ldnmp site actions (11c904a)
+
 ## 0.9.10
 - Auto release: v0.9.10
 - refactor: split system tools operations and helpers (aacad1a)
