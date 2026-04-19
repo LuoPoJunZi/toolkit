@@ -4,11 +4,11 @@
 - Record the completed migration away from the legacy vendor runtime in active paths.
 - Document which shared helpers moved into `core/` or native module helper files.
 - Keep an audit trail for `P1: 去 Vendor 运行时依赖`.
-- Keep `vendor/luopo.sh` as backup/reference while active runtime paths live in native modules.
+- Keep `vendor/luopo.sh` local-only as optional backup/reference while active runtime paths live in native modules.
 
 ## Current Snapshot
 - `modules/compat/` has been removed from the active code path.
-- `vendor/luopo.sh` remains in the repository only as backup/reference material.
+- `vendor/luopo.sh` is ignored by Git and no longer uploaded to the repository.
 - `core/runtime.sh` now exists and already absorbs the first shared runtime slice:
   - color variables
   - `send_stats`
@@ -444,7 +444,7 @@ Remaining fallback wrappers:
 
 Assessment:
 - `system_tools` is native-only in the active module path.
-- `vendor/luopo.sh` remains available as repository backup/reference, but `system_tools` no longer sources a module-local legacy bridge.
+- `vendor/luopo.sh` may remain available locally as backup/reference, but `system_tools` no longer sources a module-local legacy bridge.
 
 ## 2026-04-18 Update 2
 

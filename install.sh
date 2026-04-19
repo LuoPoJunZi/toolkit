@@ -75,6 +75,7 @@ sync_project_files() {
     --exclude="logs" \
     --exclude="LOCAL_SESSION_MEMORY.md" \
     --exclude="kejilion_upstream.sh" \
+    --exclude="vendor/luopo.sh" \
     -C "$SOURCE_DIR" -cf - . | tar -C "$INSTALL_DIR" -xf -
 
   find "$INSTALL_DIR" -type f -name "*.sh" -exec chmod +x {} \;

@@ -10,7 +10,9 @@ This repository includes locally modularized functionality derived from the foll
 
 ## Local Adaptations
 
-The vendored reference snapshot in [`vendor/luopo.sh`](../vendor/luopo.sh) is not a byte-for-byte copy. It includes local changes that were used during the migration into `LuoPo VPS Toolkit`:
+During the migration, a local-only upstream reference snapshot may be kept as `vendor/luopo.sh`. This file is ignored by Git and is not uploaded to the GitHub repository.
+
+When present locally, that snapshot is not treated as a byte-for-byte runtime dependency. It was used only as reference material while migrating functionality into `LuoPo VPS Toolkit`:
 
 - disabled upstream telemetry by forcing `ENABLE_STATS="false"`
 - disabled upstream self-install / launcher-copy side effects when loaded as a library
@@ -22,11 +24,11 @@ The vendored reference snapshot in [`vendor/luopo.sh`](../vendor/luopo.sh) is no
 
 - LuoPo-native menu entry layer: [`modules/entries.sh`](../modules/entries.sh)
 - LuoPo-native feature modules: [`modules/luopo/`](../modules/luopo/)
-- vendored upstream reference/backup snapshot: [`vendor/luopo.sh`](../vendor/luopo.sh)
+- optional local-only upstream reference/backup snapshot: `vendor/luopo.sh`
 - LuoPo host menu entry wiring: [`core/menu.sh`](../core/menu.sh)
 
 ## Notes
 
 - `LuoPo VPS Toolkit` remains licensed under GPL-3.0 as declared in the repository [`LICENSE`](../LICENSE).
 - Active menu routing and business logic now live in LuoPo-native modules.
-- `vendor/luopo.sh` is retained as attribution, audit trail, and emergency reference material rather than a normal runtime dependency.
+- `vendor/luopo.sh` is retained only locally as optional attribution/audit reference material rather than a normal runtime dependency.

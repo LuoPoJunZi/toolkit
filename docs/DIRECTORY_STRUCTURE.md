@@ -7,7 +7,7 @@ This file describes the **current** repository layout after the native module mi
 - Keep the entry path small: `toolkit.sh` -> `core/menu.sh` -> `modules/entries.sh`.
 - Keep active features in native modules under `modules/luopo/`.
 - Keep runtime helpers in `core/` or module-local helper files.
-- Keep `vendor/luopo.sh` as upstream attribution, audit trail, and emergency reference only.
+- Keep optional upstream reference snapshots local-only; do not upload `vendor/luopo.sh` to GitHub.
 - Keep retired drafts and local memory out of GitHub through `.gitignore`.
 
 ## Current Tree
@@ -32,9 +32,7 @@ toolkit/
 │  ├─ runtime.sh                      # shared runtime helpers
 │  ├─ self_update.sh                  # self-update flow
 │  ├─ uninstall.sh                    # toolkit uninstall flow
-│  ├─ rollback.sh                     # rollback helpers
-│  ├─ diagnose.sh                     # diagnostics helpers
-│  └─ mirrors.sh                      # mirror helpers
+│  └─ diagnose.sh                     # diagnostics helpers
 ├─ lang/
 │  ├─ zh_CN.sh
 │  └─ en_US.sh
@@ -97,8 +95,7 @@ toolkit/
 │  ├─ UPSTREAM_ATTRIBUTION.md
 │  ├─ VENDOR_DEPENDENCY_AUDIT.md
 │  └─ ...
-├─ vendor/
-│  └─ luopo.sh                        # Upstream reference/backup, not active runtime
+├─ vendor/                            # Optional local-only upstream reference snapshots
 ├─ data/                              # Runtime state/cache/backups, ignored where generated
 └─ logs/                              # Runtime logs, ignored
 ```
@@ -123,13 +120,14 @@ toolkit.sh
   - `luopo_*_require_vendor_runtime`
   - module-local `legacy_bridge.sh`
 - `modules/compat/` has been removed.
-- `vendor/luopo.sh` remains tracked for attribution, source comparison, and emergency reference.
+- `vendor/luopo.sh` is local-only and ignored by Git. Attribution is documented in `docs/UPSTREAM_ATTRIBUTION.md`.
 - Retired drafts stay local only:
   - `modules/menus/`
   - `modules/extended_menus.sh`
   - `modules/singbox.sh`
   - `LOCAL_SESSION_MEMORY.md`
   - `kejilion_upstream.sh`
+  - `vendor/luopo.sh`
 
 ## Notes
 

@@ -76,7 +76,7 @@ z en
 - Main menu `5-15` is now a local modular mirror of the `4-14` feature set from `kejilion/sh`.
 - These local modules intentionally keep the upstream menu structure, submenu depth, external-script integrations, and operating style as close as possible for later second-stage customization.
 - Upstream source and local adaptation notes are documented in [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md).
-- Local adaptations currently include disabling upstream telemetry, disabling upstream self-install side effects, migrating active menus into native `modules/luopo/` modules, and keeping `vendor/luopo.sh` only as backup/source reference.
+- Local adaptations currently include disabling upstream telemetry, disabling upstream self-install side effects, and migrating active menus into native `modules/luopo/` modules. `vendor/luopo.sh` may be kept locally as a source-reference snapshot, but it is no longer uploaded to the GitHub repository.
 
 ## Current Architecture Status
 
@@ -86,7 +86,7 @@ z en
 - Main menu dispatcher: `core/menu_dispatcher.sh`
 - Active feature modules: `modules/luopo/`
 - One-click script index: `integrations/index.json`
-- Upstream reference backup: `vendor/luopo.sh`
+- Upstream reference backup: `vendor/luopo.sh` may be kept locally, but is not uploaded to GitHub
 
 The active runtime path no longer depends on:
 

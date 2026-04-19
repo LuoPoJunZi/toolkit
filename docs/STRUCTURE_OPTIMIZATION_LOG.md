@@ -10,7 +10,7 @@
 - If a module is detached from `ensure_luopo_vendor_loaded`, record it here.
 - If shared runtime helpers are extracted from `vendor/luopo.sh`, record them here.
 - If a module still depends on vendor for business logic, note that separately from runtime coupling.
-- `vendor/luopo.sh` is kept as backup/reference. Structure work should migrate runtime usage into `core/` and `modules/luopo/`, not delete the backup file.
+- `vendor/luopo.sh` is local-only backup/reference material. Structure work should migrate runtime usage into `core/` and `modules/luopo/`, and the snapshot must not be uploaded to GitHub.
 
 ## Progress Timeline
 
@@ -273,7 +273,7 @@ Result:
 Remaining after round:
 - `ldnmp` still has selected heavy actions that intentionally load the vendor backup on demand
 - `system_tools` no longer has active legacy fallback wrappers
-- `vendor/luopo.sh` remains as the backup/reference layer, not the active primary implementation
+- `vendor/luopo.sh` remains local-only backup/reference material, not the active primary implementation
 
 ### 2026-04-18 - Round 13
 Completed:
@@ -317,10 +317,29 @@ Completed:
 
 Result:
 - `modules/luopo/*` no longer calls the vendor loader in active menu code.
-- `vendor/luopo.sh` remains as backup/reference only.
+- `vendor/luopo.sh` remains local-only backup/reference only.
 
 Remaining after round:
 - Optional future cleanup:
   - split `modules/luopo/ldnmp/actions_sites.sh` by site family if it keeps growing
   - split `modules/luopo/system_tools/actions_misc.sh` by maintenance family if it keeps growing
 - Linux runtime validation should still be performed on a VPS because this Windows workspace does not provide Bash.
+
+### 2026-04-19 - Round 14
+Completed:
+- Removed `vendor/luopo.sh` from Git tracking policy; it is now local-only and ignored.
+- Removed unused placeholder core files:
+  - `core/mirrors.sh`
+  - `core/rollback.sh`
+- Updated smoke checks so CI verifies `vendor/luopo.sh` is not tracked.
+- Kept `scripts/lint.sh` behavior unchanged for this round; strict linting should be enabled separately after a full formatting pass.
+
+Result:
+- GitHub repository no longer carries the large vendor snapshot.
+- Active runtime remains native-module based.
+
+Remaining after round:
+- Split large native files when convenient:
+  - `modules/luopo/app_marketplace/native_apps.sh`
+  - `modules/luopo/system_tools/actions_misc.sh`
+  - `modules/luopo/docker/manager.sh`

@@ -130,7 +130,7 @@
 - [x] `modules/compat/` 已移除
 - [x] `ldnmp` / `system_tools` 的模块级 `legacy_bridge.sh` 已移除
 - [x] 活动模块不再调用 `ensure_luopo_vendor_loaded` / `run_luopo_compat_menu`
-- [x] `vendor/luopo.sh` 仅作为来源参考和应急备份保留，不再作为活动运行依赖
+- [x] `vendor/luopo.sh` 仅作为本地来源参考和应急备份保留，不上传到 GitHub，也不作为活动运行依赖
 - [x] 旧菜单草稿已改为本地保留，不再上传 GitHub：
   - `modules/menus/`
   - `modules/extended_menus.sh`

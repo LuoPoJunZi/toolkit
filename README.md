@@ -76,7 +76,7 @@ z en
 - 当前 `5-15` 主菜单基于 `kejilion/sh` 的 `4-14` 功能体系做了本地模块化复刻。
 - 本地模块优先保留上游菜单结构、子菜单层级、外部脚本调用方式与运行习惯，便于后续继续二次开发。
 - 上游来源与本地适配说明见：[docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md)。
-- 当前本地适配主要包括：关闭上游遥测、关闭上游自安装副作用、将活动菜单迁移到 `modules/luopo/` 原生模块，`vendor/luopo.sh` 仅作为备份与来源参考保留。
+- 当前本地适配主要包括：关闭上游遥测、关闭上游自安装副作用、将活动菜单迁移到 `modules/luopo/` 原生模块。`vendor/luopo.sh` 仅允许作为本地来源参考文件保留，不再上传到 GitHub 仓库。
 
 ## 当前架构状态
 
@@ -86,7 +86,7 @@ z en
 - 主菜单分发：`core/menu_dispatcher.sh`
 - 活动功能模块：`modules/luopo/`
 - 一键脚本索引：`integrations/index.json`
-- 上游参考备份：`vendor/luopo.sh`
+- 上游参考备份：`vendor/luopo.sh` 可本地保留，但不上传 GitHub
 
 当前活动运行路径不再依赖：
 
