@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.13
+- Auto release: v0.9.13
+- feat: expand warp menu and unify submenu style (c7a6a08)
+
 ## 0.9.12
 - Auto release: v0.9.12
 - refactor: deepen native module splits (3a20538)
