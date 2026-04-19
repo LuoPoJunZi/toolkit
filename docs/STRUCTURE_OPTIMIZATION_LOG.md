@@ -499,3 +499,20 @@ Remaining after round:
 - Optional future cleanup:
   - Split `modules/luopo/system_tools/actions_access.sh` if access/user/network helpers keep growing.
   - Split test files by domain if smoke coverage becomes cumbersome to review.
+
+### 2026-04-19 - Round 23
+Completed:
+- Unified submenu visual style around the `========================================` title frame.
+- Reworked section headings to use the app-market style `[ 分类标题 ]` instead of line-wrapped headings.
+- Expanded WARP management from a single launcher into status, management, and common-operation sections.
+- Kept WARP direct operations conservative: use `warp-cli`/`warp-svc` when available and fall back to guidance/official script when not available.
+- Added smoke assertions for WARP registry/dispatcher and category heading support in LDNMP/system-tools menus.
+
+Result:
+- Submenus now share a clearer visual language.
+- WARP is no longer a one-item submenu.
+
+Remaining after round:
+- Optional future cleanup:
+  - Extract shared menu-rendering helpers if more menus are added.
+  - Add live Linux runtime validation for WARP service commands on a VPS with WARP installed.

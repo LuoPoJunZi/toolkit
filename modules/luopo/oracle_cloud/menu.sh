@@ -11,19 +11,32 @@ source "$LUOPO_ORACLE_CLOUD_DIR/registry.sh"
 source "$LUOPO_ORACLE_CLOUD_DIR/actions.sh"
 
 luopo_render_oracle_cloud_menu() {
+  local item number
+  echo "========================================"
   echo "甲骨文云脚本合集"
-  echo "------------------------"
-  local item
+  echo "========================================"
+  echo "[ 保活与系统 ]"
   for item in "${LUOPO_ORACLE_CLOUD_ITEMS[@]}"; do
-    printf "%-4s %s\n" "$(luopo_oracle_cloud_item_number "$item")." "$(luopo_oracle_cloud_item_label "$item")"
-    case "$(luopo_oracle_cloud_item_number "$item")" in
-      2|6)
-        echo "------------------------"
+    number="$(luopo_oracle_cloud_item_number "$item")"
+    case "$number" in
+      1|2|3|4)
+        printf " %-3s %s\n" "${number}." "$(luopo_oracle_cloud_item_label "$item")"
         ;;
     esac
   done
-  echo "0.   返回主菜单"
-  echo "------------------------"
+  echo "----------------------------------------"
+  echo "[ 账户与网络 ]"
+  for item in "${LUOPO_ORACLE_CLOUD_ITEMS[@]}"; do
+    number="$(luopo_oracle_cloud_item_number "$item")"
+    case "$number" in
+      5|6)
+        printf " %-3s %s\n" "${number}." "$(luopo_oracle_cloud_item_label "$item")"
+        ;;
+    esac
+  done
+  echo "----------------------------------------"
+  echo " 0.  返回主菜单"
+  echo "========================================"
 }
 
 luopo_dispatch_oracle_cloud_action() {
@@ -45,18 +58,7 @@ luopo_oracle_cloud_menu() {
 
   while true; do
     clear
-    echo "甲骨文云脚本合集"
-    echo "------------------------"
-    echo "1.   安装闲置机器活跃脚本"
-    echo "2.   卸载闲置机器活跃脚本"
-    echo "------------------------"
-    echo "3.   DD重装系统脚本"
-    echo "4.   R探长开机脚本"
-    echo "5.   开启ROOT密码登录模式"
-    echo "6.   IPV6恢复工具"
-    echo "------------------------"
-    echo "0.   返回主菜单"
-    echo "------------------------"
+    luopo_render_oracle_cloud_menu
     read -r -p "请输入你的选择: " sub_choice
 
     if ! luopo_dispatch_oracle_cloud_action "$sub_choice"; then

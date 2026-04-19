@@ -11,22 +11,29 @@ source "$LUOPO_LDNMP_DIR/registry.sh"
 source "$LUOPO_LDNMP_DIR/actions.sh"
 
 luopo_render_ldnmp_menu() {
-  local row left right
+  local row left title
+  echo "========================================"
   echo "LDNMP建站"
+  echo "========================================"
   luopo_ldnmp_render_status_banner
-  echo -e "${gl_huang}------------------------"
+  echo -e "${gl_huang}----------------------------------------${gl_bai}"
   for row in "${LUOPO_LDNMP_LAYOUT[@]}"; do
     if [[ "$row" == "---" ]]; then
-      echo -e "${gl_huang}------------------------"
+      echo -e "${gl_huang}----------------------------------------${gl_bai}"
+      continue
+    fi
+    if [[ "$row" == "##|"* ]]; then
+      IFS='|' read -r _ title <<<"$row"
+      echo -e "${gl_huang}[ ${title} ]${gl_bai}"
       continue
     fi
     IFS='|' read -r left _ <<<"$row"
     luopo_ldnmp_render_cell "$left"
     printf '\n'
   done
-  echo -e "${gl_huang}------------------------"
+  echo -e "${gl_huang}----------------------------------------${gl_bai}"
   echo -e "${gl_huang}0.   ${gl_bai}返回主菜单"
-  echo -e "${gl_huang}------------------------${gl_bai}"
+  echo "========================================"
 }
 
 luopo_ldnmp_menu() {

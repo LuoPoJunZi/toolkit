@@ -11,13 +11,19 @@ source "$LUOPO_SYSTEM_TOOLS_DIR/registry.sh"
 source "$LUOPO_SYSTEM_TOOLS_DIR/actions.sh"
 
 luopo_render_system_tools_menu() {
+  echo "========================================"
   echo "系统工具"
-  echo -e "${gl_kjlan}------------------------${gl_bai}"
+  echo "========================================"
 
-  local row left right
+  local row left title
   for row in "${LUOPO_SYSTEM_TOOLS_LAYOUT[@]}"; do
     if [[ "$row" == "---" ]]; then
-      echo -e "${gl_kjlan}------------------------${gl_bai}"
+      echo -e "${gl_kjlan}----------------------------------------${gl_bai}"
+      continue
+    fi
+    if [[ "$row" == "##|"* ]]; then
+      IFS='|' read -r _ title <<<"$row"
+      echo -e "${gl_kjlan}[ ${title} ]${gl_bai}"
       continue
     fi
 
@@ -26,9 +32,9 @@ luopo_render_system_tools_menu() {
     printf '\n'
   done
 
-  echo -e "${gl_kjlan}------------------------${gl_bai}"
+  echo -e "${gl_kjlan}----------------------------------------${gl_bai}"
   echo -e "${gl_kjlan}0.   ${gl_bai}返回主菜单"
-  echo -e "${gl_kjlan}------------------------${gl_bai}"
+  echo "========================================"
 }
 
 luopo_system_tools_menu() {

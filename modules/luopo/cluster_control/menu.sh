@@ -11,26 +11,28 @@ source "$LUOPO_CLUSTER_CONTROL_DIR/registry.sh"
 source "$LUOPO_CLUSTER_CONTROL_DIR/actions.sh"
 
 luopo_render_cluster_control_menu() {
-  echo "服务器集群控制"
-  luopo_cluster_show_servers
-  echo
-  echo "------------------------"
-
   local section section_key section_title item
+  echo "========================================"
+  echo "服务器集群控制"
+  echo "========================================"
+  echo "[ 当前服务器 ]"
+  luopo_cluster_show_servers
+  echo "----------------------------------------"
+
   for section in "${LUOPO_CLUSTER_SECTIONS[@]}"; do
     IFS='|' read -r section_key section_title <<<"$section"
-    echo "$section_title"
+    echo "[ ${section_title} ]"
     for item in "${LUOPO_CLUSTER_ITEMS[@]}"; do
       if [[ "$(luopo_cluster_item_group "$item")" != "$section_key" ]]; then
         continue
       fi
-      printf "%-4s %s\n" "$(luopo_cluster_item_number "$item")." "$(luopo_cluster_item_label "$item")"
+      printf " %-3s %s\n" "$(luopo_cluster_item_number "$item")." "$(luopo_cluster_item_label "$item")"
     done
-    echo "------------------------"
+    echo "----------------------------------------"
   done
 
-  echo "0.   返回主菜单"
-  echo "------------------------"
+  echo " 0.  返回主菜单"
+  echo "========================================"
 }
 
 luopo_dispatch_cluster_control_action() {

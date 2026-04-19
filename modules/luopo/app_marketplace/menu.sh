@@ -11,13 +11,14 @@ source "$LUOPO_APP_MARKETPLACE_DIR/registry.sh"
 source "$LUOPO_APP_MARKETPLACE_DIR/actions.sh"
 
 luopo_render_app_marketplace_menu() {
+  echo "========================================"
   echo "应用市场"
-  echo -e "${gl_kjlan}-------------------------${gl_bai}"
+  echo "========================================"
 
   local row left title
   for row in "${LUOPO_APP_MARKETPLACE_LAYOUT[@]}"; do
     if [[ "$row" == "---" ]]; then
-      echo -e "${gl_kjlan}-------------------------${gl_bai}"
+      echo -e "${gl_kjlan}----------------------------------------${gl_bai}"
       continue
     fi
     if [[ "$row" == "##|"* ]]; then
@@ -31,9 +32,9 @@ luopo_render_app_marketplace_menu() {
     printf '\n'
   done
 
-  echo -e "${gl_kjlan}------------------------${gl_bai}"
+  echo -e "${gl_kjlan}----------------------------------------${gl_bai}"
   echo -e "${gl_kjlan}0.   ${gl_bai}返回主菜单"
-  echo -e "${gl_kjlan}------------------------${gl_bai}"
+  echo "========================================"
 }
 
 luopo_app_marketplace_menu() {

@@ -18,14 +18,18 @@ luopo_bbr_management_menu() {
 
   while true; do
     clear
-    echo "当前TCP阻塞算法: $(luopo_bbr_current_algorithms)"
-    echo
+    echo "========================================"
     echo "BBR管理"
-    echo "------------------------"
-    echo "1. 开启BBRv3              2. 关闭BBRv3（会重启）"
-    echo "------------------------"
-    echo "0. 返回上一级选单"
-    echo "------------------------"
+    echo "========================================"
+    echo "[ 当前状态 ]"
+    echo "当前TCP阻塞算法: $(luopo_bbr_current_algorithms)"
+    echo "----------------------------------------"
+    echo "[ BBRv3 管理 ]"
+    echo " 1.  开启BBRv3"
+    echo " 2.  关闭BBRv3（会重启）"
+    echo "----------------------------------------"
+    echo " 0.  返回主菜单"
+    echo "========================================"
     read -r -p "请输入你的选择: " sub_choice
 
     case "$sub_choice" in
