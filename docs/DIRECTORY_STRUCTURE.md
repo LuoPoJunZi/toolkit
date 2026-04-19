@@ -47,6 +47,12 @@ toolkit/
 │     ├─ basic_tools/                 # 5. basic tools
 │     ├─ bbr_management/              # 6. BBR management
 │     ├─ docker/                      # 7. Docker management
+│     │  ├─ manager.sh                # Docker menu loader and main menu
+│     │  └─ parts/
+│     │     ├─ common.sh
+│     │     ├─ install_status.sh
+│     │     ├─ resources.sh
+│     │     └─ daemon_backup.sh
 │     ├─ warp_management/             # 8. WARP management
 │     ├─ network_test/                # 9. test script suite
 │     ├─ oracle_cloud/                # 10. Oracle Cloud tools
@@ -67,6 +73,17 @@ toolkit/
 │     │  ├─ helpers_runtime.sh
 │     │  └─ helpers_site.sh
 │     ├─ app_marketplace/             # 12. app market
+│     │  ├─ menu.sh
+│     │  ├─ registry.sh
+│     │  ├─ actions.sh
+│     │  ├─ helpers.sh
+│     │  ├─ native_apps.sh            # native app loader
+│     │  └─ native/                   # split native app implementations
+│     │     ├─ common.sh
+│     │     ├─ panels.sh
+│     │     ├─ files_media.sh
+│     │     ├─ network_security.sh
+│     │     └─ ai_productivity.sh
 │     ├─ workspace/                   # 13. background workspace
 │     ├─ system_tools/                # 14. system tools
 │     │  ├─ menu.sh
@@ -74,7 +91,12 @@ toolkit/
 │     │  ├─ actions.sh
 │     │  ├─ actions_access.sh
 │     │  ├─ actions_operations.sh
-│     │  ├─ actions_misc.sh
+│     │  ├─ actions_misc.sh           # misc action loader
+│     │  ├─ misc/
+│     │  │  ├─ maintenance.sh
+│     │  │  ├─ backup_file.sh
+│     │  │  ├─ sync_remote.sh
+│     │  │  └─ security_disk_kernel.sh
 │     │  └─ helpers.sh
 │     └─ cluster_control/             # 15. server cluster control
 ├─ integrations/

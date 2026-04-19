@@ -343,3 +343,60 @@ Remaining after round:
   - `modules/luopo/app_marketplace/native_apps.sh`
   - `modules/luopo/system_tools/actions_misc.sh`
   - `modules/luopo/docker/manager.sh`
+
+### 2026-04-19 - Round 15
+Completed:
+- Split the large app-market native implementation file:
+  - `modules/luopo/app_marketplace/native_apps.sh` is now a small loader.
+  - Shared native helpers moved to `modules/luopo/app_marketplace/native/common.sh`.
+  - Panel/operations apps moved to `native/panels.sh`.
+  - File, sync, media, and personal-data apps moved to `native/files_media.sh`.
+  - Network/security/certificate/tunnel apps moved to `native/network_security.sh`.
+  - Monitoring, AI, automation, and productivity apps moved to `native/ai_productivity.sh`.
+- Updated smoke checks to validate native app functions across the split module set.
+
+Result:
+- The app-market native implementation is no longer a single 2000+ line file.
+- `actions.sh` still sources `native_apps.sh`, so external behavior and menu dispatch remain unchanged.
+
+Remaining after round:
+- Split large native files when convenient:
+  - `modules/luopo/system_tools/actions_misc.sh`
+  - `modules/luopo/docker/manager.sh`
+
+### 2026-04-19 - Round 16
+Completed:
+- Split the large system-tools misc action file:
+  - `modules/luopo/system_tools/actions_misc.sh` is now a small loader.
+  - General maintenance helpers moved to `misc/maintenance.sh`.
+  - Backup, trash, and file-manager menus moved to `misc/backup_file.sh`.
+  - Rsync and SSH connection manager menus moved to `misc/sync_remote.sh`.
+  - ClamAV, disk, reinstall, ELRepo, and kernel optimization menus moved to `misc/security_disk_kernel.sh`.
+- Updated smoke checks to validate system-tools misc functions across the split module set.
+
+Result:
+- System tools misc actions are no longer concentrated in a single 1400+ line file.
+- `actions.sh` still sources `actions_misc.sh`, so menu dispatch remains unchanged.
+
+Remaining after round:
+- Split large native files when convenient:
+  - `modules/luopo/docker/manager.sh`
+
+### 2026-04-19 - Round 17
+Completed:
+- Split the Docker manager:
+  - `modules/luopo/docker/manager.sh` keeps the main `docker_manager` menu and loads focused parts.
+  - Shared Docker helpers moved to `docker/parts/common.sh`.
+  - Install/status/cleanup/uninstall actions moved to `docker/parts/install_status.sh`.
+  - Container/image/network/volume menus moved to `docker/parts/resources.sh`.
+  - Daemon config, mirror, IPv6, backup, migration, and restore flows moved to `docker/parts/daemon_backup.sh`.
+- Updated smoke checks to validate the split Docker part files are loaded.
+
+Result:
+- Docker management is no longer a single 700+ line file.
+- Main menu behavior remains unchanged because `entry_docker_management` still calls `docker_manager`.
+
+Remaining after round:
+- Optional future cleanup:
+  - Split `modules/luopo/system_tools/actions_operations.sh` if it grows further.
+  - Split `modules/luopo/system_tools/helpers.sh` by helper family if new helpers keep accumulating.
