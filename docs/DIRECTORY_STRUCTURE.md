@@ -90,14 +90,25 @@ toolkit/
 │     │  ├─ registry.sh
 │     │  ├─ actions.sh
 │     │  ├─ actions_access.sh
-│     │  ├─ actions_operations.sh
+│     │  ├─ actions_operations.sh     # operations action loader
+│     │  ├─ operations/
+│     │  │  ├─ host_schedule.sh
+│     │  │  ├─ security_monitoring.sh
+│     │  │  ├─ network_env.sh
+│     │  │  └─ shell_locale.sh
 │     │  ├─ actions_misc.sh           # misc action loader
 │     │  ├─ misc/
 │     │  │  ├─ maintenance.sh
 │     │  │  ├─ backup_file.sh
 │     │  │  ├─ sync_remote.sh
 │     │  │  └─ security_disk_kernel.sh
-│     │  └─ helpers.sh
+│     │  ├─ helpers.sh                # helper loader
+│     │  └─ helpers/
+│     │     ├─ common.sh
+│     │     ├─ access_network.sh
+│     │     ├─ ssh_users.sh
+│     │     ├─ system_maintenance.sh
+│     │     └─ rendering.sh
 │     └─ cluster_control/             # 15. server cluster control
 ├─ integrations/
 │  ├─ index.json                      # Approved one-click scripts

@@ -398,5 +398,41 @@ Result:
 
 Remaining after round:
 - Optional future cleanup:
-  - Split `modules/luopo/system_tools/actions_operations.sh` if it grows further.
+  - Split `modules/luopo/system_tools/helpers.sh` by helper family if new helpers keep accumulating.
+
+### 2026-04-19 - Round 19
+Completed:
+- Split the system-tools helper file:
+  - `modules/luopo/system_tools/helpers.sh` is now a small loader.
+  - Bootstrap and package-recovery helpers moved to `helpers/common.sh`.
+  - Root, SSH, firewall, swap, and IP helpers moved to `helpers/access_network.sh`.
+  - SSH-key and user-table helpers moved to `helpers/ssh_users.sh`.
+  - Timezone, DNS, update, cleanup, and Fail2ban helpers moved to `helpers/system_maintenance.sh`.
+  - Menu rendering and display helpers moved to `helpers/rendering.sh`.
+- Updated smoke checks to validate helper functions across the split helper set.
+
+Result:
+- System tools helpers are now organized by purpose instead of living in one shared file.
+- `menu.sh` still sources `helpers.sh`, so menu rendering behavior remains unchanged.
+
+Remaining after round:
+- Optional future cleanup:
+  - Split `modules/luopo/ldnmp/actions_sites.sh` if site installers keep growing.
+
+### 2026-04-19 - Round 18
+Completed:
+- Split the system-tools operations action file:
+  - `modules/luopo/system_tools/actions_operations.sh` is now a small loader.
+  - Hostname, crontab, and hosts-file operations moved to `operations/host_schedule.sh`.
+  - Traffic guard, Telegram monitoring, and Fail2ban operations moved to `operations/security_monitoring.sh`.
+  - Mirror, DNS, network card, log, and environment-variable operations moved to `operations/network_env.sh`.
+  - Shell prompt theme and locale operations moved to `operations/shell_locale.sh`.
+- Updated smoke checks to validate operations functions across the split module set.
+
+Result:
+- System tools operations are no longer concentrated in a single 700+ line file.
+- `actions.sh` still sources `actions_operations.sh`, so menu dispatch remains unchanged.
+
+Remaining after round:
+- Optional future cleanup:
   - Split `modules/luopo/system_tools/helpers.sh` by helper family if new helpers keep accumulating.
