@@ -455,3 +455,47 @@ Remaining after round:
 - Optional future cleanup:
   - Split `tests/smoke_menu.sh` into smaller smoke suites if it keeps growing.
   - Continue small-file cleanup only when a native module crosses an uncomfortable size threshold.
+
+### 2026-04-19 - Round 21
+Completed:
+- Split the large app-market files/media implementation loader into focused native groups:
+  - `modules/luopo/app_marketplace/native/files_media/notes_bookmarks.sh`
+  - `modules/luopo/app_marketplace/native/files_media/file_storage_sync.sh`
+  - `modules/luopo/app_marketplace/native/files_media/media_gallery.sh`
+  - `modules/luopo/app_marketplace/native/files_media/docs_dev_data.sh`
+- Split the large app-market network/security implementation loader into focused native groups:
+  - `modules/luopo/app_marketplace/native/network_security/dns_search_speed.sh`
+  - `modules/luopo/app_marketplace/native/network_security/cert_remote_access.sh`
+  - `modules/luopo/app_marketplace/native/network_security/tunnels.sh`
+- Kept `files_media.sh` and `network_security.sh` as stable loaders so the outer native app loader remains unchanged.
+- Updated smoke checks and directory documentation for the deeper app-market native layers.
+
+Result:
+- The two largest app-market native files are now small loader files plus focused implementation groups.
+- App-market dispatch and menu behavior remain unchanged.
+
+Remaining after round:
+- Optional future cleanup:
+  - Split `tests/smoke_menu.sh` if it becomes difficult to maintain.
+  - Split individual app groups only if a specific group grows beyond comfortable review size.
+
+### 2026-04-19 - Round 22
+Completed:
+- Split system-tools sync/remote actions into focused files:
+  - `modules/luopo/system_tools/misc/sync_remote/rsync_tasks.sh`
+  - `modules/luopo/system_tools/misc/sync_remote/ssh_manager.sh`
+- Split system-tools security/disk/kernel actions into focused files:
+  - `modules/luopo/system_tools/misc/security_disk_kernel/clamav.sh`
+  - `modules/luopo/system_tools/misc/security_disk_kernel/disk_manager.sh`
+  - `modules/luopo/system_tools/misc/security_disk_kernel/reinstall_kernel.sh`
+- Kept `sync_remote.sh` and `security_disk_kernel.sh` as stable loaders for existing dispatch and cron runner paths.
+- Updated smoke checks and directory documentation for the deeper system-tools misc layers.
+
+Result:
+- System-tools misc actions are grouped by operational domain instead of broad mixed-purpose files.
+- Existing menu dispatch and `toolkit.sh rsync_run` behavior remain unchanged.
+
+Remaining after round:
+- Optional future cleanup:
+  - Split `modules/luopo/system_tools/actions_access.sh` if access/user/network helpers keep growing.
+  - Split test files by domain if smoke coverage becomes cumbersome to review.

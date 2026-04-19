@@ -86,7 +86,16 @@ toolkit/
 │     │     ├─ common.sh
 │     │     ├─ panels.sh
 │     │     ├─ files_media.sh
+│     │     ├─ files_media/
+│     │     │  ├─ notes_bookmarks.sh
+│     │     │  ├─ file_storage_sync.sh
+│     │     │  ├─ media_gallery.sh
+│     │     │  └─ docs_dev_data.sh
 │     │     ├─ network_security.sh
+│     │     ├─ network_security/
+│     │     │  ├─ dns_search_speed.sh
+│     │     │  ├─ cert_remote_access.sh
+│     │     │  └─ tunnels.sh
 │     │     └─ ai_productivity.sh
 │     ├─ workspace/                   # 13. background workspace
 │     ├─ system_tools/                # 14. system tools
@@ -105,7 +114,14 @@ toolkit/
 │     │  │  ├─ maintenance.sh
 │     │  │  ├─ backup_file.sh
 │     │  │  ├─ sync_remote.sh
-│     │  │  └─ security_disk_kernel.sh
+│     │  │  ├─ sync_remote/
+│     │  │  │  ├─ rsync_tasks.sh
+│     │  │  │  └─ ssh_manager.sh
+│     │  │  ├─ security_disk_kernel.sh
+│     │  │  └─ security_disk_kernel/
+│     │  │     ├─ clamav.sh
+│     │  │     ├─ disk_manager.sh
+│     │  │     └─ reinstall_kernel.sh
 │     │  ├─ helpers.sh                # helper loader
 │     │  └─ helpers/
 │     │     ├─ common.sh
