@@ -105,7 +105,7 @@ Retired menu drafts are kept locally and no longer uploaded to GitHub:
 
 | Menu | Highlights |
 | --- | --- |
-| 4. One-click script hub | Curated scripts with cached download + SHA256 verification before execution |
+| 4. One-click script hub | LuoPo-maintained scripts with cached download + SHA256 verification before execution |
 | 5. Basic tools | Common packages, terminal utilities, editors, small CLI tools, bulk install/remove |
 | 6. BBR management | BBR / BBRv3 management and upstream network-acceleration script integration |
 | 7. Docker management | Install/upgrade, global status, container/image/network/volume management, IPv6, backup/migrate/restore |
@@ -120,13 +120,8 @@ Retired menu drafts are kept locally and no longer uploaded to GitHub:
 
 ## One-Click Script List (Menu 4)
 
-1. LuoPo Hysteria2 install script
-2. LuoPo Sing-box install script
-3. 3X-UI install script
-4. Fscarmen Sing-box script
-5. Eooce Sing-box script
-6. Yongge Sing-box script
-7. 233boy Sing-box script
+1. [LuoPo] Hysteria2 install script
+2. [LuoPo] Sing-box install script
 
 Script index: `integrations/index.json`
 

@@ -1,5 +1,6 @@
 # Local working memory between user and Codex (do not commit)
 LOCAL_SESSION_MEMORY.md
+AGENTS.md
 kejilion_upstream.sh
 vendor/luopo.sh
 

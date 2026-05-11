@@ -59,8 +59,7 @@ scripts_hub() {
   local index_file="$ROOT_DIR/integrations/index.json"
   local choice selected_id
   local -a selected_ids
-  local -a self_entries
-  local -a third_entries
+  local -a script_entries
   local i
 
   if ! require_jq; then
@@ -72,10 +71,9 @@ scripts_hub() {
     return 1
   fi
 
-  mapfile -t self_entries < <(jq -r '.scripts[] | select(.enabled == true and (.tags | index("self-project"))) | [.id, .name] | @tsv' "$index_file")
-  mapfile -t third_entries < <(jq -r '.scripts[] | select(.enabled == true and ((.tags | index("self-project")) | not)) | [.id, .name] | @tsv' "$index_file")
+  mapfile -t script_entries < <(jq -r '.scripts[] | select(.enabled == true and (.tags | index("self-project"))) | [.id, .name] | @tsv' "$index_file")
 
-  if [[ "${#self_entries[@]}" -eq 0 && "${#third_entries[@]}" -eq 0 ]]; then
+  if [[ "${#script_entries[@]}" -eq 0 ]]; then
     echo "暂无可用脚本"
     return 0
   fi
@@ -85,21 +83,11 @@ scripts_hub() {
   echo "========================================"
 
   i=1
-  if [[ "${#self_entries[@]}" -gt 0 ]]; then
-    for entry in "${self_entries[@]}"; do
-      selected_ids+=("$(awk -F$'\t' '{print $1}' <<<"$entry")")
-      printf " %-3s %s\n" "${i}." "【落魄】$(awk -F$'\t' '{print $2}' <<<"$entry")"
-      ((i++))
-    done
-  fi
-
-  if [[ "${#third_entries[@]}" -gt 0 ]]; then
-    for entry in "${third_entries[@]}"; do
-      selected_ids+=("$(awk -F$'\t' '{print $1}' <<<"$entry")")
-      printf " %-3s %s\n" "${i}." "【第三方】$(awk -F$'\t' '{print $2}' <<<"$entry")"
-      ((i++))
-    done
-  fi
+  for entry in "${script_entries[@]}"; do
+    selected_ids+=("$(awk -F$'\t' '{print $1}' <<<"$entry")")
+    printf " %-3s %s\n" "${i}." "【落魄】 $(awk -F$'\t' '{print $2}' <<<"$entry")"
+    ((i++))
+  done
 
   echo "----------------------------------------"
   menu_item "0" "返回上级菜单"
