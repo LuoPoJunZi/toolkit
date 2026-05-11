@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.9.14
+- Auto release: v0.9.14
+- chore: limit script hub to luopo scripts (327ae04)
+
 ## 0.9.13
 - Auto release: v0.9.13
 - feat: expand warp menu and unify submenu style (c7a6a08)
