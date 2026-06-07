@@ -327,9 +327,11 @@ main() {
   assert_file "$DISPATCHER_FILE"
   assert_file "$ENTRIES_LOAD_FILE"
 
-  for label in 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 99 88 0; do
+  for label in 1 2 3 4 5 6 7 8 9 10 11 12 13 99 88 0; do
     assert_contains_fixed "$REGISTRY_FILE" "\"${label}|menu_label_${label}" "missing menu registry item ${label}"
   done
+  assert_not_contains_fixed "$REGISTRY_FILE" 'entry_oracle_cloud_suite' "oracle cloud should be hidden from main menu registry"
+  assert_not_contains_fixed "$REGISTRY_FILE" 'entry_cluster_control_suite' "cluster control should be hidden from main menu registry"
 
   assert_contains_fixed "$MENU_FILE" 'source "$ROOT_DIR/core/menu_registry.sh"' "menu should load registry"
   assert_contains_fixed "$MENU_FILE" 'source "$ROOT_DIR/core/menu_dispatcher.sh"' "menu should load dispatcher"

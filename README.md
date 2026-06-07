@@ -51,29 +51,33 @@ z en
 ## 主菜单（当前实现）
 
 ```text
-1. 系统信息查询
-2. 系统全面更新
-3. 系统垃圾清理
-4. 一键脚本中心
-5. 基础工具
-6. BBR管理
-7. Docker管理
-8. WARP管理
-9. 测试脚本合集
-10. 甲骨文云脚本合集
-11. LDNMP建站
-12. 应用市场
-13. 后台工作区
-14. 系统工具
-15. 服务器集群控制
-99. 更新脚本
-88. 卸载脚本
-0. 退出脚本
+========================================
+LuoPo VPS Toolkit v{VERSION} (快捷启动: z)
+========================================
+ 1.  系统信息查询
+ 2.  系统全面更新
+ 3.  系统垃圾清理
+ 4.  一键脚本中心
+ 5.  基础工具
+ 6.  BBR管理
+ 7.  Docker管理
+ 8.  WARP管理
+ 9.  测试脚本合集
+ 10. LDNMP建站
+ 11. 应用市场
+ 12. 后台工作区
+ 13. 系统工具
+----------------------------------------
+ 99. 更新脚本
+ 88. 卸载脚本
+ 0.  退出脚本
+========================================
+请输入选择:
 ```
 
 ## 复刻说明
 
-- 当前 `5-15` 主菜单基于 `kejilion/sh` 的 `4-14` 功能体系做了本地模块化复刻。
+- 当前可见主菜单入口 `5-13` 基于 `kejilion/sh` 的 `4-14` 功能体系做了本地模块化复刻；甲骨文云脚本合集和服务器集群控制代码仍保留在仓库中，但不在主菜单展示。
 - 本地模块优先保留上游菜单结构、子菜单层级、外部脚本调用方式与运行习惯，便于后续继续二次开发。
 - 上游来源与本地适配说明见：[docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md)。
 - 当前本地适配主要包括：关闭上游遥测、关闭上游自安装副作用、将活动菜单迁移到 `modules/luopo/` 原生模块。`vendor/luopo.sh` 仅允许作为本地来源参考文件保留，不再上传到 GitHub 仓库。
@@ -111,12 +115,10 @@ z en
 | 7. Docker管理 | Docker 安装升级、全局状态、容器/镜像/网络/卷管理、IPv6、备份迁移还原 |
 | 8. WARP管理 | 接入上游 WARP 管理脚本 |
 | 9. 测试脚本合集 | 解锁检测、回程测试、测速脚本、硬件性能与综合测评 |
-| 10. 甲骨文云脚本合集 | 甲骨文保活、DD 重装、root 登录、IPv6 恢复等 |
-| 11. LDNMP建站 | LDNMP、WordPress、站点反代、重定向、全站备份恢复、防护优化 |
-| 12. 应用市场 | 对接上游应用市场体系，提供大量 Docker 化应用一键部署 |
-| 13. 后台工作区 | Tmux 工作区、常驻 SSH 模式、自定义工作区与命令注入 |
-| 14. 系统工具 | SSH、时区、主机名、端口、swap、用户、防火墙、日志、环境变量等 |
-| 15. 服务器集群控制 | 多节点服务器清单、批量执行任务、批量系统维护与同步操作 |
+| 10. LDNMP建站 | LDNMP、WordPress、站点反代、重定向、全站备份恢复、防护优化 |
+| 11. 应用市场 | 对接上游应用市场体系，提供大量 Docker 化应用一键部署 |
+| 12. 后台工作区 | Tmux 工作区、常驻 SSH 模式、自定义工作区与命令注入 |
+| 13. 系统工具 | SSH、时区、主机名、端口、swap、用户、防火墙、日志、环境变量等 |
 
 ## 一键脚本清单（菜单 4）
 
@@ -169,6 +171,7 @@ bash tests/smoke_menu.sh
 - `VERSION` + `CHANGELOG.md` 管理版本历史。
 - GitHub Actions 执行 `ci` 与 `release` 工作流。
 - 自动发布只递增 patch 小版本；minor/major 版本由维护者手动控制。
+- 发布 GitHub Release 时，版本描述必须包含简洁的“主要变化”说明，便于区分不同版本之间的差异。
 - Release 页面：<https://github.com/LuoPoJunZi/toolkit/releases>
 - 当前目录结构说明：[docs/DIRECTORY_STRUCTURE.md](docs/DIRECTORY_STRUCTURE.md)
 - 结构优化记录：[docs/STRUCTURE_OPTIMIZATION_LOG.md](docs/STRUCTURE_OPTIMIZATION_LOG.md)
@@ -176,4 +179,4 @@ bash tests/smoke_menu.sh
 ## 开源协议
 
 - 本项目基于 [GPL-3.0 License](LICENSE) 开源。
-- `5-15` 模块化复刻层包含来自 `kejilion/sh` 的 Apache-2.0 授权代码与适配修改，详细说明见 [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md)。
+- 可见 `5-13` 模块及隐藏保留模块包含来自 `kejilion/sh` 的 Apache-2.0 授权代码与适配修改，详细说明见 [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md)。

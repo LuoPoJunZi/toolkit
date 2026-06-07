@@ -74,9 +74,7 @@ release_notes_file="$ROOT_DIR/.release-notes.md"
 {
   echo "## ${next_tag}"
   echo
-  echo "Auto-generated release."
-  echo
-  echo "### Changes"
+  echo "### 主要变化"
   git log --pretty='- %s (%h)' $log_range
 } >"$release_notes_file"
 
@@ -87,7 +85,8 @@ tmp_changelog="$(mktemp)"
   echo "# Changelog"
   echo
   echo "## ${next_version}"
-  echo "- Auto release: ${next_tag}"
+  echo
+  echo "### 主要变化"
   git log --pretty='- %s (%h)' $log_range
   echo
   tail -n +3 CHANGELOG.md 2>/dev/null || true

@@ -55,8 +55,8 @@ toolkit/
 │     │     └─ daemon_backup.sh
 │     ├─ warp_management/             # 8. WARP management
 │     ├─ network_test/                # 9. test script suite
-│     ├─ oracle_cloud/                # 10. Oracle Cloud tools
-│     ├─ ldnmp/                       # 11. LDNMP site builder
+│     ├─ oracle_cloud/                # Oracle Cloud tools, hidden from main menu
+│     ├─ ldnmp/                       # 10. LDNMP site builder
 │     │  ├─ menu.sh
 │     │  ├─ registry.sh
 │     │  ├─ actions.sh
@@ -76,7 +76,7 @@ toolkit/
 │     │  ├─ helpers_install.sh
 │     │  ├─ helpers_runtime.sh
 │     │  └─ helpers_site.sh
-│     ├─ app_marketplace/             # 12. app market
+│     ├─ app_marketplace/             # 11. app market
 │     │  ├─ menu.sh
 │     │  ├─ registry.sh
 │     │  ├─ actions.sh
@@ -97,8 +97,8 @@ toolkit/
 │     │     │  ├─ cert_remote_access.sh
 │     │     │  └─ tunnels.sh
 │     │     └─ ai_productivity.sh
-│     ├─ workspace/                   # 13. background workspace
-│     ├─ system_tools/                # 14. system tools
+│     ├─ workspace/                   # 12. background workspace
+│     ├─ system_tools/                # 13. system tools
 │     │  ├─ menu.sh
 │     │  ├─ registry.sh
 │     │  ├─ actions.sh
@@ -129,7 +129,7 @@ toolkit/
 │     │     ├─ ssh_users.sh
 │     │     ├─ system_maintenance.sh
 │     │     └─ rendering.sh
-│     └─ cluster_control/             # 15. server cluster control
+│     └─ cluster_control/             # server cluster control, hidden from main menu
 ├─ integrations/
 │  ├─ index.json                      # Approved one-click scripts
 │  ├─ fetcher.sh                      # Download/cache wrapper

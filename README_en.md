@@ -51,29 +51,33 @@ z en
 ## Main Menu (Current)
 
 ```text
-1. System info
-2. Full system update
-3. System cleanup
-4. One-click script hub
-5. Basic tools
-6. BBR management
-7. Docker management
-8. WARP management
-9. Test script suite
-10. Oracle Cloud tools
-11. LDNMP site builder
-12. App market
-13. Background workspace
-14. System tools
-15. Server cluster control
-99. Update toolkit
-88. Uninstall toolkit
-0. Exit script
+========================================
+LuoPo VPS Toolkit v{VERSION} (快捷启动: z)
+========================================
+ 1.  System info
+ 2.  Full system update
+ 3.  System cleanup
+ 4.  One-click script hub
+ 5.  Basic tools
+ 6.  BBR management
+ 7.  Docker management
+ 8.  WARP management
+ 9.  Test script suite
+ 10. LDNMP site builder
+ 11. App market
+ 12. Background workspace
+ 13. System tools
+----------------------------------------
+ 99. Update toolkit
+ 88. Uninstall toolkit
+ 0.  Exit script
+========================================
+Enter choice:
 ```
 
 ## Clone Layer Notes
 
-- Main menu `5-15` is now a local modular mirror of the `4-14` feature set from `kejilion/sh`.
+- Visible main menu entries `5-13` are now local modular mirrors of the `4-14` feature set from `kejilion/sh`; the Oracle Cloud tools and server cluster control code remains in the repository, but is hidden from the main menu.
 - These local modules intentionally keep the upstream menu structure, submenu depth, external-script integrations, and operating style as close as possible for later second-stage customization.
 - Upstream source and local adaptation notes are documented in [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md).
 - Local adaptations currently include disabling upstream telemetry, disabling upstream self-install side effects, and migrating active menus into native `modules/luopo/` modules. `vendor/luopo.sh` may be kept locally as a source-reference snapshot, but it is no longer uploaded to the GitHub repository.
@@ -111,12 +115,10 @@ Retired menu drafts are kept locally and no longer uploaded to GitHub:
 | 7. Docker management | Install/upgrade, global status, container/image/network/volume management, IPv6, backup/migrate/restore |
 | 8. WARP management | Upstream WARP management script integration |
 | 9. Test script suite | Unlock tests, route tracing, bandwidth tests, hardware benchmarks, all-in-one test suites |
-| 10. Oracle Cloud tools | OCI keepalive helpers, DD reinstall, root login helpers, IPv6 recovery |
-| 11. LDNMP site builder | LDNMP, WordPress, reverse proxy, redirects, full-site backup/restore, security and tuning |
-| 12. App market | Upstream app-market driven deployment for a large catalog of Dockerized apps |
-| 13. Background workspace | Tmux workspaces, persistent SSH mode, custom workspaces, command injection |
-| 14. System tools | SSH, timezone, hostname, ports, swap, users, firewall, logs, environment variables, and more |
-| 15. Server cluster control | Multi-node inventory, batch tasks, bulk system maintenance, and synchronized operations |
+| 10. LDNMP site builder | LDNMP, WordPress, reverse proxy, redirects, full-site backup/restore, security and tuning |
+| 11. App market | Upstream app-market driven deployment for a large catalog of Dockerized apps |
+| 12. Background workspace | Tmux workspaces, persistent SSH mode, custom workspaces, command injection |
+| 13. System tools | SSH, timezone, hostname, ports, swap, users, firewall, logs, environment variables, and more |
 
 ## One-Click Script List (Menu 4)
 
@@ -169,6 +171,7 @@ Version and release:
 - Version history is managed by `VERSION` + `CHANGELOG.md`.
 - GitHub Actions runs `ci` and `release` workflows.
 - Auto release only increments the patch version; minor/major versions are controlled manually by the maintainer.
+- Each GitHub Release description must include a concise "主要变化" / "Major Changes" section so version differences are clear.
 - Release page: <https://github.com/LuoPoJunZi/toolkit/releases>
 - Current directory structure: [docs/DIRECTORY_STRUCTURE.md](docs/DIRECTORY_STRUCTURE.md)
 - Structure optimization log: [docs/STRUCTURE_OPTIMIZATION_LOG.md](docs/STRUCTURE_OPTIMIZATION_LOG.md)
@@ -176,4 +179,4 @@ Version and release:
 ## License
 
 - This project is released under the [GPL-3.0 License](LICENSE).
-- The mirrored modular `5-15` layer includes Apache-2.0 licensed upstream code from `kejilion/sh` plus local adaptations. See [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md).
+- The visible `5-13` modules and hidden retained modules include Apache-2.0 licensed upstream code from `kejilion/sh` plus local adaptations. See [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md).
