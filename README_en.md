@@ -54,18 +54,18 @@ z en
 ========================================
 LuoPo VPS Toolkit v{VERSION} (快捷启动: z)
 ========================================
- 1.  System info
- 2.  Full system update
- 3.  System cleanup
- 4.  One-click script hub
- 5.  Basic tools
- 6.  BBR management
- 7.  Docker management
- 8.  WARP management
- 9.  Test script suite
- 10. LDNMP site builder
+ 1.  Overview
+ 2.  Update
+ 3.  Cleanup
+ 4.  Script hub
+ 5.  Tools
+ 6.  BBR
+ 7.  Docker
+ 8.  WARP
+ 9.  Network test
+ 10. Site builder
  11. App market
- 12. Background workspace
+ 12. Workspace
  13. System tools
 ----------------------------------------
  99. Update toolkit
@@ -109,15 +109,15 @@ Retired menu drafts are kept locally and no longer uploaded to GitHub:
 
 | Menu | Highlights |
 | --- | --- |
-| 4. One-click script hub | LuoPo-maintained scripts with cached download + SHA256 verification before execution |
-| 5. Basic tools | Common packages, terminal utilities, editors, small CLI tools, bulk install/remove |
-| 6. BBR management | BBR / BBRv3 management and upstream network-acceleration script integration |
-| 7. Docker management | Install/upgrade, global status, container/image/network/volume management, IPv6, backup/migrate/restore |
-| 8. WARP management | Upstream WARP management script integration |
-| 9. Test script suite | Unlock tests, route tracing, bandwidth tests, hardware benchmarks, all-in-one test suites |
-| 10. LDNMP site builder | LDNMP, WordPress, reverse proxy, redirects, full-site backup/restore, security and tuning |
+| 4. Script hub | LuoPo-maintained scripts with cached download + SHA256 verification before execution |
+| 5. Tools | Common packages, terminal utilities, editors, small CLI tools, bulk install/remove |
+| 6. BBR | BBR / BBRv3 management and upstream network-acceleration script integration |
+| 7. Docker | Install/upgrade, global status, container/image/network/volume management, IPv6, backup/migrate/restore |
+| 8. WARP | Upstream WARP management script integration |
+| 9. Network test | Unlock tests, route tracing, bandwidth tests, hardware benchmarks, all-in-one test suites |
+| 10. Site builder | LDNMP, WordPress, reverse proxy, redirects, full-site backup/restore, security and tuning |
 | 11. App market | Upstream app-market driven deployment for a large catalog of Dockerized apps |
-| 12. Background workspace | Tmux workspaces, persistent SSH mode, custom workspaces, command injection |
+| 12. Workspace | Tmux workspaces, persistent SSH mode, custom workspaces, command injection |
 | 13. System tools | SSH, timezone, hostname, ports, swap, users, firewall, logs, environment variables, and more |
 
 ## One-Click Script List (Menu 4)
