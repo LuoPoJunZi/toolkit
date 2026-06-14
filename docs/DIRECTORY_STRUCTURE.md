@@ -42,7 +42,7 @@ toolkit/
 │  ├─ system_info.sh                  # 1. system information
 │  ├─ system_update.sh                # 2. full system update
 │  ├─ system_cleanup.sh               # 3. system cleanup
-│  ├─ scripts_hub.sh                  # 4. one-click script hub
+│  ├─ scripts_hub.sh                  # 4. script hub
 │  └─ luopo/
 │     ├─ basic_tools/                 # 5. basic tools
 │     ├─ bbr_management/              # 6. BBR management
@@ -138,7 +138,8 @@ toolkit/
 ├─ scripts/
 │  ├─ auto-release.sh
 │  ├─ check-version-sync.sh
-│  └─ lint.sh
+│  ├─ lint.sh
+│  └─ preflight.ps1
 ├─ tests/
 │  └─ smoke_menu.sh
 ├─ docs/

@@ -52,7 +52,7 @@ z en
 
 ```text
 ========================================
-LuoPo VPS Toolkit v{VERSION} (快捷启动: z)
+LuoPo VPS Toolkit v{VERSION} (Quick start: z)
 ========================================
  1.  Overview
  2.  Update
@@ -164,6 +164,12 @@ Quality checks:
 ```bash
 bash scripts/lint.sh
 bash tests/smoke_menu.sh
+```
+
+Windows preflight (auto-detects Git Bash/WSL):
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\preflight.ps1
 ```
 
 Version and release:

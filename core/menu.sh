@@ -46,7 +46,7 @@ main_menu() {
     clear
     local version title
     version="$(get_toolkit_version)"
-    title="LuoPo VPS Toolkit v${version} (快捷启动: z)"
+    title="$(msg title_main_fmt "$version")"
 
     echo "========================================"
     color_text 36 "$title"

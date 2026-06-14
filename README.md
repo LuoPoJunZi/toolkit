@@ -166,6 +166,12 @@ bash scripts/lint.sh
 bash tests/smoke_menu.sh
 ```
 
+Windows 预检（自动检测 Git Bash/WSL）：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File .\scripts\preflight.ps1
+```
+
 版本与发布：
 
 - `VERSION` + `CHANGELOG.md` 管理版本历史。

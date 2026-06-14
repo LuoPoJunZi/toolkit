@@ -3,6 +3,9 @@ set -euo pipefail
 
 declare -A I18N=(
   [title_main]="Toolkit VPS one-click toolbox"
+  [title_main_fmt]="LuoPo VPS Toolkit v%s (Quick start: z)"
+  [banner_title_fmt]="LuoPo VPS Toolkit v%s"
+  [banner_quick_start]="Run z from the terminal to launch the toolkit quickly"
   [menu_1]="1. Overview"
   [menu_2]="2. System update"
   [menu_3]="3. System cleanup"

@@ -15,10 +15,8 @@ get_toolkit_version() {
 render_banner() {
   local version
   version="$(get_toolkit_version)"
-  cat <<EOF
-LuoPo VPS Toolkit v${version}
-命令行输入z可快速启动脚本
-EOF
+  printf '%s\n' "$(msg banner_title_fmt "$version")"
+  msg banner_quick_start
 }
 
 supports_color() {
