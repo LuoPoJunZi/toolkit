@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.4
+
+### 主要变化
+- fix(ci): support Ubuntu shellcheck (d03a4b1)
+
 ## 1.0.3
 
 ### 主要变化
