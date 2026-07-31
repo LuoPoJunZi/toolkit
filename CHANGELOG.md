@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.3
+
+### 主要变化
+- chore: standardize shell code quality (16ed4a4)
+
 ## 1.0.2
 
 ### 主要变化
