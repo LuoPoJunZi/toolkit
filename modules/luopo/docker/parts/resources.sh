@@ -24,7 +24,9 @@ container_manager_menu() {
 
     case "$choice" in
       1)
-        docker_check_ready && docker ps -a || true
+        if docker_check_ready; then
+          docker ps -a || true
+        fi
         ;;
       2)
         if docker_check_ready; then
@@ -99,7 +101,9 @@ image_manager_menu() {
 
     case "$choice" in
       1)
-        docker_check_ready && docker images || true
+        if docker_check_ready; then
+          docker images || true
+        fi
         ;;
       2)
         if docker_check_ready; then
@@ -114,7 +118,9 @@ image_manager_menu() {
         fi
         ;;
       4)
-        docker_check_ready && docker image prune -f || true
+        if docker_check_ready; then
+          docker image prune -f || true
+        fi
         ;;
       5)
         if docker_check_ready; then
@@ -162,7 +168,9 @@ network_manager_menu() {
 
     case "$choice" in
       1)
-        docker_check_ready && docker network ls || true
+        if docker_check_ready; then
+          docker network ls || true
+        fi
         ;;
       2)
         if docker_check_ready; then
@@ -281,7 +289,9 @@ volume_manager_menu() {
 
     case "$choice" in
       1)
-        docker_check_ready && docker volume ls || true
+        if docker_check_ready; then
+          docker volume ls || true
+        fi
         ;;
       2)
         if docker_check_ready; then
@@ -302,7 +312,9 @@ volume_manager_menu() {
         fi
         ;;
       5)
-        docker_check_ready && docker volume prune -f || true
+        if docker_check_ready; then
+          docker volume prune -f || true
+        fi
         ;;
       6)
         volume_backup || true

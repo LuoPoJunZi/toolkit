@@ -102,7 +102,9 @@ luopo_ldnmp_restore_all() {
   fi
 
   if [[ -n "$filename" && -f "$filename" ]]; then
-    cd /home/web/ >/dev/null 2>&1 && docker compose down >/dev/null 2>&1 || true
+    if cd /home/web/ >/dev/null 2>&1; then
+      docker compose down >/dev/null 2>&1 || true
+    fi
     rm -rf /home/web >/dev/null 2>&1
     echo -e "${gl_kjlan}正在解压 $filename ...${gl_bai}"
     cd /home/ && tar -xzf "$filename"

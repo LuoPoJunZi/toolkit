@@ -40,7 +40,9 @@ luopo_ldnmp_delete_site() {
   if [[ -f /home/web/docker-compose.yml ]] && docker inspect mysql >/dev/null 2>&1; then
     target_db="${target_domain//[^A-Za-z0-9]/_}"
     dbrootpasswd="$(grep -oP 'MYSQL_ROOT_PASSWORD:\s*\K.*' /home/web/docker-compose.yml | tr -d '[:space:]')"
-    [[ -n "${dbrootpasswd:-}" ]] && docker exec mysql mysql -u root -p"$dbrootpasswd" -e "DROP DATABASE ${target_db};" >/dev/null 2>&1 || true
+    if [[ -n "${dbrootpasswd:-}" ]]; then
+      docker exec mysql mysql -u root -p"$dbrootpasswd" -e "DROP DATABASE ${target_db};" >/dev/null 2>&1 || true
+    fi
   fi
 
   docker exec nginx nginx -s reload >/dev/null 2>&1 || true

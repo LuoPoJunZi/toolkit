@@ -105,7 +105,9 @@ luopo_app_marketplace_karakeep_update() {
   local app_port="$1"
   if [[ -d /home/docker/karakeep/docker ]]; then
     cd /home/docker/karakeep/docker && docker compose down --rmi all
-    cd /home/docker/karakeep && git pull origin main >/dev/null 2>&1 || true
+    if cd /home/docker/karakeep; then
+      git pull origin main >/dev/null 2>&1 || true
+    fi
     sed -i "s/[0-9]\\+:3000/${app_port}:3000/g" /home/docker/karakeep/docker/docker-compose.yml
     cd /home/docker/karakeep/docker && docker compose up -d
   else
