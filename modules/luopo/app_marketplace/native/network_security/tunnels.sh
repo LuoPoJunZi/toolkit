@@ -9,7 +9,7 @@ luopo_app_marketplace_frps_write_config() {
   dashboard_user="admin"
   dashboard_pwd="$(openssl rand -hex 8)"
   mkdir -p /home/frp
-  cat > /home/frp/frps.toml <<EOF
+  cat >/home/frp/frps.toml <<EOF
 [common]
 bind_port = 8055
 authentication_method = token
@@ -115,7 +115,7 @@ luopo_app_marketplace_frpc_write_config() {
   read -r -p "请输入 FRP 服务端 IP/域名: " server_addr
   read -r -p "请输入 FRP 服务端 token: " token
   mkdir -p /home/frp
-  cat > /home/frp/frpc.toml <<EOF
+  cat >/home/frp/frpc.toml <<EOF
 [common]
 server_addr = ${server_addr}
 server_port = 8055

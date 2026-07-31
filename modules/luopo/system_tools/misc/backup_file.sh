@@ -188,12 +188,12 @@ luopo_system_tools_trash_menu() {
       1)
         install trash-cli
         sed -i '/alias rm=/d' "$bashrc_profile"
-        echo "alias rm='trash-put'" >> "$bashrc_profile"
+        echo "alias rm='trash-put'" >>"$bashrc_profile"
         echo "回收站已启用。重新登录 SSH 后别名生效。"
         ;;
       2)
         sed -i '/alias rm=/d' "$bashrc_profile"
-        echo "alias rm='rm -i'" >> "$bashrc_profile"
+        echo "alias rm='rm -i'" >>"$bashrc_profile"
         echo "回收站已关闭。重新登录 SSH 后别名生效。"
         ;;
       3)
@@ -213,8 +213,8 @@ luopo_system_tools_trash_menu() {
           [Yy])
             if command -v trash-empty >/dev/null 2>&1; then
               trash-empty
-            else
-              rm -rf "$trash_dir"/*
+            elif [[ -d "$trash_dir" ]]; then
+              find "$trash_dir" -mindepth 1 -maxdepth 1 -exec rm -rf -- {} +
             fi
             echo "回收站已清空。"
             ;;

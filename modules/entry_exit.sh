@@ -5,4 +5,3 @@ entry_exit() {
   msg bye
   exit 0
 }
-

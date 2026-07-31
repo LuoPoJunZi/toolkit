@@ -4,7 +4,8 @@ set -euo pipefail
 luopo_ldnmp_backup_all() {
   clear
   send_stats "LDNMP环境备份"
-  local backup_filename="web_$(date +"%Y%m%d%H%M%S").tar.gz"
+  local backup_filename
+  backup_filename="web_$(date +"%Y%m%d%H%M%S").tar.gz"
   echo -e "${gl_kjlan}正在备份 $backup_filename ...${gl_bai}"
   cd /home/ && tar czvf "$backup_filename" web
 
@@ -23,8 +24,7 @@ luopo_ldnmp_backup_all() {
           echo "远端服务器IP不能为空，已取消传送。"
           break
         fi
-        local latest_tar
-        latest_tar="$(ls -t /home/*.tar.gz 2>/dev/null | head -1)"
+        local latest_tar="/home/$backup_filename"
         if [[ -n "$latest_tar" ]]; then
           ssh-keygen -f "/root/.ssh/known_hosts" -R "$remote_ip"
           sleep 2
@@ -63,12 +63,18 @@ luopo_ldnmp_scheduled_remote_backup() {
     1)
       check_crontab_installed
       read -r -p "选择每周备份的星期几 (0-6，0代表星期日): " weekday
-      (crontab -l 2>/dev/null; echo "0 0 * * $weekday ./${useip}_beifen.sh") | crontab -
+      (
+        crontab -l 2>/dev/null
+        echo "0 0 * * $weekday ./${useip}_beifen.sh"
+      ) | crontab -
       ;;
     2)
       check_crontab_installed
       read -r -p "选择每天备份的时间（小时，0-23）: " hour
-      (crontab -l 2>/dev/null; echo "0 $hour * * * ./${useip}_beifen.sh") | crontab -
+      (
+        crontab -l 2>/dev/null
+        echo "0 $hour * * * ./${useip}_beifen.sh"
+      ) | crontab -
       ;;
     *)
       echo "已取消"
@@ -82,13 +88,13 @@ luopo_ldnmp_restore_all() {
   send_stats "LDNMP环境还原"
   echo "可用的站点备份"
   echo "-------------------------"
-  ls -lt /home/*.gz 2>/dev/null | awk '{print $NF}' || true
+  luopo_ldnmp_list_files_by_mtime /home '*.gz'
   echo
   read -r -p "回车键还原最新的备份，输入备份文件名还原指定的备份，输入0退出: " filename
   [[ "$filename" == "0" ]] && return 0
 
   if [[ -z "$filename" ]]; then
-    filename="$(ls -t /home/*.tar.gz 2>/dev/null | head -1)"
+    filename="$(luopo_ldnmp_latest_file /home '*.tar.gz')"
   fi
 
   if [[ -n "$filename" && "$filename" != /* ]]; then
@@ -229,4 +235,3 @@ luopo_ldnmp_uninstall() {
       ;;
   esac
 }
-

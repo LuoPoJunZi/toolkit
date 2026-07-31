@@ -2,14 +2,38 @@
 set -euo pipefail
 
 luopo_system_tools_set_shortcut() {
+  local kuaijiejian shortcut shortcut_path
+  local shortcut_conflict
+
   while true; do
     clear
     read -r -p "请输入你的快捷按键（输入0退出）: " kuaijiejian
     if [[ "$kuaijiejian" == "0" ]]; then
       return 0
     fi
+    if [[ ! "$kuaijiejian" =~ ^[A-Za-z0-9][A-Za-z0-9._-]*$ ]]; then
+      echo "快捷命令只能包含字母、数字、点、下划线和连字符，且必须以字母或数字开头。"
+      break_end
+      continue
+    fi
 
-    find /usr/local/bin/ -type l -exec bash -c 'test "$(readlink -f {})" = "/usr/local/bin/z" && rm -f {}' \;
+    shortcut_conflict=0
+    for shortcut_path in "/usr/local/bin/$kuaijiejian" "/usr/bin/$kuaijiejian"; do
+      if [[ (-e "$shortcut_path" || -L "$shortcut_path") && "$(readlink -f "$shortcut_path")" != "/usr/local/bin/z" ]]; then
+        echo "命令已存在，拒绝覆盖: $shortcut_path"
+        shortcut_conflict=1
+      fi
+    done
+    if ((shortcut_conflict)); then
+      break_end
+      continue
+    fi
+
+    while IFS= read -r -d '' shortcut; do
+      if [[ "$(readlink -f "$shortcut")" == "/usr/local/bin/z" ]]; then
+        rm -f -- "$shortcut"
+      fi
+    done < <(find /usr/local/bin/ -type l -print0)
     if [[ "$kuaijiejian" != "z" ]]; then
       ln -sf /usr/local/bin/z "/usr/local/bin/$kuaijiejian"
     fi
@@ -48,6 +72,8 @@ luopo_system_tools_python_version_menu() {
     return 0
   fi
 
+  # Match the literal $HOME expression written to the shell profile.
+  # shellcheck disable=SC2016
   if ! grep -q 'export PYENV_ROOT="\$HOME/.pyenv"' "$HOME/.bashrc" 2>/dev/null; then
     if command -v yum >/dev/null 2>&1; then
       yum update -y && yum install git -y
@@ -65,7 +91,7 @@ luopo_system_tools_python_version_menu() {
     fi
 
     curl https://pyenv.run | bash
-    cat <<'EOF' >> "$HOME/.bashrc"
+    cat <<'EOF' >>"$HOME/.bashrc"
 
 export PYENV_ROOT="$HOME/.pyenv"
 if [[ -d "$PYENV_ROOT/bin" ]]; then
@@ -255,19 +281,31 @@ luopo_system_tools_user_management_menu() {
     case "$sub_choice" in
       1)
         read -r -p "请输入新用户名: " new_username
-        [[ -n "$new_username" ]] || { echo "用户名不能为空"; press_enter; continue; }
+        [[ -n "$new_username" ]] || {
+          echo "用户名不能为空"
+          press_enter
+          continue
+        }
         create_user_with_sshkey "$new_username" false
         ;;
       2)
         read -r -p "请输入新用户名: " new_username
-        [[ -n "$new_username" ]] || { echo "用户名不能为空"; press_enter; continue; }
+        [[ -n "$new_username" ]] || {
+          echo "用户名不能为空"
+          press_enter
+          continue
+        }
         create_user_with_sshkey "$new_username" true
         ;;
       3)
         read -r -p "请输入用户名: " username
-        [[ -n "$username" ]] || { echo "用户名不能为空"; press_enter; continue; }
+        [[ -n "$username" ]] || {
+          echo "用户名不能为空"
+          press_enter
+          continue
+        }
         if id "$username" >/dev/null 2>&1; then
-          echo "$username ALL=(ALL:ALL) ALL" > "/etc/sudoers.d/$username"
+          echo "$username ALL=(ALL:ALL) ALL" >"/etc/sudoers.d/$username"
           chmod 440 "/etc/sudoers.d/$username"
           echo "已赋予 $username sudo 权限"
         else
@@ -276,14 +314,22 @@ luopo_system_tools_user_management_menu() {
         ;;
       4)
         read -r -p "请输入用户名: " username
-        [[ -n "$username" ]] || { echo "用户名不能为空"; press_enter; continue; }
+        [[ -n "$username" ]] || {
+          echo "用户名不能为空"
+          press_enter
+          continue
+        }
         rm -f "/etc/sudoers.d/$username"
         sed -i "/^$username .*ALL$/d" /etc/sudoers
         echo "已移除 $username sudo 权限"
         ;;
       5)
         read -r -p "请输入要删除的用户名: " username
-        [[ -n "$username" ]] || { echo "用户名不能为空"; press_enter; continue; }
+        [[ -n "$username" ]] || {
+          echo "用户名不能为空"
+          press_enter
+          continue
+        }
         if id "$username" >/dev/null 2>&1; then
           userdel -r "$username"
           echo "用户 $username 已删除"
@@ -329,11 +375,19 @@ luopo_system_tools_iptables_menu() {
     case "$sub_choice" in
       1)
         read -r -p "请输入开放的端口号（可空格分隔多个）: " o_port
-        [[ -n "$o_port" ]] && open_port $o_port
+        if [[ -n "$o_port" ]]; then
+          local -a open_ports=()
+          read -r -a open_ports <<<"$o_port"
+          open_port "${open_ports[@]}"
+        fi
         ;;
       2)
         read -r -p "请输入关闭的端口号（可空格分隔多个）: " c_port
-        [[ -n "$c_port" ]] && close_port $c_port
+        if [[ -n "$c_port" ]]; then
+          local -a closed_ports=()
+          read -r -a closed_ports <<<"$c_port"
+          close_port "${closed_ports[@]}"
+        fi
         ;;
       3)
         luopo_system_tools_open_all_ports
@@ -356,7 +410,11 @@ luopo_system_tools_iptables_menu() {
         ;;
       5)
         read -r -p "请输入放行的IP或CIDR: " o_ip
-        [[ -n "$o_ip" ]] || { echo "IP不能为空"; press_enter; continue; }
+        [[ -n "$o_ip" ]] || {
+          echo "IP不能为空"
+          press_enter
+          continue
+        }
         iptables -D INPUT -s "$o_ip" -j DROP >/dev/null 2>&1 || true
         iptables -C INPUT -s "$o_ip" -j ACCEPT >/dev/null 2>&1 || iptables -I INPUT 1 -s "$o_ip" -j ACCEPT
         save_iptables_rules || true
@@ -364,7 +422,11 @@ luopo_system_tools_iptables_menu() {
         ;;
       6)
         read -r -p "请输入封禁的IP或CIDR: " c_ip
-        [[ -n "$c_ip" ]] || { echo "IP不能为空"; press_enter; continue; }
+        [[ -n "$c_ip" ]] || {
+          echo "IP不能为空"
+          press_enter
+          continue
+        }
         iptables -D INPUT -s "$c_ip" -j ACCEPT >/dev/null 2>&1 || true
         iptables -C INPUT -s "$c_ip" -j DROP >/dev/null 2>&1 || iptables -I INPUT 1 -s "$c_ip" -j DROP
         save_iptables_rules || true
@@ -372,7 +434,11 @@ luopo_system_tools_iptables_menu() {
         ;;
       7)
         read -r -p "请输入要清除的IP或CIDR: " d_ip
-        [[ -n "$d_ip" ]] || { echo "IP不能为空"; press_enter; continue; }
+        [[ -n "$d_ip" ]] || {
+          echo "IP不能为空"
+          press_enter
+          continue
+        }
         iptables -D INPUT -s "$d_ip" -j ACCEPT >/dev/null 2>&1 || true
         iptables -D INPUT -s "$d_ip" -j DROP >/dev/null 2>&1 || true
         save_iptables_rules || true

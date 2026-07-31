@@ -46,12 +46,16 @@ compact_dns() {
     return
   fi
 
-  # shellcheck disable=SC2206
-  local items=($dns_raw)
+  local -a items=()
+  read -r -a items <<<"$dns_raw"
   local count="${#items[@]}"
 
-  if (( count <= 2 )); then
-    echo "${items[*]}" | sed 's/ /, /g'
+  if ((count <= 2)); then
+    local item formatted=""
+    for item in "${items[@]}"; do
+      formatted+="${formatted:+, }$item"
+    done
+    printf '%s\n' "$formatted"
     return
   fi
 
@@ -137,20 +141,20 @@ get_cpu_usage_pct() {
   local user2 nice2 sys2 idle2 iowait2 irq2 softirq2 steal2 total2 idle_total2
   local total_diff idle_diff
 
-  read -r _ user1 nice1 sys1 idle1 iowait1 irq1 softirq1 steal1 _ < /proc/stat
+  read -r _ user1 nice1 sys1 idle1 iowait1 irq1 softirq1 steal1 _ </proc/stat
   total1=$((user1 + nice1 + sys1 + idle1 + iowait1 + irq1 + softirq1 + steal1))
   idle_total1=$((idle1 + iowait1))
 
   sleep 0.4
 
-  read -r _ user2 nice2 sys2 idle2 iowait2 irq2 softirq2 steal2 _ < /proc/stat
+  read -r _ user2 nice2 sys2 idle2 iowait2 irq2 softirq2 steal2 _ </proc/stat
   total2=$((user2 + nice2 + sys2 + idle2 + iowait2 + irq2 + softirq2 + steal2))
   idle_total2=$((idle2 + iowait2))
 
   total_diff=$((total2 - total1))
   idle_diff=$((idle_total2 - idle_total1))
 
-  if (( total_diff <= 0 )); then
+  if ((total_diff <= 0)); then
     echo "0%"
     return
   fi

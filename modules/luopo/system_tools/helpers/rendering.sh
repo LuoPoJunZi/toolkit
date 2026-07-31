@@ -84,7 +84,7 @@ luopo_system_tools_print_generated_credentials() {
   echo "随机用户名"
   echo "------------------------"
   for i in {1..5}; do
-    username="user$(< /dev/urandom tr -dc _a-z0-9 | head -c6)"
+    username="user$(</dev/urandom tr -dc _a-z0-9 | head -c6)"
     echo "随机用户名 $i: $username"
   done
 
@@ -110,7 +110,7 @@ luopo_system_tools_print_generated_credentials() {
   echo "16位随机密码"
   echo "------------------------"
   for i in {1..5}; do
-    password="$(< /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c16)"
+    password="$(</dev/urandom tr -dc _A-Z-a-z-0-9 | head -c16)"
     echo "随机密码 $i: $password"
   done
 }

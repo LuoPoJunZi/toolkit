@@ -16,7 +16,7 @@ luopo_system_tools_apply_shell_theme() {
   touch "$target_file"
   sed -i '/^PS1=/d' "$target_file"
   if [[ -n "$ps1_line" ]]; then
-    printf '%s\n' "$ps1_line" >> "$target_file"
+    printf '%s\n' "$ps1_line" >>"$target_file"
   fi
 
   echo -e "${gl_lv:-}变更完成。重新连接 SSH 后可查看变化！${gl_bai:-}"
@@ -79,7 +79,7 @@ luopo_system_tools_apply_locale() {
 
   if command -v locale-gen >/dev/null 2>&1; then
     if [[ -f /etc/locale.gen ]] && ! grep -q "^${locale_name} UTF-8" /etc/locale.gen; then
-      echo "${locale_name} UTF-8" >> /etc/locale.gen
+      echo "${locale_name} UTF-8" >>/etc/locale.gen
     fi
     locale-gen "$locale_name" >/dev/null 2>&1 || locale-gen >/dev/null 2>&1 || true
   fi
@@ -89,11 +89,11 @@ luopo_system_tools_apply_locale() {
   fi
 
   if [[ -f /etc/default/locale || -d /etc/default ]]; then
-    printf 'LANG=%s\nLC_ALL=%s\n' "$locale_name" "$locale_name" > /etc/default/locale
+    printf 'LANG=%s\nLC_ALL=%s\n' "$locale_name" "$locale_name" >/etc/default/locale
   fi
 
   if [[ -f /etc/locale.conf || -d /etc ]]; then
-    printf 'LANG=%s\n' "$locale_name" > /etc/locale.conf
+    printf 'LANG=%s\n' "$locale_name" >/etc/locale.conf
   fi
 
   export LANG="$locale_name"

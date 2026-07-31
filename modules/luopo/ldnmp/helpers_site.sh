@@ -1,6 +1,32 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+luopo_ldnmp_latest_file() {
+  local directory="$1"
+  local pattern="$2"
+  local candidate latest=""
+
+  [[ -d "$directory" ]] || return 0
+  while IFS= read -r -d '' candidate; do
+    if [[ -z "$latest" || "$candidate" -nt "$latest" ]]; then
+      latest="$candidate"
+    fi
+  done < <(find "$directory" -maxdepth 1 -type f -name "$pattern" -print0 2>/dev/null)
+
+  printf '%s\n' "$latest"
+}
+
+luopo_ldnmp_list_files_by_mtime() {
+  local directory="$1"
+  local pattern="$2"
+
+  [[ -d "$directory" ]] || return 0
+  find "$directory" -maxdepth 1 -type f -name "$pattern" -printf '%T@\t%p\0' 2>/dev/null \
+    | sort -z -nr \
+    | cut -z -f2- \
+    | tr '\0' '\n'
+}
+
 luopo_ldnmp_delete_site() {
   local target_domain="$1"
   local target_db
@@ -12,7 +38,7 @@ luopo_ldnmp_delete_site() {
   rm -f "/home/web/certs/${target_domain}_cert.pem" >/dev/null 2>&1 || true
 
   if [[ -f /home/web/docker-compose.yml ]] && docker inspect mysql >/dev/null 2>&1; then
-    target_db="$(echo "$target_domain" | sed -e 's/[^A-Za-z0-9]/_/g')"
+    target_db="${target_domain//[^A-Za-z0-9]/_}"
     dbrootpasswd="$(grep -oP 'MYSQL_ROOT_PASSWORD:\s*\K.*' /home/web/docker-compose.yml | tr -d '[:space:]')"
     [[ -n "${dbrootpasswd:-}" ]] && docker exec mysql mysql -u root -p"$dbrootpasswd" -e "DROP DATABASE ${target_db};" >/dev/null 2>&1 || true
   fi
@@ -60,7 +86,7 @@ luopo_ldnmp_update_nginx_listen_port() {
 }
 
 add_db() {
-  dbname="$(echo "$yuming" | sed -e 's/[^A-Za-z0-9]/_/g')"
+  dbname="${yuming//[^A-Za-z0-9]/_}"
   dbrootpasswd="$(grep -oP 'MYSQL_ROOT_PASSWORD:\s*\K.*' /home/web/docker-compose.yml | tr -d '[:space:]')"
   dbuse="$(grep -oP 'MYSQL_USER:\s*\K.*' /home/web/docker-compose.yml | tr -d '[:space:]')"
   dbusepasswd="$(grep -oP 'MYSQL_PASSWORD:\s*\K.*' /home/web/docker-compose.yml | tr -d '[:space:]')"
@@ -138,6 +164,8 @@ nginx_install_status() {
 nginx_http_on() {
   local ipv4_pattern='^[0-9]+\.[0-9]+\.[0-9]+\.[0-9]+$'
   local ipv6_pattern='^(([0-9A-Fa-f]{1,4}:){1,7}:|([0-9A-Fa-f]{1,4}:){7,7}[0-9A-Fa-f]{1,4}|::1)$'
+  # The escaped dollar sign is part of the Nginx directive being matched.
+  # shellcheck disable=SC2016
   if [[ "${yuming:-}" =~ $ipv4_pattern || "${yuming:-}" =~ $ipv6_pattern ]]; then
     sed -i '/if (\$scheme = http) {/,/}/s/^/#/' "/home/web/conf.d/${yuming}.conf" 2>/dev/null || true
   fi
@@ -157,6 +185,8 @@ nginx_web_on() {
   clear
   echo "您的 $webname 搭建好了！"
 
+  # The escaped dollar sign is part of the Nginx directive being matched.
+  # shellcheck disable=SC2016
   if [[ "$yuming" =~ $ipv4_pattern || "$yuming" =~ $ipv6_pattern ]]; then
     [[ -n "${access_port:-}" ]] && mv "/home/web/conf.d/${yuming}.conf" "/home/web/conf.d/${yuming}_${access_port}.conf"
     echo "http://$yuming:${access_port:-80}"
@@ -216,7 +246,7 @@ luopo_ldnmp_proxy_site() {
   certs_status || return 1
 
   luopo_ldnmp_write_domain_conf "${gh_proxy}raw.githubusercontent.com/kejilion/nginx/main/reverse-proxy-backend.conf"
-  backend="$(tr -dc 'A-Za-z' < /dev/urandom | head -c 8)"
+  backend="$(tr -dc 'A-Za-z' </dev/urandom | head -c 8)"
   sed -i "s/backend_yuming_com/backend_$backend/g" "/home/web/conf.d/$yuming.conf"
 
   reverseproxy_port="$reverseproxy:$port"

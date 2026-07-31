@@ -29,9 +29,15 @@ luopo_ldnmp_security() {
       3) fail2ban-client status nginx-docker-cc 2>/dev/null || fail2ban-client status 2>/dev/null || true ;;
       4) tail -f /var/log/fail2ban.log ;;
       5) luopo_ldnmp_fail2ban_unban_all ;;
-      9) remove fail2ban; systemctl disable --now fail2ban 2>/dev/null || true ;;
+      9)
+        remove fail2ban
+        systemctl disable --now fail2ban 2>/dev/null || true
+        ;;
       0) return 0 ;;
-      *) luopo_ldnmp_invalid_choice; continue ;;
+      *)
+        luopo_ldnmp_invalid_choice
+        continue
+        ;;
     esac
     break_end
   done
@@ -41,7 +47,7 @@ luopo_ldnmp_fail2ban_install() {
   install fail2ban curl wget
   mkdir -p /etc/fail2ban/filter.d /etc/fail2ban/jail.d
   curl -fsSL "${gh_proxy}raw.githubusercontent.com/kejilion/sh/main/fail2ban-nginx-cc.conf" -o /etc/fail2ban/filter.d/fail2ban-nginx-cc.conf || true
-  cat > /etc/fail2ban/jail.d/luopo-nginx-docker-cc.conf <<'EOF'
+  cat >/etc/fail2ban/jail.d/luopo-nginx-docker-cc.conf <<'EOF'
 [nginx-docker-cc]
 enabled = true
 filter = fail2ban-nginx-cc
@@ -56,7 +62,10 @@ EOF
 }
 
 luopo_ldnmp_fail2ban_unban_all() {
-  command -v fail2ban-client >/dev/null 2>&1 || { echo "Fail2ban 未安装"; return 0; }
+  command -v fail2ban-client >/dev/null 2>&1 || {
+    echo "Fail2ban 未安装"
+    return 0
+  }
   local jail
   for jail in $(fail2ban-client status 2>/dev/null | awk -F: '/Jail list/ {gsub(/,/, " "); print $2}'); do
     fail2ban-client unban --all "$jail" >/dev/null 2>&1 || true

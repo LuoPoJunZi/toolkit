@@ -27,4 +27,3 @@ dispatch_menu_action() {
     press_enter
   fi
 }
-

@@ -276,11 +276,11 @@ luopo_system_tools_env_menu() {
     grep -Ev '^\s*#|^\s*$' "$file" \
       | grep -E '^(export[[:space:]]+)?[A-Za-z_][A-Za-z0-9_]*=' \
       | while read -r line; do
-          local var val
-          var="$(echo "$line" | sed -E 's/^(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*).*/\2/')"
-          val="$(echo "$line" | sed -E 's/^[^=]+=//')"
-          printf "%-20s %s\n" "$var" "$val"
-        done
+        local var val
+        var="$(echo "$line" | sed -E 's/^(export[[:space:]]+)?([A-Za-z_][A-Za-z0-9_]*).*/\2/')"
+        val="$(echo "$line" | sed -E 's/^[^=]+=//')"
+        printf "%-20s %s\n" "$var" "$val"
+      done
   }
 
   while true; do

@@ -59,7 +59,7 @@ luopo_workspace_enable_ssh_mode() {
   install tmux
   local SESSION_NAME="sshd"
   send_stats "启动工作区$SESSION_NAME"
-  grep -q "tmux attach-session -t sshd" ~/.bashrc 2>/dev/null || cat >> ~/.bashrc <<'EOF'
+  grep -q "tmux attach-session -t sshd" ~/.bashrc 2>/dev/null || cat >>~/.bashrc <<'EOF'
 
 # 自动进入 tmux 会话
 if [[ -z "$TMUX" ]]; then

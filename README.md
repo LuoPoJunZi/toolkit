@@ -166,11 +166,18 @@ bash scripts/lint.sh
 bash tests/smoke_menu.sh
 ```
 
+`scripts/lint.sh` 会对全部受 Git 跟踪的 `.sh` 文件执行 Bash 语法检查、ShellCheck（`info` 及以上）和 shfmt 只读格式校验。开发环境需安装 `shellcheck` 与 `shfmt`；Bash 统一使用 2 空格缩进，CI 发现问题会直接失败，不会自动改写文件。
+
+仓库使用 `.editorconfig` 统一编辑器基础格式，使用 `.gitattributes` 固定脚本与文档为 LF 换行。
+
 Windows 预检（自动检测 Git Bash/WSL）：
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\preflight.ps1
 ```
+
+Windows 预检会检查全部 Bash 文件的语法并运行菜单烟测；本机安装了 `shellcheck` 和 `shfmt` 时，也会执行完整 lint，否则由 GitHub Actions 强制补检。
+在 Linux、Git Bash 或 WSL 中也可以直接运行 `bash scripts/preflight.sh`。
 
 版本与发布：
 

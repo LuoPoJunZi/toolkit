@@ -1,6 +1,16 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
+luopo_ldnmp_certificate_count() {
+  local cert_file count=0
+
+  for cert_file in /home/web/certs/*_cert.pem; do
+    [[ -f "$cert_file" ]] || continue
+    ((count += 1))
+  done
+  printf '%s\n' "$count"
+}
+
 ldnmp_v() {
   local nginx_version mysql_version php_version redis_version dbrootpasswd
 
@@ -24,12 +34,12 @@ ldnmp_v() {
 
 luopo_ldnmp_render_status_banner() {
   local cert_count db_count dbrootpasswd
-  cert_count="$(ls /home/web/certs/*_cert.pem 2>/dev/null | wc -l | tr -d '[:space:]')"
+  cert_count="$(luopo_ldnmp_certificate_count)"
   db_count="0"
 
   dbrootpasswd="$(grep -oP 'MYSQL_ROOT_PASSWORD:\s*\K.*' /home/web/docker-compose.yml 2>/dev/null | tr -d '[:space:]')"
   if [[ -n "$dbrootpasswd" ]] && docker inspect mysql >/dev/null 2>&1; then
-    db_count="$(docker exec mysql mysql -u root -p"$dbrootpasswd" -e 'SHOW DATABASES;' 2>/dev/null | grep -Ev 'Database|information_schema|mysql|performance_schema|sys' | wc -l | tr -d '[:space:]')"
+    db_count="$(docker exec mysql mysql -u root -p"$dbrootpasswd" -e 'SHOW DATABASES;' 2>/dev/null | grep -Evc 'Database|information_schema|mysql|performance_schema|sys' || true)"
   fi
 
   if command -v docker >/dev/null 2>&1 && docker ps --filter "name=nginx" --filter "status=running" | grep -q nginx; then
@@ -83,15 +93,21 @@ check_crontab_installed() {
 save_iptables_rules() {
   mkdir -p /etc/iptables
   touch /etc/iptables/rules.v4
-  iptables-save > /etc/iptables/rules.v4
+  iptables-save >/etc/iptables/rules.v4
   check_crontab_installed || return 0
   crontab -l 2>/dev/null | grep -v 'iptables-restore' | crontab - >/dev/null 2>&1 || true
-  { crontab -l 2>/dev/null; echo '@reboot iptables-restore < /etc/iptables/rules.v4'; } | crontab - >/dev/null 2>&1 || true
+  {
+    crontab -l 2>/dev/null
+    echo '@reboot iptables-restore < /etc/iptables/rules.v4'
+  } | crontab - >/dev/null 2>&1 || true
 }
 
 close_port() {
   local ports=("$@")
-  [[ ${#ports[@]} -gt 0 ]] || { echo "请提供至少一个端口号"; return 1; }
+  [[ ${#ports[@]} -gt 0 ]] || {
+    echo "请提供至少一个端口号"
+    return 1
+  }
 
   install iptables
   for port in "${ports[@]}"; do

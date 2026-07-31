@@ -113,4 +113,3 @@ LUOPO_SYSTEM_TOOLS_LAYOUT=(
   "65"
   "66"
 )
-

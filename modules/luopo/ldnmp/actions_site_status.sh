@@ -6,11 +6,11 @@ luopo_ldnmp_site_status() {
   while true; do
     clear
     local cert_count db_count dbrootpasswd
-    cert_count="$(ls /home/web/certs/*_cert.pem 2>/dev/null | wc -l | tr -d '[:space:]')"
+    cert_count="$(luopo_ldnmp_certificate_count)"
     db_count="0"
     dbrootpasswd="$(grep -oP 'MYSQL_ROOT_PASSWORD:\s*\K.*' /home/web/docker-compose.yml 2>/dev/null | tr -d '[:space:]')"
     if [[ -n "$dbrootpasswd" ]] && docker inspect mysql >/dev/null 2>&1; then
-      db_count="$(docker exec mysql mysql -u root -p"$dbrootpasswd" -e 'SHOW DATABASES;' 2>/dev/null | grep -Ev 'Database|information_schema|mysql|performance_schema|sys' | wc -l | tr -d '[:space:]')"
+      db_count="$(docker exec mysql mysql -u root -p"$dbrootpasswd" -e 'SHOW DATABASES;' 2>/dev/null | grep -Evc 'Database|information_schema|mysql|performance_schema|sys' || true)"
     fi
 
     echo "LDNMP站点数据管理"
@@ -45,30 +45,50 @@ luopo_ldnmp_site_status() {
     echo "------------------------"
     read -r -p "请输入你的选择: " sub_choice
     case "$sub_choice" in
-      1) add_yuming; install_ssltls; certs_status ;;
-      2) docker exec nginx sh -c 'rm -rf /var/cache/nginx/*' >/dev/null 2>&1 || true; echo "站点缓存已清理" ;;
+      1)
+        add_yuming
+        install_ssltls
+        certs_status
+        ;;
+      2)
+        docker exec nginx sh -c 'rm -rf /var/cache/nginx/*' >/dev/null 2>&1 || true
+        echo "站点缓存已清理"
+        ;;
       3) docker logs --tail=200 nginx 2>/dev/null || tail -n 200 /home/web/log/nginx/access.log 2>/dev/null || true ;;
       4) docker logs --tail=200 nginx 2>/dev/null || tail -n 200 /home/web/log/nginx/error.log 2>/dev/null || true ;;
-      5) install nano; nano /home/web/nginx.conf; docker exec nginx nginx -s reload >/dev/null 2>&1 || true ;;
+      5)
+        install nano
+        nano /home/web/nginx.conf
+        docker exec nginx nginx -s reload >/dev/null 2>&1 || true
+        ;;
       6) luopo_ldnmp_edit_site_conf ;;
       7) [[ -n "$dbrootpasswd" ]] && docker exec mysql mysql -u root -p"$dbrootpasswd" -e 'SHOW DATABASES;' 2>/dev/null || echo "未检测到数据库容器" ;;
       20) luopo_ldnmp_delete_site_prompt ;;
       0) return 0 ;;
-      *) luopo_ldnmp_invalid_choice; continue ;;
+      *)
+        luopo_ldnmp_invalid_choice
+        continue
+        ;;
     esac
     break_end
   done
 }
 
 luopo_ldnmp_edit_site_conf() {
-  local domain conf
-  ls /home/web/conf.d/*.conf 2>/dev/null | xargs -r -n1 basename
+  local domain conf config_path
+  for config_path in /home/web/conf.d/*.conf; do
+    [[ -f "$config_path" ]] || continue
+    basename "$config_path"
+  done
   read -r -p "请输入配置文件名或域名: " domain
   [[ -n "$domain" ]] || return 0
   conf="$domain"
   [[ "$conf" == *.conf ]] || conf="${domain}.conf"
   conf="/home/web/conf.d/$conf"
-  [[ -f "$conf" ]] || { echo "配置不存在: $conf"; return 1; }
+  [[ -f "$conf" ]] || {
+    echo "配置不存在: $conf"
+    return 1
+  }
   install nano
   nano "$conf"
   docker exec nginx nginx -s reload >/dev/null 2>&1 || true
@@ -79,7 +99,10 @@ luopo_ldnmp_delete_site_prompt() {
   read -r -p "请输入要删除的站点域名: " domain
   [[ -n "$domain" ]] || return 0
   read -r -p "确认删除 $domain 的站点/证书/配置/数据库？输入 DELETE 确认: " confirm
-  [[ "$confirm" == "DELETE" ]] || { echo "已取消"; return 0; }
+  [[ "$confirm" == "DELETE" ]] || {
+    echo "已取消"
+    return 0
+  }
   luopo_ldnmp_delete_site "$domain"
   echo "站点已删除: $domain"
 }

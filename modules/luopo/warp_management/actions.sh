@@ -2,13 +2,22 @@
 set -euo pipefail
 
 luopo_warp_launch_menu() {
+  local script_path status=0
+
   clear
   send_stats "warp管理"
   install wget
-  set +e
-  wget -N https://gitlab.com/fscarmen/warp/-/raw/main/menu.sh
-  bash menu.sh [option] [lisence/url/token]
-  set -e
+  script_path="$(mktemp)"
+
+  if ! wget -qO "$script_path" https://gitlab.com/fscarmen/warp/-/raw/main/menu.sh; then
+    echo "WARP 管理脚本下载失败。"
+    rm -f "$script_path"
+    return 1
+  fi
+
+  bash "$script_path" || status=$?
+  rm -f "$script_path"
+  return "$status"
 }
 
 luopo_warp_status() {
@@ -133,5 +142,8 @@ luopo_warp_dispatch_choice() {
   fi
 
   handler="$(luopo_warp_item_handler "$item")"
-  "$handler"
+  if ! "$handler"; then
+    echo "WARP 操作执行失败，请查看上方输出。"
+  fi
+  return 0
 }

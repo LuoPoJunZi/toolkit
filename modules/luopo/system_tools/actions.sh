@@ -69,4 +69,3 @@ luopo_system_tools_dispatch_choice() {
   esac
   return 0
 }
-

@@ -211,4 +211,3 @@ luopo_app_marketplace_invalid_choice() {
   echo "无效的输入!"
   press_enter
 }
-

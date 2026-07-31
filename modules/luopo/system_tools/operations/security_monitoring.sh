@@ -3,6 +3,18 @@ set -euo pipefail
 
 # Traffic guard, Telegram monitoring, and Fail2ban operations.
 
+luopo_system_tools_crontab_without() {
+  local pattern="$1"
+
+  { crontab -l 2>/dev/null || true; } | grep -Fv -- "$pattern" || true
+}
+
+luopo_system_tools_crontab_without_traffic_reboot() {
+  local pattern='^[[:space:]]*0[[:space:]]+1[[:space:]]+([1-9]|[12][0-9]|3[01])[[:space:]]+\*[[:space:]]+\*[[:space:]]+reboot([[:space:]]+# luopo-traffic-reset)?[[:space:]]*$'
+
+  { crontab -l 2>/dev/null || true; } | grep -Ev -- "$pattern" || true
+}
+
 luopo_system_tools_traffic_shutdown_menu() {
   root_use
   while true; do
@@ -24,22 +36,36 @@ luopo_system_tools_traffic_shutdown_menu() {
         tx_threshold_gb="${tx_threshold_gb:-100}"
         read -r -p "请输入流量重置日期（默认每月1日重置）: " reset_day
         reset_day="${reset_day:-1}"
+        if [[ ! "$rx_threshold_gb" =~ ^[0-9]+([.][0-9]+)?$ || ! "$tx_threshold_gb" =~ ^[0-9]+([.][0-9]+)?$ ]]; then
+          echo "流量阈值必须是非负数字。"
+          break_end
+          continue
+        fi
+        if [[ ! "$reset_day" =~ ^([1-9]|[12][0-9]|3[01])$ ]]; then
+          echo "重置日期必须是 1-31。"
+          break_end
+          continue
+        fi
         curl -Ss -o "$HOME/Limiting_Shut_down.sh" "${gh_proxy}raw.githubusercontent.com/kejilion/sh/main/Limiting_Shut_down1.sh"
         chmod +x "$HOME/Limiting_Shut_down.sh"
         sed -i "s/110/$rx_threshold_gb/g" "$HOME/Limiting_Shut_down.sh"
         sed -i "s/120/$tx_threshold_gb/g" "$HOME/Limiting_Shut_down.sh"
         check_crontab_installed
-        crontab -l 2>/dev/null | grep -v '~/Limiting_Shut_down.sh' | crontab -
-        (crontab -l 2>/dev/null; echo "* * * * * ~/Limiting_Shut_down.sh") | crontab -
-        crontab -l 2>/dev/null | grep -v 'reboot' | crontab -
-        (crontab -l 2>/dev/null; echo "0 1 $reset_day * * reboot") | crontab -
+        {
+          luopo_system_tools_crontab_without 'Limiting_Shut_down.sh'
+          printf '* * * * * %s\n' "$HOME/Limiting_Shut_down.sh"
+        } | crontab -
+        {
+          luopo_system_tools_crontab_without_traffic_reboot
+          printf '0 1 %s * * reboot # luopo-traffic-reset\n' "$reset_day"
+        } | crontab -
         echo "限流关机已设置"
         send_stats "限流关机已设置"
         ;;
       2)
         check_crontab_installed
-        crontab -l 2>/dev/null | grep -v '~/Limiting_Shut_down.sh' | crontab -
-        crontab -l 2>/dev/null | grep -v 'reboot' | crontab -
+        luopo_system_tools_crontab_without 'Limiting_Shut_down.sh' | crontab -
+        luopo_system_tools_crontab_without_traffic_reboot | crontab -
         rm -f "$HOME/Limiting_Shut_down.sh"
         echo "已关闭限流关机功能"
         ;;
@@ -79,18 +105,20 @@ luopo_system_tools_tg_monitor_menu() {
         chmod +x "$HOME/TG-check-notify.sh"
         nano "$HOME/TG-check-notify.sh"
       fi
-      tmux kill-session -t TG-check-notify >/dev/null 2>&1
+      tmux kill-session -t TG-check-notify >/dev/null 2>&1 || true
       tmux new -d -s TG-check-notify "$HOME/TG-check-notify.sh"
-      crontab -l 2>/dev/null | grep -v '~/TG-check-notify.sh' | crontab -
-      (crontab -l 2>/dev/null; echo "@reboot tmux new -d -s TG-check-notify '~/TG-check-notify.sh'") | crontab -
+      {
+        luopo_system_tools_crontab_without 'TG-check-notify.sh'
+        printf '@reboot tmux new -d -s TG-check-notify %s\n' "$HOME/TG-check-notify.sh"
+      } | crontab -
       curl -sS -O "${gh_proxy}raw.githubusercontent.com/kejilion/sh/main/TG-SSH-check-notify.sh" >/dev/null 2>&1
       sed -i "3i$(grep '^TELEGRAM_BOT_TOKEN=' "$HOME/TG-check-notify.sh")" TG-SSH-check-notify.sh >/dev/null 2>&1
       sed -i "4i$(grep '^CHAT_ID=' "$HOME/TG-check-notify.sh")" TG-SSH-check-notify.sh
       chmod +x "$HOME/TG-SSH-check-notify.sh"
       if ! grep -q 'bash ~/TG-SSH-check-notify.sh' "$HOME/.profile" >/dev/null 2>&1; then
-        echo 'bash ~/TG-SSH-check-notify.sh' >> "$HOME/.profile"
+        echo 'bash ~/TG-SSH-check-notify.sh' >>"$HOME/.profile"
         if command -v dnf >/dev/null 2>&1 || command -v yum >/dev/null 2>&1; then
-          echo 'source ~/.profile' >> "$HOME/.bashrc"
+          echo 'source ~/.profile' >>"$HOME/.bashrc"
         fi
       fi
       echo "TG-bot预警系统已启动"

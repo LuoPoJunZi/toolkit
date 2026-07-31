@@ -40,18 +40,18 @@ luopo_basic_tools_detect_package_manager() {
 luopo_basic_tools_print_status_table() {
   local left right
   local i
-  for ((i=0; i<${#LUOPO_BASIC_TOOLS[@]}; i+=2)); do
+  for ((i = 0; i < ${#LUOPO_BASIC_TOOLS[@]}; i += 2)); do
     if command -v "${LUOPO_BASIC_TOOLS[i]}" >/dev/null 2>&1; then
       left=$(printf "已安装 %-12s" "${LUOPO_BASIC_TOOLS[i]}")
     else
       left=$(printf "未安装 %-12s" "${LUOPO_BASIC_TOOLS[i]}")
     fi
 
-    if [[ -n "${LUOPO_BASIC_TOOLS[i+1]:-}" ]]; then
-      if command -v "${LUOPO_BASIC_TOOLS[i+1]}" >/dev/null 2>&1; then
-        right=$(printf "已安装 %-12s" "${LUOPO_BASIC_TOOLS[i+1]}")
+    if [[ -n "${LUOPO_BASIC_TOOLS[i + 1]:-}" ]]; then
+      if command -v "${LUOPO_BASIC_TOOLS[i + 1]}" >/dev/null 2>&1; then
+        right=$(printf "已安装 %-12s" "${LUOPO_BASIC_TOOLS[i + 1]}")
       else
-        right=$(printf "未安装 %-12s" "${LUOPO_BASIC_TOOLS[i+1]}")
+        right=$(printf "未安装 %-12s" "${LUOPO_BASIC_TOOLS[i + 1]}")
       fi
       printf "%-32s %s\n" "$left" "$right"
     else

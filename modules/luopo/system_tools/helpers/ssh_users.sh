@@ -22,7 +22,7 @@ add_sshkey() {
   touch "$HOME/.ssh/authorized_keys"
 
   ssh-keygen -t ed25519 -C "luopo@toolkit" -f "$HOME/.ssh/sshkey" -N ""
-  cat "$HOME/.ssh/sshkey.pub" >> "$HOME/.ssh/authorized_keys"
+  cat "$HOME/.ssh/sshkey.pub" >>"$HOME/.ssh/authorized_keys"
   chmod 600 "$HOME/.ssh/authorized_keys"
 
   luopo_system_tools_ip_address
@@ -44,8 +44,14 @@ import_sshkey() {
     read -r -p "请输入您的SSH公钥内容（通常以 'ssh-rsa' 或 'ssh-ed25519' 开头）: " public_key
   fi
 
-  [[ -n "$public_key" ]] || { echo "错误：未输入公钥内容。"; return 1; }
-  [[ "$public_key" =~ ^ssh-(rsa|ed25519|ecdsa) ]] || { echo "错误：看起来不像合法的 SSH 公钥。"; return 1; }
+  [[ -n "$public_key" ]] || {
+    echo "错误：未输入公钥内容。"
+    return 1
+  }
+  [[ "$public_key" =~ ^ssh-(rsa|ed25519|ecdsa) ]] || {
+    echo "错误：看起来不像合法的 SSH 公钥。"
+    return 1
+  }
 
   mkdir -p "$ssh_dir"
   chmod 700 "$ssh_dir"
@@ -55,7 +61,7 @@ import_sshkey() {
     return 0
   fi
 
-  echo "$public_key" >> "$auth_keys"
+  echo "$public_key" >>"$auth_keys"
   chmod 600 "$auth_keys"
   sshkey_on
 }
@@ -73,16 +79,28 @@ fetch_remote_ssh_keys() {
 
   temp_file="$(mktemp)"
   if command -v curl >/dev/null 2>&1; then
-    curl -fsSL --connect-timeout 10 "$keys_url" -o "$temp_file" || { rm -f "$temp_file"; echo "错误：无法从 URL 下载公钥"; return 1; }
+    curl -fsSL --connect-timeout 10 "$keys_url" -o "$temp_file" || {
+      rm -f "$temp_file"
+      echo "错误：无法从 URL 下载公钥"
+      return 1
+    }
   elif command -v wget >/dev/null 2>&1; then
-    wget -q --timeout=10 -O "$temp_file" "$keys_url" || { rm -f "$temp_file"; echo "错误：无法从 URL 下载公钥"; return 1; }
+    wget -q --timeout=10 -O "$temp_file" "$keys_url" || {
+      rm -f "$temp_file"
+      echo "错误：无法从 URL 下载公钥"
+      return 1
+    }
   else
     rm -f "$temp_file"
     echo "错误：系统中未找到 curl 或 wget，无法下载公钥"
     return 1
   fi
 
-  [[ -s "$temp_file" ]] || { rm -f "$temp_file"; echo "错误：下载到的文件为空"; return 1; }
+  [[ -s "$temp_file" ]] || {
+    rm -f "$temp_file"
+    echo "错误：下载到的文件为空"
+    return 1
+  }
 
   mkdir -p "$ssh_dir"
   chmod 700 "$ssh_dir"
@@ -95,13 +113,13 @@ fetch_remote_ssh_keys() {
     [[ -z "$line" || "$line" =~ ^# ]] && continue
     [[ "$line" =~ ^ssh-(rsa|ed25519|ecdsa) ]] || continue
     if ! grep -Fxq "$line" "$authorized_keys" 2>/dev/null; then
-      echo "$line" >> "$authorized_keys"
+      echo "$line" >>"$authorized_keys"
       added=$((added + 1))
     fi
-  done < "$temp_file"
+  done <"$temp_file"
   rm -f "$temp_file"
 
-  if (( added > 0 )); then
+  if ((added > 0)); then
     echo "成功添加 ${added} 条新的公钥到 ${authorized_keys}"
     sshkey_on
   else
@@ -113,7 +131,10 @@ fetch_github_ssh_keys() {
   local username="${1:-}"
   local base_dir="${2:-$HOME}"
   [[ -n "$username" ]] || read -r -p "请输入您的 GitHub 用户名（username，不含 @）： " username
-  [[ -n "$username" ]] || { echo "错误：GitHub 用户名不能为空"; return 1; }
+  [[ -n "$username" ]] || {
+    echo "错误：GitHub 用户名不能为空"
+    return 1
+  }
   fetch_remote_ssh_keys "https://github.com/${username}.keys" "$base_dir"
 }
 
@@ -122,8 +143,14 @@ create_user_with_sshkey() {
   local is_sudo="${2:-false}"
   local sshkey_vl
 
-  [[ -n "$new_username" ]] || { echo "用法：create_user_with_sshkey <用户名>"; return 1; }
-  id "$new_username" >/dev/null 2>&1 && { echo "用户 $new_username 已存在"; return 1; }
+  [[ -n "$new_username" ]] || {
+    echo "用法：create_user_with_sshkey <用户名>"
+    return 1
+  }
+  id "$new_username" >/dev/null 2>&1 && {
+    echo "用户 $new_username 已存在"
+    return 1
+  }
 
   useradd -m -s /bin/bash "$new_username" || return 1
 
@@ -134,7 +161,7 @@ create_user_with_sshkey() {
   read -r -p "请导入 ${new_username} 的公钥: " sshkey_vl
 
   case "$sshkey_vl" in
-    http://*|https://*)
+    http://* | https://*)
       send_stats "从 URL 导入 SSH 公钥"
       fetch_remote_ssh_keys "$sshkey_vl" "/home/$new_username"
       ;;
@@ -142,7 +169,7 @@ create_user_with_sshkey() {
       send_stats "从 GitHub 导入 SSH 公钥"
       fetch_github_ssh_keys "${sshkey_vl#github:}" "/home/$new_username"
       ;;
-    ssh-rsa*|ssh-ed25519*|ssh-ecdsa*)
+    ssh-rsa* | ssh-ed25519* | ssh-ecdsa*)
       send_stats "公钥直接导入"
       import_sshkey "$sshkey_vl" "/home/$new_username"
       ;;
@@ -156,14 +183,14 @@ create_user_with_sshkey() {
   chown -R "$new_username:$new_username" "/home/$new_username/.ssh" 2>/dev/null || true
   install sudo
   if [[ "$is_sudo" == "true" ]]; then
-    cat > "/etc/sudoers.d/$new_username" <<EOF
+    cat >"/etc/sudoers.d/$new_username" <<EOF
 $new_username ALL=(ALL) NOPASSWD:ALL
 EOF
     chmod 440 "/etc/sudoers.d/$new_username"
   fi
 
   sed -i '/^\s*#\?\s*UsePAM\s\+/d' /etc/ssh/sshd_config
-  echo 'UsePAM yes' >> /etc/ssh/sshd_config
+  echo 'UsePAM yes' >>/etc/ssh/sshd_config
   passwd -l "$new_username" >/dev/null 2>&1 || true
   restart_ssh
   echo "用户 $new_username 创建完成"
@@ -182,5 +209,5 @@ luopo_system_tools_print_user_table() {
       sudo_status="No"
     fi
     printf "%-24s %-34s %-20s %-10s\n" "$username" "$homedir" "$groups" "$sudo_status"
-  done < /etc/passwd
+  done </etc/passwd
 }

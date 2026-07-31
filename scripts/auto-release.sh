@@ -27,7 +27,7 @@ done
 # No version release for non-core changes (e.g. docs only)
 if [[ "$core_changed" -eq 0 ]]; then
   echo "No core code changes detected, skip auto release."
-  echo "SKIP_RELEASE=1" >> "$GITHUB_ENV"
+  echo "SKIP_RELEASE=1" >>"$GITHUB_ENV"
   exit 0
 fi
 
@@ -36,7 +36,7 @@ has_latest_tag=1
 if [[ -z "$latest_tag" ]]; then
   has_latest_tag=0
   if [[ -f VERSION ]]; then
-    base_version="$(tr -d '[:space:]' < VERSION)"
+    base_version="$(tr -d '[:space:]' <VERSION)"
     if [[ "$base_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
       latest_tag="v${base_version}"
     else
@@ -61,7 +61,7 @@ next_tag="v${next_version}"
 
 if git rev-parse "$next_tag" >/dev/null 2>&1; then
   echo "Tag $next_tag already exists, skip."
-  echo "SKIP_RELEASE=1" >> "$GITHUB_ENV"
+  echo "SKIP_RELEASE=1" >>"$GITHUB_ENV"
   exit 0
 fi
 
@@ -75,10 +75,10 @@ release_notes_file="$ROOT_DIR/.release-notes.md"
   echo "## ${next_tag}"
   echo
   echo "### 主要变化"
-  git log --pretty='- %s (%h)' $log_range
+  git log --pretty='- %s (%h)' "$log_range"
 } >"$release_notes_file"
 
-echo "$next_version" > VERSION
+echo "$next_version" >VERSION
 
 tmp_changelog="$(mktemp)"
 {
@@ -87,7 +87,7 @@ tmp_changelog="$(mktemp)"
   echo "## ${next_version}"
   echo
   echo "### 主要变化"
-  git log --pretty='- %s (%h)' $log_range
+  git log --pretty='- %s (%h)' "$log_range"
   echo
   tail -n +3 CHANGELOG.md 2>/dev/null || true
 } >"$tmp_changelog"
@@ -96,7 +96,9 @@ mv "$tmp_changelog" CHANGELOG.md
 git add VERSION CHANGELOG.md
 git commit -m "chore(release): ${next_tag}"
 
-echo "SKIP_RELEASE=0" >> "$GITHUB_ENV"
-echo "NEXT_VERSION=$next_version" >> "$GITHUB_ENV"
-echo "NEXT_TAG=$next_tag" >> "$GITHUB_ENV"
-echo "RELEASE_NOTES_FILE=$release_notes_file" >> "$GITHUB_ENV"
+{
+  echo "SKIP_RELEASE=0"
+  echo "NEXT_VERSION=$next_version"
+  echo "NEXT_TAG=$next_tag"
+  echo "RELEASE_NOTES_FILE=$release_notes_file"
+} >>"$GITHUB_ENV"

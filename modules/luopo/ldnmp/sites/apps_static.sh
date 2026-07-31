@@ -59,8 +59,8 @@ luopo_ldnmp_install_ai_prompt_generator() {
 
   mkdir -p "/home/web/html/$yuming"
   cd "/home/web/html/$yuming"
-  wget "${gh_proxy}github.com/kejilion/Website_source_code/raw/refs/heads/main/ai_prompt_generator.zip"
-  unzip "$(ls -t ./*.zip | head -1)"
+  wget -O ./ai_prompt_generator.zip "${gh_proxy}github.com/kejilion/Website_source_code/raw/refs/heads/main/ai_prompt_generator.zip"
+  unzip ./ai_prompt_generator.zip
   rm -f ./*.zip
 
   docker exec nginx chown -R nginx:nginx /var/www/html
@@ -93,7 +93,7 @@ luopo_ldnmp_custom_static_site() {
   fi
 
   local latest_zip
-  latest_zip="$(ls -t ./*.zip 2>/dev/null | head -1)"
+  latest_zip="$(luopo_ldnmp_latest_file "$PWD" '*.zip')"
   if [[ -n "$latest_zip" ]]; then
     unzip "$latest_zip"
     rm -f "$latest_zip"
@@ -104,7 +104,7 @@ luopo_ldnmp_custom_static_site() {
   clear
   echo -e "[${gl_huang}2/2${gl_bai}] index.html 所在路径"
   echo "-------------"
-  find "$(realpath .)" -name "index.html" -print | xargs -r -I {} dirname {}
+  find "$(realpath .)" -name "index.html" -exec dirname {} \;
   read -r -p "请输入 index.html 的路径，类似 /home/web/html/$yuming/index/: " index_lujing
 
   sed -i "s#root /var/www/html/$yuming/#root $index_lujing#g" "/home/web/conf.d/$yuming.conf"

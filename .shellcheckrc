@@ -1,0 +1,5 @@
+# Modules are sourced into one runtime, so shared globals and dynamic source
+# paths cannot be resolved correctly when ShellCheck analyzes files alone.
+shell=bash
+severity=info
+disable=SC1090,SC1091,SC2034,SC2154,SC2317

@@ -15,7 +15,7 @@ detect_os() {
   fi
   . /etc/os-release
   case "${ID:-}" in
-    ubuntu|debian)
+    ubuntu | debian)
       echo "$ID"
       ;;
     *)

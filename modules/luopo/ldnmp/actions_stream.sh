@@ -26,7 +26,10 @@ luopo_ldnmp_stream_proxy() {
       3) luopo_ldnmp_stream_delete ;;
       4) docker exec nginx nginx -s reload && echo "Nginx 已重载" ;;
       0) return 0 ;;
-      *) luopo_ldnmp_invalid_choice; continue ;;
+      *)
+        luopo_ldnmp_invalid_choice
+        continue
+        ;;
     esac
     break_end
   done
@@ -55,13 +58,16 @@ luopo_ldnmp_stream_add() {
   read -r -p "服务名（英文/数字/横线）: " name
   read -r -p "本机监听端口: " listen_port
   read -r -p "后端地址 IP:端口: " backend
-  [[ "$name" =~ ^[A-Za-z0-9_-]+$ && -n "$listen_port" && -n "$backend" ]] || { echo "输入不完整或服务名不合法"; return 1; }
+  [[ "$name" =~ ^[A-Za-z0-9_-]+$ && -n "$listen_port" && -n "$backend" ]] || {
+    echo "输入不完整或服务名不合法"
+    return 1
+  }
 
   local listen_directive
   listen_directive="listen ${listen_port};"
   [[ "$proto" == "udp" ]] && listen_directive="listen ${listen_port} udp;"
 
-  cat > "/home/web/stream.d/${name}.conf" <<EOF
+  cat >"/home/web/stream.d/${name}.conf" <<EOF
 upstream ${name}_backend {
     server ${backend};
 }

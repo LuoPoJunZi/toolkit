@@ -19,7 +19,7 @@ luopo_render_oracle_cloud_menu() {
   for item in "${LUOPO_ORACLE_CLOUD_ITEMS[@]}"; do
     number="$(luopo_oracle_cloud_item_number "$item")"
     case "$number" in
-      1|2|3|4)
+      1 | 2 | 3 | 4)
         printf " %-3s %s\n" "${number}." "$(luopo_oracle_cloud_item_label "$item")"
         ;;
     esac
@@ -29,7 +29,7 @@ luopo_render_oracle_cloud_menu() {
   for item in "${LUOPO_ORACLE_CLOUD_ITEMS[@]}"; do
     number="$(luopo_oracle_cloud_item_number "$item")"
     case "$number" in
-      5|6)
+      5 | 6)
         printf " %-3s %s\n" "${number}." "$(luopo_oracle_cloud_item_label "$item")"
         ;;
     esac

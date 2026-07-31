@@ -23,7 +23,10 @@ luopo_ldnmp_optimization() {
       4) luopo_ldnmp_toggle_nginx_gzip off ;;
       5) echo "当前镜像未保证内置 brotli/zstd 模块，建议优先使用 gzip 或自定义 Nginx 镜像。" ;;
       0) return 0 ;;
-      *) luopo_ldnmp_invalid_choice; continue ;;
+      *)
+        luopo_ldnmp_invalid_choice
+        continue
+        ;;
     esac
     break_end
   done
@@ -32,7 +35,10 @@ luopo_ldnmp_optimization() {
 luopo_ldnmp_toggle_nginx_gzip() {
   local state="$1"
   local conf="/home/web/nginx.conf"
-  [[ -f "$conf" ]] || { echo "未找到 $conf"; return 1; }
+  [[ -f "$conf" ]] || {
+    echo "未找到 $conf"
+    return 1
+  }
   if grep -q 'gzip[[:space:]]\+' "$conf"; then
     sed -i "s/^[[:space:]]*gzip[[:space:]].*/    gzip ${state};/" "$conf"
   else
@@ -46,7 +52,10 @@ luopo_ldnmp_apply_performance_profile() {
   local mode="$1"
   local conf="/home/web/nginx.conf"
   local cpu_cores connections php_conf mysql_conf
-  [[ -f "$conf" ]] || { echo "未找到 $conf"; return 1; }
+  [[ -f "$conf" ]] || {
+    echo "未找到 $conf"
+    return 1
+  }
   cpu_cores="$(nproc 2>/dev/null || echo 1)"
   if [[ "$mode" == "high" ]]; then
     connections=$((2048 * cpu_cores))

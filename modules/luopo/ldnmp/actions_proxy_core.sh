@@ -63,14 +63,17 @@ luopo_ldnmp_reverse_proxy_load_balance() {
 
   local reverseproxy_port backend upstream_servers server
   read -r -p "请输入多个后端 IP+端口，用空格隔开（例如 127.0.0.1:3000 127.0.0.1:3002）: " reverseproxy_port
-  [[ -n "$reverseproxy_port" ]] || { echo "后端地址不能为空"; return 1; }
+  [[ -n "$reverseproxy_port" ]] || {
+    echo "后端地址不能为空"
+    return 1
+  }
 
   nginx_install_status || return 1
   install_ssltls || return 1
   certs_status || return 1
 
   luopo_ldnmp_write_domain_conf "${gh_proxy}raw.githubusercontent.com/kejilion/nginx/main/reverse-proxy-backend.conf"
-  backend="$(tr -dc 'A-Za-z' < /dev/urandom | head -c 8)"
+  backend="$(tr -dc 'A-Za-z' </dev/urandom | head -c 8)"
   sed -i "s/backend_yuming_com/backend_$backend/g" "/home/web/conf.d/$yuming.conf"
   upstream_servers=""
   for server in $reverseproxy_port; do

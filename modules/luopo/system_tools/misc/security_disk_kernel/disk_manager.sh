@@ -45,11 +45,13 @@ luopo_system_tools_disk_mount_partition() {
   fi
 
   echo "分区已挂载到 $mount_point"
-  if grep -qE "UUID=$uuid|[[:space:]]$mount_point[[:space:]]" /etc/fstab 2>/dev/null; then
+  if awk -v uuid="UUID=$uuid" -v mount_point="$mount_point" \
+    '$1 == uuid || $2 == mount_point { found = 1; exit } END { exit !found }' \
+    /etc/fstab 2>/dev/null; then
     echo "/etc/fstab 中已存在该分区记录，跳过写入。"
     return 0
   fi
-  printf 'UUID=%s %s %s defaults,nofail 0 2\n' "$uuid" "$mount_point" "$fstype" >> /etc/fstab
+  printf 'UUID=%s %s %s defaults,nofail 0 2\n' "$uuid" "$mount_point" "$fstype" >>/etc/fstab
   echo "已写入 /etc/fstab，实现持久化挂载。"
 }
 

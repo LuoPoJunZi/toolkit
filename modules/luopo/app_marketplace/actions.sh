@@ -8,7 +8,8 @@ source "$LUOPO_APP_MARKETPLACE_DIR/native_apps.sh"
 
 luopo_app_marketplace_backup_all() {
   mkdir -p /home
-  local backup_file="/home/luopo-app-market-$(date +%Y%m%d%H%M%S).tar.gz"
+  local backup_file
+  backup_file="/home/luopo-app-market-$(date +%Y%m%d%H%M%S).tar.gz"
 
   if [[ ! -d /home/docker ]]; then
     echo "未检测到 /home/docker，暂无应用数据可备份。"
@@ -22,7 +23,7 @@ luopo_app_marketplace_backup_all() {
 
 luopo_app_marketplace_restore_all() {
   echo "可用备份文件:"
-  ls -lt /home/luopo-app-market-*.tar.gz 2>/dev/null | awk '{print $NF}' || true
+  luopo_ldnmp_list_files_by_mtime /home 'luopo-app-market-*.tar.gz'
   echo
 
   local backup_file
@@ -30,7 +31,7 @@ luopo_app_marketplace_restore_all() {
   [[ "$backup_file" == "0" ]] && return 0
 
   if [[ -z "$backup_file" ]]; then
-    backup_file="$(ls -t /home/luopo-app-market-*.tar.gz 2>/dev/null | head -1)"
+    backup_file="$(luopo_ldnmp_latest_file /home 'luopo-app-market-*.tar.gz')"
   elif [[ "$backup_file" != /* ]]; then
     backup_file="/home/$backup_file"
   fi
@@ -60,11 +61,11 @@ luopo_app_marketplace_dispatch_choice() {
     0)
       return 1
       ;;
-    b|91)
+    b | 91)
       luopo_app_marketplace_backup_all
       return 0
       ;;
-    r|92)
+    r | 92)
       luopo_app_marketplace_restore_all
       return 0
       ;;

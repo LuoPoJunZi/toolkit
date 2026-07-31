@@ -68,4 +68,3 @@ menu_item_group() {
   IFS='|' read -r _ _ _ _ _ group <<<"$item"
   printf '%s\n' "$group"
 }
-

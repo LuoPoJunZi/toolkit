@@ -516,3 +516,20 @@ Remaining after round:
 - Optional future cleanup:
   - Extract shared menu-rendering helpers if more menus are added.
   - Add live Linux runtime validation for WARP service commands on a VPS with WARP installed.
+
+### 2026-07-31 - Round 24
+Completed:
+- Added repository-wide formatting and static-analysis policy through `.editorconfig`, `.gitattributes`, and `.shellcheckrc`.
+- Standardized all tracked Bash files with shfmt using two-space indentation, case indentation, and binary-operator line breaks.
+- Changed `scripts/lint.sh` from best-effort checks to enforced Bash syntax, ShellCheck (`info` and above), and read-only shfmt validation.
+- Extended CI with strict lint and semantic-version/changelog consistency checks.
+- Fixed audit findings involving argument quoting, array-safe command execution, filename-safe cleanup, cron path handling, WARP launcher placeholders, and backup/archive discovery.
+- Added `scripts/preflight.sh` as the shared Bash verification entrypoint and updated the Windows wrapper to detect Git Bash from custom installation drives.
+- Updated smoke assertions, README files, directory documentation, and the runtime checklist for the new standards.
+
+Result:
+- The full tracked Bash codebase passes ShellCheck and shfmt validation under one reproducible rule set.
+- CI now fails on syntax, static-analysis, formatting, or version-metadata drift instead of silently continuing.
+
+Remaining after round:
+- Run live Linux/VPS checks for operations that require Docker, iptables, cron, disks, or WARP services.

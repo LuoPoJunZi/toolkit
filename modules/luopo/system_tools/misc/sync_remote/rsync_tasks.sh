@@ -74,10 +74,10 @@ luopo_system_tools_rsync_add_task() {
       if [[ -z "$key_file" ]]; then
         key_file="$key_dir/${name}_sync.key"
         echo "请粘贴私钥内容，输入单独一行 EOF 结束："
-        : > "$key_file"
+        : >"$key_file"
         while IFS= read -r line; do
           [[ "$line" == "EOF" ]] && break
-          printf '%s\n' "$line" >> "$key_file"
+          printf '%s\n' "$line" >>"$key_file"
         done
       fi
       if [[ ! -f "$key_file" ]]; then
@@ -105,7 +105,7 @@ luopo_system_tools_rsync_add_task() {
 
   install rsync
   printf '%s|%s|%s|%s|%s|%s|%s|%s|%s\n' \
-    "$name" "$local_path" "$remote_user" "$remote_host" "$remote_path" "$port" "$options" "$auth_method" "$secret" >> "$config_file"
+    "$name" "$local_path" "$remote_user" "$remote_host" "$remote_path" "$port" "$options" "$auth_method" "$secret" >>"$config_file"
   echo "任务已保存。"
 }
 
@@ -128,7 +128,7 @@ luopo_system_tools_rsync_delete_task() {
     return 1
   fi
 
-  IFS='|' read -r name local_path remote_user remote_host remote_path port options auth_method secret <<< "$task"
+  IFS='|' read -r name local_path remote_user remote_host remote_path port options auth_method secret <<<"$task"
   read -r -p "确认删除任务 $name ? (y/N): " confirm
   case "$confirm" in
     [Yy])
@@ -148,6 +148,7 @@ luopo_system_tools_rsync_run_task() {
   local config_file
   local task name local_path remote_user remote_host remote_path port options auth_method secret
   local source_path destination_path ssh_options
+  local -a rsync_options=()
 
   config_file="$(luopo_system_tools_rsync_config_file)"
   if [[ -z "$num" ]]; then
@@ -165,8 +166,11 @@ luopo_system_tools_rsync_run_task() {
     return 1
   fi
 
-  IFS='|' read -r name local_path remote_user remote_host remote_path port options auth_method secret <<< "$task"
+  IFS='|' read -r name local_path remote_user remote_host remote_path port options auth_method secret <<<"$task"
   ssh_options="-p $port -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null"
+  if [[ -n "$options" ]]; then
+    read -r -a rsync_options <<<"$options"
+  fi
 
   if [[ "$direction" == "pull" ]]; then
     echo "正在拉取同步到本地: $remote_user@$remote_host:$remote_path -> $local_path"
@@ -181,14 +185,14 @@ luopo_system_tools_rsync_run_task() {
   install rsync
   if [[ "$auth_method" == "password" ]]; then
     install sshpass
-    sshpass -p "$secret" rsync $options -e "ssh $ssh_options" "$source_path" "$destination_path"
+    sshpass -p "$secret" rsync "${rsync_options[@]}" -e "ssh $ssh_options" "$source_path" "$destination_path"
   else
     if [[ ! -f "$secret" ]]; then
       echo "密钥文件不存在: $secret"
       return 1
     fi
     chmod 600 "$secret"
-    rsync $options -e "ssh -i $secret $ssh_options" "$source_path" "$destination_path"
+    rsync "${rsync_options[@]}" -e "ssh -i $secret $ssh_options" "$source_path" "$destination_path"
   fi
 }
 
@@ -227,7 +231,10 @@ luopo_system_tools_rsync_schedule_task() {
     echo "该任务的定时同步已存在。"
     return 1
   fi
-  (crontab -l 2>/dev/null; echo "$cron_job") | crontab -
+  (
+    crontab -l 2>/dev/null
+    echo "$cron_job"
+  ) | crontab -
   echo "定时任务已创建: $cron_job"
 }
 
@@ -243,7 +250,7 @@ luopo_system_tools_rsync_delete_schedule() {
   fi
 
   tmp_file="$(mktemp)"
-  crontab -l 2>/dev/null | grep -v "luopo_rsync_run:$num" > "$tmp_file" || true
+  crontab -l 2>/dev/null | grep -v "luopo_rsync_run:$num" >"$tmp_file" || true
   crontab "$tmp_file"
   rm -f "$tmp_file"
   echo "已删除任务编号 $num 的定时任务。"

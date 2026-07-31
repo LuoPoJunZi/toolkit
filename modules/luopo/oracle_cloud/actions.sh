@@ -55,16 +55,16 @@ luopo_oracle_cloud_dd_reinstall() {
     return 0
   fi
 
-  local xitong=""
+  local -a system_args=()
   while true; do
     read -r -p "请选择要重装的系统:  1. Debian12 | 2. Ubuntu20.04 : " sys_choice
     case "$sys_choice" in
       1)
-        xitong="-d 12"
+        system_args=(-d 12)
         break
         ;;
       2)
-        xitong="-u 20.04"
+        system_args=(-u 20.04)
         break
         ;;
       *)
@@ -78,7 +78,7 @@ luopo_oracle_cloud_dd_reinstall() {
   send_stats "甲骨文云重装系统脚本"
   set +e
   install wget
-  bash <(wget --no-check-certificate -qO- "${gh_proxy}raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh") $xitong -v 64 -p "$vpspasswd" -port 22
+  bash <(wget --no-check-certificate -qO- "${gh_proxy}raw.githubusercontent.com/MoeClub/Note/master/InstallNET.sh") "${system_args[@]}" -v 64 -p "$vpspasswd" -port 22
   set -e
   luopo_oracle_cloud_finish
   return 0

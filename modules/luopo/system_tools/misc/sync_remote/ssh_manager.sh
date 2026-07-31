@@ -64,10 +64,10 @@ luopo_system_tools_ssh_add_connection() {
       if [[ -z "$key_file" ]]; then
         key_file="$key_dir/${name}.key"
         echo "请粘贴私钥内容，输入单独一行 EOF 结束："
-        : > "$key_file"
+        : >"$key_file"
         while IFS= read -r line; do
           [[ "$line" == "EOF" ]] && break
-          printf '%s\n' "$line" >> "$key_file"
+          printf '%s\n' "$line" >>"$key_file"
         done
       fi
       if [[ ! -f "$key_file" ]]; then
@@ -84,7 +84,7 @@ luopo_system_tools_ssh_add_connection() {
       ;;
   esac
 
-  printf '%s|%s|%s|%s|%s|%s\n' "$name" "$host" "$user" "$port" "$auth_method" "$secret" >> "$config_file"
+  printf '%s|%s|%s|%s|%s|%s\n' "$name" "$host" "$user" "$port" "$auth_method" "$secret" >>"$config_file"
   echo "连接已保存。"
 }
 
@@ -106,7 +106,7 @@ luopo_system_tools_ssh_use_connection() {
     return 1
   fi
 
-  IFS='|' read -r name host user port auth_method secret <<< "$connection"
+  IFS='|' read -r name host user port auth_method secret <<<"$connection"
   echo "正在连接到 $name ($user@$host:$port)..."
   if [[ "$auth_method" == "key" ]]; then
     if [[ ! -f "$secret" ]]; then
@@ -140,7 +140,7 @@ luopo_system_tools_ssh_delete_connection() {
     return 1
   fi
 
-  IFS='|' read -r name host user port auth_method secret <<< "$connection"
+  IFS='|' read -r name host user port auth_method secret <<<"$connection"
   read -r -p "确认删除连接 $name ? (y/N): " confirm
   case "$confirm" in
     [Yy])

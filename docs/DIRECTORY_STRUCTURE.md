@@ -17,6 +17,9 @@ toolkit/
 ├─ toolkit.sh                         # Entry script and internal command dispatcher
 ├─ install.sh                         # Remote/local bootstrap installer
 ├─ .gitignore                         # Shared ignore rules
+├─ .editorconfig                      # Editor whitespace and indentation rules
+├─ .gitattributes                     # Repository line-ending policy
+├─ .shellcheckrc                      # Bash static-analysis policy
 ├─ README.md
 ├─ README_en.md
 ├─ LICENSE
@@ -139,6 +142,7 @@ toolkit/
 │  ├─ auto-release.sh
 │  ├─ check-version-sync.sh
 │  ├─ lint.sh
+│  ├─ preflight.sh
 │  └─ preflight.ps1
 ├─ tests/
 │  └─ smoke_menu.sh
@@ -187,6 +191,8 @@ toolkit.sh
 
 - `data/state/`, `data/backups/`, `data/cache/`, and `logs/` are runtime-generated and ignored.
 - `integrations/index.json` is the source of truth for one-click script definitions.
+- Tracked Bash files use two-space indentation and are checked by `bash -n`, ShellCheck, and read-only shfmt validation through `scripts/lint.sh`.
+- Shell and documentation files use LF line endings on every platform.
 - Main menu numbering is registry-driven and currently reserves:
   - `99` update toolkit
   - `88` uninstall toolkit

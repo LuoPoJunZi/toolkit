@@ -53,7 +53,7 @@ luopo_app_marketplace_native_app_store_port() {
   local container_name="$1"
   local port="$2"
   mkdir -p /home/docker
-  printf '%s\n' "$port" > "$(luopo_app_marketplace_native_app_port_file "$container_name")"
+  printf '%s\n' "$port" >"$(luopo_app_marketplace_native_app_port_file "$container_name")"
 }
 
 luopo_app_marketplace_native_add_app_id() {
@@ -65,7 +65,7 @@ luopo_app_marketplace_native_add_app_id() {
     [[ -z "$legacy_app_id" ]] && continue
     sed -i "/\b${legacy_app_id}\b/d" /home/docker/appno.txt
   done < <(luopo_app_marketplace_legacy_numbers "$app_id")
-  grep -qxF "$app_id" /home/docker/appno.txt || printf '%s\n' "$app_id" >> /home/docker/appno.txt
+  grep -qxF "$app_id" /home/docker/appno.txt || printf '%s\n' "$app_id" >>/home/docker/appno.txt
 }
 
 luopo_app_marketplace_native_remove_app_id() {
@@ -149,7 +149,7 @@ luopo_app_marketplace_native_set_env_value() {
   if grep -q "^${key}=" "$env_file" 2>/dev/null; then
     sed -i "s|^${key}=.*|${key}=${escaped_value}|" "$env_file"
   else
-    printf '%s=%s\n' "$key" "$value" >> "$env_file"
+    printf '%s=%s\n' "$key" "$value" >>"$env_file"
   fi
 }
 

@@ -4,7 +4,7 @@ set -euo pipefail
 # Root, SSH, firewall, swap, and IP helpers.
 
 prefer_ipv4() {
-  grep -q '^precedence ::ffff:0:0/96  100' /etc/gai.conf 2>/dev/null || echo 'precedence ::ffff:0:0/96  100' >> /etc/gai.conf
+  grep -q '^precedence ::ffff:0:0/96  100' /etc/gai.conf 2>/dev/null || echo 'precedence ::ffff:0:0/96  100' >>/etc/gai.conf
   echo "已切换为 IPv4 优先"
   send_stats "已切换为 IPv4 优先"
 }
@@ -16,10 +16,13 @@ restart_ssh() {
 save_iptables_rules() {
   mkdir -p /etc/iptables
   touch /etc/iptables/rules.v4
-  iptables-save > /etc/iptables/rules.v4
+  iptables-save >/etc/iptables/rules.v4
   check_crontab_installed || return 1
   crontab -l 2>/dev/null | grep -v 'iptables-restore' | crontab - >/dev/null 2>&1 || true
-  { crontab -l 2>/dev/null; echo '@reboot iptables-restore < /etc/iptables/rules.v4'; } | crontab - >/dev/null 2>&1
+  {
+    crontab -l 2>/dev/null
+    echo '@reboot iptables-restore < /etc/iptables/rules.v4'
+  } | crontab - >/dev/null 2>&1
 }
 
 iptables_open() {
@@ -41,7 +44,10 @@ iptables_open() {
 
 open_port() {
   local ports=("$@")
-  [[ ${#ports[@]} -gt 0 ]] || { echo "请提供至少一个端口号"; return 1; }
+  [[ ${#ports[@]} -gt 0 ]] || {
+    echo "请提供至少一个端口号"
+    return 1
+  }
 
   install iptables
 
@@ -63,7 +69,10 @@ open_port() {
 
 close_port() {
   local ports=("$@")
-  [[ ${#ports[@]} -gt 0 ]] || { echo "请提供至少一个端口号"; return 1; }
+  [[ ${#ports[@]} -gt 0 ]] || {
+    echo "请提供至少一个端口号"
+    return 1
+  }
 
   install iptables
 
@@ -114,7 +123,7 @@ new_ssh_port() {
 
   cp /etc/ssh/sshd_config /etc/ssh/sshd_config.bak
   sed -i '/^\s*#\?\s*Port\s\+/d' /etc/ssh/sshd_config
-  echo "Port $new_port" >> /etc/ssh/sshd_config
+  echo "Port $new_port" >>/etc/ssh/sshd_config
 
   correct_ssh_config
   restart_ssh
@@ -145,11 +154,11 @@ add_swap() {
   swapon /swapfile
 
   sed -i '/\/swapfile/d' /etc/fstab
-  echo "/swapfile swap swap defaults 0 0" >> /etc/fstab
+  echo "/swapfile swap swap defaults 0 0" >>/etc/fstab
 
   if [[ -f /etc/alpine-release ]]; then
     mkdir -p /etc/local.d
-    echo "nohup swapon /swapfile" > /etc/local.d/swap.start
+    echo "nohup swapon /swapfile" >/etc/local.d/swap.start
     chmod +x /etc/local.d/swap.start
     rc-update add local >/dev/null 2>&1 || true
   fi

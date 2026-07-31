@@ -69,4 +69,3 @@ LUOPO_LDNMP_LAYOUT=(
   "37"
   "38"
 )
-

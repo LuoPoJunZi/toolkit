@@ -4,4 +4,3 @@ set -euo pipefail
 entry_system_update() {
   system_update
 }
-

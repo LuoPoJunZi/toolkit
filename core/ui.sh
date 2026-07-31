@@ -44,6 +44,8 @@ msg() {
     echo "$key $*"
     return
   fi
+  # Translation values are trusted printf templates with positional placeholders.
+  # shellcheck disable=SC2059
   printf '%s\n' "$(printf "$value" "$@")"
 }
 

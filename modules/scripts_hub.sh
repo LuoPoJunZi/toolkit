@@ -101,7 +101,7 @@ scripts_hub() {
     echo "无效选项"
     return 1
   fi
-  if (( choice < 1 || choice > ${#selected_ids[@]} )); then
+  if ((choice < 1 || choice > ${#selected_ids[@]})); then
     echo "选项超出范围"
     return 1
   fi

@@ -21,17 +21,18 @@ ldnmp_install_status_one() {
 
 luopo_ldnmp_stop_port_owner() {
   local port="$1"
-  local containers pids pid
+  local pid
+  local -a containers=() pids=()
 
-  containers="$(docker ps --filter "publish=$port" --format "{{.ID}}" 2>/dev/null || true)"
-  if [[ -n "$containers" ]]; then
-    docker stop $containers >/dev/null 2>&1 || true
+  mapfile -t containers < <(docker ps --filter "publish=$port" --format "{{.ID}}" 2>/dev/null || true)
+  if ((${#containers[@]} > 0)); then
+    docker stop "${containers[@]}" >/dev/null 2>&1 || true
     return 0
   fi
 
   install lsof
-  pids="$(lsof -t -i:"$port" 2>/dev/null || true)"
-  for pid in $pids; do
+  mapfile -t pids < <(lsof -t -i:"$port" 2>/dev/null || true)
+  for pid in "${pids[@]}"; do
     kill -9 "$pid" >/dev/null 2>&1 || true
   done
 }
@@ -67,7 +68,7 @@ luopo_ldnmp_add_swap() {
   chmod 600 /swapfile
   mkswap /swapfile >/dev/null
   swapon /swapfile >/dev/null
-  grep -q '^/swapfile ' /etc/fstab 2>/dev/null || echo '/swapfile none swap sw 0 0' >> /etc/fstab
+  grep -q '^/swapfile ' /etc/fstab 2>/dev/null || echo '/swapfile none swap sw 0 0' >>/etc/fstab
 }
 
 check_swap() {
@@ -78,7 +79,7 @@ check_swap() {
 
 prefer_ipv4() {
   if [[ -w /etc/gai.conf ]] && ! grep -q '^precedence ::ffff:0:0/96  100' /etc/gai.conf 2>/dev/null; then
-    echo 'precedence ::ffff:0:0/96  100' >> /etc/gai.conf
+    echo 'precedence ::ffff:0:0/96  100' >>/etc/gai.conf
   fi
   send_stats "已切换为 IPv4 优先"
 }
@@ -172,7 +173,10 @@ install_ldnmp() {
   sleep 1
   check_crontab_installed || true
   crontab -l 2>/dev/null | grep -v 'logrotate' | crontab - 2>/dev/null || true
-  { crontab -l 2>/dev/null; echo '0 2 * * * docker exec nginx apk add logrotate && docker exec nginx logrotate -f /etc/logrotate.conf'; } | crontab - 2>/dev/null || true
+  {
+    crontab -l 2>/dev/null
+    echo '0 2 * * * docker exec nginx apk add logrotate && docker exec nginx logrotate -f /etc/logrotate.conf'
+  } | crontab - 2>/dev/null || true
 
   fix_phpfpm_conf php
   fix_phpfpm_conf php74
@@ -196,7 +200,10 @@ install_certbot() {
   check_crontab_installed || return 0
   local cron_job="0 0 * * * ~/auto_cert_renewal.sh"
   crontab -l 2>/dev/null | grep -vF "$cron_job" | crontab - 2>/dev/null || true
-  { crontab -l 2>/dev/null; echo "$cron_job"; } | crontab - 2>/dev/null || true
+  {
+    crontab -l 2>/dev/null
+    echo "$cron_job"
+  } | crontab - 2>/dev/null || true
   echo "续签任务已更新"
 }
 
@@ -209,7 +216,10 @@ nginx_upgrade() {
   docker compose up -d --force-recreate "$ldnmp_pods"
   check_crontab_installed || true
   crontab -l 2>/dev/null | grep -v 'logrotate' | crontab - 2>/dev/null || true
-  { crontab -l 2>/dev/null; echo '0 2 * * * docker exec nginx apk add logrotate && docker exec nginx logrotate -f /etc/logrotate.conf'; } | crontab - 2>/dev/null || true
+  {
+    crontab -l 2>/dev/null
+    echo '0 2 * * * docker exec nginx apk add logrotate && docker exec nginx logrotate -f /etc/logrotate.conf'
+  } | crontab - 2>/dev/null || true
   docker exec nginx chown -R nginx:nginx /var/www/html >/dev/null 2>&1 || true
   docker exec nginx mkdir -p /var/cache/nginx/proxy /var/cache/nginx/fastcgi >/dev/null 2>&1 || true
   docker exec nginx chown -R nginx:nginx /var/cache/nginx/proxy /var/cache/nginx/fastcgi >/dev/null 2>&1 || true
@@ -229,6 +239,6 @@ patch_wp_url() {
     awk -v insert="define('WP_HOME', '$home_url');\ndefine('WP_SITEURL', '$site_url');" '
       /Happy publishing/ { print insert }
       { print }
-    ' "$file" > "$file.tmp" && mv -f "$file.tmp" "$file"
+    ' "$file" >"$file.tmp" && mv -f "$file.tmp" "$file"
   done
 }

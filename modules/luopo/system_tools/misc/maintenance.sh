@@ -180,7 +180,10 @@ luopo_system_tools_timezone_menu() {
       26) set_timedate America/Argentina/Buenos_Aires ;;
       31) set_timedate UTC ;;
       0) return 0 ;;
-      *) luopo_system_tools_invalid_choice; continue ;;
+      *)
+        luopo_system_tools_invalid_choice
+        continue
+        ;;
     esac
     break_end
   done

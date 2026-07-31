@@ -57,12 +57,12 @@ luopo_cluster_run_commands_on_servers() {
 
   clear
   local i name hostname port username password
-  for ((i=0; i<${#server_array[@]}; i+=5)); do
+  for ((i = 0; i < ${#server_array[@]}; i += 5)); do
     name="${server_array[i]}"
-    hostname="${server_array[i+1]}"
-    port="${server_array[i+2]}"
-    username="${server_array[i+3]}"
-    password="${server_array[i+4]}"
+    hostname="${server_array[i + 1]}"
+    port="${server_array[i + 2]}"
+    username="${server_array[i + 3]}"
+    password="${server_array[i + 4]}"
     echo
     echo -e "${gl_huang}连接到 $name ($hostname)...${gl_bai}"
     sshpass -p "$password" ssh -t -o StrictHostKeyChecking=no -o ConnectTimeout=10 "$username@$hostname" -p "$port" "$remote_command" || true

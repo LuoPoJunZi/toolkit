@@ -25,7 +25,7 @@ set_timedate() {
     timedatectl set-timezone "${shiqu}"
   else
     ln -sf "/usr/share/zoneinfo/${shiqu}" /etc/localtime
-    echo "${shiqu}" > /etc/timezone
+    echo "${shiqu}" >/etc/timezone
   fi
 }
 
@@ -42,7 +42,7 @@ luopo_system_tools_write_dns() {
     echo "nameserver $dns2_ipv4"
     [[ -n "$dns1_ipv6" ]] && echo "nameserver $dns1_ipv6"
     [[ -n "$dns2_ipv6" ]] && echo "nameserver $dns2_ipv6"
-  } > "$resolv_conf"
+  } >"$resolv_conf"
 }
 
 auto_optimize_dns() {

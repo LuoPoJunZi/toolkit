@@ -11,4 +11,3 @@ luopo_warp_bootstrap() {
 luopo_warp_finish() {
   press_enter
 }
-

@@ -145,7 +145,7 @@ bbr_on() {
   {
     echo "net.core.default_qdisc=fq"
     echo "net.ipv4.tcp_congestion_control=bbr"
-  } > "$conf"
+  } >"$conf"
 
   sed -i '/net.ipv4.tcp_congestion_control/d' /etc/sysctl.conf 2>/dev/null || true
   sed -i '/net.core.default_qdisc/d' /etc/sysctl.conf 2>/dev/null || true
@@ -153,8 +153,9 @@ bbr_on() {
 }
 
 server_reboot() {
-  local rboot
-  read -r -p "$(printf "${gl_huang}提示: ${gl_bai}现在重启服务器吗？(Y/N): ")" rboot
+  local rboot prompt
+  printf -v prompt '%b' "${gl_huang}提示: ${gl_bai}现在重启服务器吗？(Y/N): "
+  read -r -p "$prompt" rboot
   case "$rboot" in
     [Yy])
       echo "已重启"

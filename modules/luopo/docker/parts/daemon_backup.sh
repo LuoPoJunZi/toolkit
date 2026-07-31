@@ -6,7 +6,7 @@ set -euo pipefail
 ensure_daemon_json() {
   mkdir -p /etc/docker
   if [[ ! -f "$DAEMON_JSON" || ! -s "$DAEMON_JSON" ]]; then
-    echo '{}' > "$DAEMON_JSON"
+    echo '{}' >"$DAEMON_JSON"
     return
   fi
   if ! jq empty "$DAEMON_JSON" >/dev/null 2>&1; then
@@ -14,7 +14,7 @@ ensure_daemon_json() {
     backup_path="${DAEMON_JSON}.bak.$(date +%Y%m%d_%H%M%S)"
     cp -a "$DAEMON_JSON" "$backup_path"
     echo "检测到 daemon.json 非法，已备份到: $backup_path"
-    echo '{}' > "$DAEMON_JSON"
+    echo '{}' >"$DAEMON_JSON"
   fi
 }
 
@@ -42,7 +42,7 @@ apply_daemon_jq_filter() {
   cp -a "$DAEMON_JSON" "$backup_path"
 
   tmp="$(mktemp)"
-  if ! jq "$@" "$DAEMON_JSON" > "$tmp"; then
+  if ! jq "$@" "$DAEMON_JSON" >"$tmp"; then
     rm -f "$tmp"
     echo "daemon.json 修改失败"
     return 1
@@ -85,12 +85,14 @@ switch_docker_mirror() {
       ;;
   esac
 
+  # $mirror is a jq variable and must not be expanded by Bash.
+  # shellcheck disable=SC2016
   apply_daemon_jq_filter --arg mirror "$mirror" '."registry-mirrors" = [$mirror]'
 }
 
 edit_daemon_json() {
   mkdir -p /etc/docker
-  [[ -f "$DAEMON_JSON" ]] || echo '{}' > "$DAEMON_JSON"
+  [[ -f "$DAEMON_JSON" ]] || echo '{}' >"$DAEMON_JSON"
 
   if command -v nano >/dev/null 2>&1; then
     nano "$DAEMON_JSON"
@@ -124,10 +126,10 @@ backup_docker_metadata() {
   out_dir="/root/docker-backups/metadata-${ts}"
 
   mkdir -p "$out_dir"
-  docker ps -a > "${out_dir}/containers.txt" 2>/dev/null || true
-  docker images > "${out_dir}/images.txt" 2>/dev/null || true
-  docker network ls > "${out_dir}/networks.txt" 2>/dev/null || true
-  docker volume ls > "${out_dir}/volumes.txt" 2>/dev/null || true
+  docker ps -a >"${out_dir}/containers.txt" 2>/dev/null || true
+  docker images >"${out_dir}/images.txt" 2>/dev/null || true
+  docker network ls >"${out_dir}/networks.txt" 2>/dev/null || true
+  docker volume ls >"${out_dir}/volumes.txt" 2>/dev/null || true
   cp -a /etc/docker "${out_dir}/etc-docker" 2>/dev/null || true
 
   echo "元数据备份完成: $out_dir"
@@ -190,7 +192,7 @@ backup_docker_data_dir() {
   [[ -d /var/lib/containerd ]] && backup_targets+=("/var/lib/containerd")
   [[ -d /etc/docker ]] && backup_targets+=("/etc/docker")
 
-  if (( ${#backup_targets[@]} == 0 )); then
+  if ((${#backup_targets[@]} == 0)); then
     service_action start containerd || true
     service_action start docker || true
     echo "未找到可备份的 Docker 目录"

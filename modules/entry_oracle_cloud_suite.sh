@@ -7,4 +7,3 @@ source "$ROOT_DIR/modules/luopo/oracle_cloud/menu.sh"
 entry_oracle_cloud_suite() {
   luopo_oracle_cloud_menu
 }
-

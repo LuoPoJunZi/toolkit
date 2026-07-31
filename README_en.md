@@ -166,11 +166,18 @@ bash scripts/lint.sh
 bash tests/smoke_menu.sh
 ```
 
+`scripts/lint.sh` runs Bash syntax checks, ShellCheck (`info` and above), and a read-only shfmt format check across every tracked `.sh` file. The development environment must provide `shellcheck` and `shfmt`; Bash uses two-space indentation, and CI fails on violations without rewriting files.
+
+The repository uses `.editorconfig` for baseline editor formatting and `.gitattributes` to keep scripts and documentation on LF line endings.
+
 Windows preflight (auto-detects Git Bash/WSL):
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File .\scripts\preflight.ps1
 ```
+
+The Windows preflight checks every Bash file for syntax and runs the menu smoke suite. It also runs the full lint when `shellcheck` and `shfmt` are installed; otherwise GitHub Actions remains the enforced lint path.
+On Linux, Git Bash, or WSL, the same Bash checks can be run directly with `bash scripts/preflight.sh`.
 
 Version and release:
 

@@ -4,4 +4,3 @@ set -euo pipefail
 entry_uninstall() {
   uninstall_toolkit
 }
-

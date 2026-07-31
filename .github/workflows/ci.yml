@@ -13,5 +13,7 @@ jobs:
         run: sudo apt-get update && sudo apt-get install -y shellcheck shfmt
       - name: Lint
         run: bash scripts/lint.sh
+      - name: Version metadata
+        run: bash scripts/check-version-sync.sh
       - name: Smoke
         run: bash tests/smoke_menu.sh

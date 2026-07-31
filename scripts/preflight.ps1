@@ -41,6 +41,15 @@ function Get-GitBashPath {
     $candidates += $pathCommands | ForEach-Object { $_.Source }
   }
 
+  $gitCommands = Get-Command git.exe -All -ErrorAction SilentlyContinue
+  foreach ($gitCommand in $gitCommands) {
+    $gitRoot = Split-Path -Parent (Split-Path -Parent $gitCommand.Source)
+    $candidates += @(
+      (Join-Path $gitRoot "bin\bash.exe"),
+      (Join-Path $gitRoot "usr\bin\bash.exe")
+    )
+  }
+
   $commonPaths = @(
     (Join-Path $env:ProgramFiles "Git\bin\bash.exe"),
     (Join-Path $env:ProgramFiles "Git\usr\bin\bash.exe")
@@ -104,10 +113,24 @@ function Convert-ToWslPath {
   return $wslPath.Trim()
 }
 
-function Quote-BashSingle {
-  param([string]$Value)
+function Convert-ToGitBashPath {
+  param(
+    [string]$GitBashPath,
+    [string]$WindowsPath
+  )
 
-  return "'" + $Value.Replace("'", "'\''") + "'"
+  $gitRoot = Split-Path -Parent (Split-Path -Parent $GitBashPath)
+  $cygpath = Join-Path $gitRoot "usr\bin\cygpath.exe"
+  if (-not (Test-Path -LiteralPath $cygpath)) {
+    throw "Unable to find cygpath next to Git Bash: $GitBashPath"
+  }
+
+  $gitBashPathValue = & $cygpath -u $WindowsPath
+  if ($LASTEXITCODE -ne 0 -or -not $gitBashPathValue) {
+    throw "Unable to convert repository path for Git Bash: $WindowsPath"
+  }
+
+  return $gitBashPathValue.Trim()
 }
 
 function Show-BashFallback {
@@ -126,9 +149,11 @@ function Show-BashFallback {
   Write-Host "Manual fallback commands to run in any Bash-capable checkout:"
   Write-Host "  cd $RepoRoot"
   Write-Host "  git diff --check"
-  Write-Host "  bash -n toolkit.sh install.sh"
-  Write-Host "  bash -n modules/scripts_hub.sh"
+  Write-Host "  mapfile -t shell_files < <(git ls-files '*.sh')"
+  Write-Host '  bash -n "${shell_files[@]}"'
+  Write-Host "  bash scripts/lint.sh  # requires shellcheck and shfmt"
   Write-Host "  bash tests/smoke_menu.sh"
+  Write-Host "  # Or run all Bash checks with: bash scripts/preflight.sh"
   Write-Host ""
   Write-Host "If neither Git Bash nor WSL is available on this Windows machine, push the branch and rely on GitHub Actions. Include this note in the handoff: local Bash checks were skipped because Git Bash/WSL was unavailable."
 }
@@ -141,18 +166,13 @@ Write-Host "Repository: $repoRoot"
 
 Invoke-Native "git diff --check" "git" @("-C", $repoRoot, "diff", "--check")
 
-$bashCommands = 'set -euo pipefail; bash -n toolkit.sh install.sh; bash -n modules/scripts_hub.sh; bash tests/smoke_menu.sh'
 $gitBash = Get-GitBashPath
 
 if ($gitBash) {
+  $gitBashRepoRoot = Convert-ToGitBashPath $gitBash $repoRoot
   Write-Host ""
   Write-Host "Using Git Bash: $gitBash"
-  Invoke-Native "Bash syntax and smoke checks" $gitBash @(
-    "-lc",
-    "set -euo pipefail; repo=`"$(cygpath -u `"`$1`")`"; cd `"`$repo`"; bash -n toolkit.sh install.sh; bash -n modules/scripts_hub.sh; bash tests/smoke_menu.sh",
-    "--",
-    $repoRoot
-  )
+  Invoke-Native "Bash preflight checks" $gitBash @("$gitBashRepoRoot/scripts/preflight.sh")
   Write-Host ""
   Write-Host "Preflight passed."
   exit 0
@@ -162,11 +182,10 @@ if (Test-WslBash) {
   $wslRepoRoot = Convert-ToWslPath $repoRoot
   Write-Host ""
   Write-Host "Using WSL: $wslRepoRoot"
-  Invoke-Native "Bash syntax and smoke checks" "wsl.exe" @(
+  Invoke-Native "Bash preflight checks" "wsl.exe" @(
     "-e",
     "bash",
-    "-lc",
-    "cd $(Quote-BashSingle $wslRepoRoot); $bashCommands"
+    "$wslRepoRoot/scripts/preflight.sh"
   )
   Write-Host ""
   Write-Host "Preflight passed."

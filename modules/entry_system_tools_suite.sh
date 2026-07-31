@@ -7,4 +7,3 @@ source "$ROOT_DIR/modules/luopo/system_tools/menu.sh"
 entry_system_tools_suite() {
   luopo_system_tools_menu
 }
-

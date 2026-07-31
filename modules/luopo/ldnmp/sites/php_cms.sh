@@ -24,7 +24,7 @@ luopo_ldnmp_install_wordpress() {
   wget -O latest.zip "${gh_proxy}github.com/kejilion/Website_source_code/raw/refs/heads/main/wp-latest.zip"
   unzip -o latest.zip
   rm -f latest.zip
-  echo "define('FS_METHOD', 'direct'); define('WP_REDIS_HOST', 'redis'); define('WP_REDIS_PORT', '6379'); define('WP_REDIS_MAXTTL', 86400); define('WP_CACHE_KEY_SALT', '${yuming}_');" >> "/home/web/html/$yuming/wordpress/wp-config-sample.php"
+  echo "define('FS_METHOD', 'direct'); define('WP_REDIS_HOST', 'redis'); define('WP_REDIS_PORT', '6379'); define('WP_REDIS_MAXTTL', 86400); define('WP_CACHE_KEY_SALT', '${yuming}_');" >>"/home/web/html/$yuming/wordpress/wp-config-sample.php"
   sed -i "s|database_name_here|$dbname|g" "/home/web/html/$yuming/wordpress/wp-config-sample.php"
   sed -i "s|username_here|$dbuse|g" "/home/web/html/$yuming/wordpress/wp-config-sample.php"
   sed -i "s|password_here|$dbusepasswd|g" "/home/web/html/$yuming/wordpress/wp-config-sample.php"
@@ -288,7 +288,7 @@ luopo_ldnmp_custom_dynamic_site() {
   fi
 
   local latest_zip
-  latest_zip="$(ls -t ./*.zip 2>/dev/null | head -1)"
+  latest_zip="$(luopo_ldnmp_latest_file "$PWD" '*.zip')"
   if [[ -n "$latest_zip" ]]; then
     unzip "$latest_zip"
     rm -f "$latest_zip"
@@ -299,7 +299,7 @@ luopo_ldnmp_custom_dynamic_site() {
   clear
   echo -e "[${gl_huang}2/6${gl_bai}] index.php 所在路径"
   echo "-------------"
-  find "$(realpath .)" -name "index.php" -print | xargs -r -I {} dirname {}
+  find "$(realpath .)" -name "index.php" -exec dirname {} \;
   read -r -p "请输入 index.php 的路径，类似 /home/web/html/$yuming/wordpress/: " index_lujing
 
   sed -i "s#root /var/www/html/$yuming/#root $index_lujing#g" "/home/web/conf.d/$yuming.conf"
@@ -327,7 +327,9 @@ luopo_ldnmp_custom_dynamic_site() {
   docker exec php php -m
   read -r -p "输入需要安装的扩展名称，如 SourceGuardian imap ftp 等。直接回车将跳过安装: " php_extensions
   if [[ -n "$php_extensions" ]]; then
-    docker exec "$PHP_Version" install-php-extensions $php_extensions
+    local -a php_extension_args=()
+    read -r -a php_extension_args <<<"$php_extensions"
+    docker exec "$PHP_Version" install-php-extensions "${php_extension_args[@]}"
   fi
 
   clear
@@ -352,13 +354,13 @@ luopo_ldnmp_custom_dynamic_site() {
       fi
 
       local latest_gz latest_sql dbrootpasswd
-      latest_gz="$(ls -t ./*.gz 2>/dev/null | head -1)"
+      latest_gz="$(luopo_ldnmp_latest_file "$PWD" '*.gz')"
       if [[ -n "$latest_gz" ]]; then
         gunzip "$latest_gz"
-        latest_sql="$(ls -t ./*.sql 2>/dev/null | head -1)"
+        latest_sql="$(luopo_ldnmp_latest_file "$PWD" '*.sql')"
         if [[ -n "$latest_sql" ]]; then
           dbrootpasswd="$(grep -oP 'MYSQL_ROOT_PASSWORD:\s*\K.*' /home/web/docker-compose.yml | tr -d '[:space:]')"
-          docker exec -i mysql mysql -u root -p"$dbrootpasswd" "$dbname" < "$latest_sql"
+          docker exec -i mysql mysql -u root -p"$dbrootpasswd" "$dbname" <"$latest_sql"
           echo "数据库导入的表数据"
           docker exec -i mysql mysql -u root -p"$dbrootpasswd" -e "USE $dbname; SHOW TABLES;"
           rm -f "$latest_sql"

@@ -39,7 +39,7 @@ luopo_system_tools_clamav_scan() {
   fi
 
   mkdir -p /home/docker/clamav/log/
-  : > /home/docker/clamav/log/scan.log
+  : >/home/docker/clamav/log/scan.log
   echo -e "${gl_kjlan:-}正在扫描: ${dirs[*]}${gl_bai:-}"
   docker run --rm \
     --name luopo-clamav-scan \
@@ -87,12 +87,13 @@ luopo_system_tools_clamav_menu() {
         ;;
       3)
         local directories
+        local -a scan_directories=()
         send_stats "自定义目录扫描"
         read -r -p "请输入要扫描的目录，用空格分隔（例如：/etc /var /usr /home /root）: " directories
         install_docker
         luopo_system_tools_clamav_freshclam
-        # shellcheck disable=SC2206
-        luopo_system_tools_clamav_scan $directories
+        read -r -a scan_directories <<<"$directories"
+        luopo_system_tools_clamav_scan "${scan_directories[@]}"
         ;;
       0)
         return 0

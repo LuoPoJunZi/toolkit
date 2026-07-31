@@ -153,6 +153,11 @@ UNINSTALL_FILE="$ROOT_DIR/core/uninstall.sh"
 REGISTRY_FILE="$ROOT_DIR/core/menu_registry.sh"
 DISPATCHER_FILE="$ROOT_DIR/core/menu_dispatcher.sh"
 ENTRIES_LOAD_FILE="$ROOT_DIR/modules/entries.sh"
+EDITORCONFIG_FILE="$ROOT_DIR/.editorconfig"
+GITATTRIBUTES_FILE="$ROOT_DIR/.gitattributes"
+SHELLCHECK_CONFIG_FILE="$ROOT_DIR/.shellcheckrc"
+LINT_FILE="$ROOT_DIR/scripts/lint.sh"
+PREFLIGHT_SH_FILE="$ROOT_DIR/scripts/preflight.sh"
 
 fail() {
   echo "::error title=smoke_menu::$*"
@@ -230,6 +235,8 @@ assert_not_contains_fixed() {
   fi
 }
 
+# The assertions below intentionally use single-quoted source text literally.
+# shellcheck disable=SC2016
 main() {
   assert_file "$MENU_FILE"
   assert_file "$LUOPO_NETWORK_TEST_MENU_FILE"
@@ -330,6 +337,27 @@ main() {
   assert_file "$REGISTRY_FILE"
   assert_file "$DISPATCHER_FILE"
   assert_file "$ENTRIES_LOAD_FILE"
+  assert_file "$EDITORCONFIG_FILE"
+  assert_file "$GITATTRIBUTES_FILE"
+  assert_file "$SHELLCHECK_CONFIG_FILE"
+  assert_file "$LINT_FILE"
+  assert_file "$PREFLIGHT_SH_FILE"
+
+  assert_contains_fixed "$EDITORCONFIG_FILE" 'indent_size = 2' "EditorConfig should enforce two-space indentation"
+  assert_contains_fixed "$GITATTRIBUTES_FILE" '*.sh text eol=lf' "Bash files should use LF line endings"
+  assert_contains_fixed "$SHELLCHECK_CONFIG_FILE" 'severity=info' "ShellCheck should include informational findings"
+  assert_contains_fixed "$LINT_FILE" 'bash -n "${shell_files[@]}"' "lint should syntax-check every tracked Bash file"
+  assert_contains_fixed "$LINT_FILE" 'shellcheck "${shell_files[@]}"' "lint should enforce ShellCheck findings"
+  assert_contains_fixed "$LINT_FILE" 'shfmt -d -i 2 -ci -bn "${shell_files[@]}"' "lint should verify formatting without rewriting files"
+  assert_not_contains_fixed "$LINT_FILE" 'shellcheck "${shell_files[@]}" || true' "lint must not swallow ShellCheck failures"
+  assert_contains_fixed "$PREFLIGHT_SH_FILE" 'bash -n "${shell_files[@]}"' "Bash preflight should syntax-check every tracked shell file"
+  assert_contains_fixed "$PREFLIGHT_SH_FILE" 'bash scripts/lint.sh' "Bash preflight should run strict lint when tools are available"
+  assert_contains_fixed "$PREFLIGHT_SH_FILE" 'bash scripts/check-version-sync.sh' "Bash preflight should validate version metadata"
+  assert_not_contains_fixed "$LUOPO_WARP_ACTIONS_FILE" '[option] [lisence/url/token]' "WARP launcher should not pass placeholder arguments"
+  assert_contains_fixed "$LUOPO_WARP_ACTIONS_FILE" 'if ! "$handler"; then' "WARP action failures should not be confused with the return-menu signal"
+  assert_contains_fixed "$LUOPO_SYSTEM_TOOLS_ACTIONS_ACCESS_FILE" 'shortcut_conflict=0' "shortcut setup should protect existing system commands"
+  assert_contains_fixed "$LUOPO_SYSTEM_TOOLS_OPERATIONS_SECURITY_MONITORING_FILE" '# luopo-traffic-reset' "traffic reboot cron should use an ownership marker"
+  assert_not_contains_fixed "$LUOPO_SYSTEM_TOOLS_OPERATIONS_SECURITY_MONITORING_FILE" "luopo_system_tools_crontab_without 'reboot'" "traffic cron cleanup must preserve unrelated reboot jobs"
 
   for label in 1 2 3 4 5 6 7 8 9 10 11 12 13 99 88 0; do
     assert_contains_fixed "$REGISTRY_FILE" "\"${label}|menu_label_${label}" "missing menu registry item ${label}"

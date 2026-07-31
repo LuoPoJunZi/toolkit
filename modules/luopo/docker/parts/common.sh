@@ -33,7 +33,7 @@ docker_compose_version() {
 
 count_by_command() {
   local out
-  out="$($@ 2>/dev/null || true)"
+  out="$("$@" 2>/dev/null || true)"
   if [[ -z "$out" ]]; then
     echo "0"
     return

@@ -7,4 +7,3 @@ source "$ROOT_DIR/modules/luopo/docker/manager.sh"
 entry_docker_management() {
   docker_manager
 }
-

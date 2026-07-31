@@ -48,4 +48,3 @@ luopo_ldnmp_dispatch_choice() {
   esac
   return 0
 }
-
