@@ -117,7 +117,7 @@
 ## 4. 当前结构状态备注
 
 - [x] 可见主菜单入口 `5-13` 已接到 `modules/luopo/`
-- [x] `oracle_cloud` 和 `cluster_control` 模块代码保留，但当前不在主菜单展示
+- [x] `oracle_cloud` 和 `cluster_control` 模块及入口代码已删除
 - [x] `modules/compat/` 已移除
 - [x] `ldnmp` / `system_tools` 的模块级 `legacy_bridge.sh` 已移除
 - [x] 活动模块不再调用 `ensure_luopo_vendor_loaded` / `run_luopo_compat_menu`
@@ -160,4 +160,3 @@
    logs/action.log 片段:
    logs/error.log 片段:
 ```
-

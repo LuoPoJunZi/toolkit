@@ -1,7 +1,13 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-mapfile -t shell_files < <(git ls-files '*.sh')
+mapfile -t tracked_shell_files < <(git ls-files -- '*.sh')
+shell_files=()
+for file in "${tracked_shell_files[@]}"; do
+  if [[ -f "$file" ]]; then
+    shell_files+=("$file")
+  fi
+done
 
 if ((${#shell_files[@]} == 0)); then
   echo "No tracked Bash files found."

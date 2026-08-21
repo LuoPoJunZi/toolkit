@@ -27,7 +27,7 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
-      - name: Auto bump version and changelog
+      - name: Prepare calendar version and changelog
         run: bash scripts/auto-release.sh
 
       - name: Push release commit

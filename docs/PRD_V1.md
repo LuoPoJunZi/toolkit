@@ -29,7 +29,7 @@
   - SHA256 check
   - manual confirmation
 - Distribution: bash one-liner style
-- Versioning: semantic versioning
+- Versioning: triggering commit date converted to Asia/Shanghai in `YY.M.D` format
 - CI: shellcheck + shfmt + basic smoke test
 
 ## Acceptance Criteria

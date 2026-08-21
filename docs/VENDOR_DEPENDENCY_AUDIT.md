@@ -28,8 +28,8 @@
 - Module-local `legacy_bridge.sh` files have been removed from the active `modules/luopo/*` tree.
 - `docker` is already comparatively isolated and does not rely on a `helpers.sh` bootstrap.
 - `basic_tools` and `network_test` have already been detached from vendor bootstrap.
-- `workspace`, `bbr_management`, and `oracle_cloud` have now also been detached from vendor bootstrap.
-- `cluster_control` and `warp_management` have now also been detached from vendor bootstrap.
+- `workspace`, `bbr_management`, and `warp_management` have been detached from vendor bootstrap.
+- The retired `oracle_cloud` and `cluster_control` modules were removed from the project on 2026-08-21. Their sections below are retained only as historical migration notes.
 
 ## Dependency Layers
 
@@ -160,8 +160,8 @@ Priority:
 
 ### cluster_control
 Status:
-- Native menu/actions exist
-- Bootstrap dependency removed
+- Removed from the project on 2026-08-21
+- The notes below describe its former implementation
 
 Confirmed direct dependencies:
 - Shared runtime:
@@ -250,9 +250,8 @@ Priority:
 
 ### oracle_cloud
 Status:
-- Native menu/actions exist
-- Still relies on a few vendor operational helpers
-- Bootstrap dependency removed
+- Removed from the project on 2026-08-21
+- The notes below describe its former implementation
 
 Confirmed dependencies:
 - Shared runtime:

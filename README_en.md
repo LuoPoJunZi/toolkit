@@ -77,7 +77,7 @@ Enter choice:
 
 ## Clone Layer Notes
 
-- Visible main menu entries `5-13` are now local modular mirrors of the `4-14` feature set from `kejilion/sh`; the Oracle Cloud tools and server cluster control code remains in the repository, but is hidden from the main menu.
+- Visible main menu entries `5-13` are local modular mirrors of the relevant `kejilion/sh` features; the Oracle Cloud tools and server cluster control code have been removed from the project.
 - These local modules intentionally keep the upstream menu structure, submenu depth, external-script integrations, and operating style as close as possible for later second-stage customization.
 - Upstream source and local adaptation notes are documented in [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md).
 - Local adaptations currently include disabling upstream telemetry, disabling upstream self-install side effects, and migrating active menus into native `modules/luopo/` modules. `vendor/luopo.sh` may be kept locally as a source-reference snapshot, but it is no longer uploaded to the GitHub repository.
@@ -183,7 +183,8 @@ Version and release:
 
 - Version history is managed by `VERSION` + `CHANGELOG.md`.
 - GitHub Actions runs `ci` and `release` workflows.
-- Auto release only increments the patch version; minor/major versions are controlled manually by the maintainer.
+- Versions use the triggering commit date converted to the Asia/Shanghai time zone in `YY.M.D` format; for example, a change dated `2026-08-21` becomes `26.8.21`.
+- Only one version tag is created per calendar day to avoid duplicate releases or moving an existing tag.
 - Each GitHub Release description must include a concise "主要变化" / "Major Changes" section so version differences are clear.
 - Release page: <https://github.com/LuoPoJunZi/toolkit/releases>
 - Current directory structure: [docs/DIRECTORY_STRUCTURE.md](docs/DIRECTORY_STRUCTURE.md)
@@ -192,4 +193,4 @@ Version and release:
 ## License
 
 - This project is released under the [GPL-3.0 License](LICENSE).
-- The visible `5-13` modules and hidden retained modules include Apache-2.0 licensed upstream code from `kejilion/sh` plus local adaptations. See [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md).
+- The visible `5-13` modules include Apache-2.0 licensed upstream code from `kejilion/sh` plus local adaptations. See [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md).

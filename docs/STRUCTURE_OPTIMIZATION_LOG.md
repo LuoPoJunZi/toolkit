@@ -14,6 +14,13 @@
 
 ## Progress Timeline
 
+### 2026-08-21 - Retired Hidden Modules
+Completed:
+- Removed the retired `oracle_cloud` and `cluster_control` entry files and native module trees.
+- Removed both modules from the entry loader and smoke-test inventory.
+- Replaced patch-based semantic releases with `YY.M.D` calendar versions based on the triggering commit date converted to Asia/Shanghai.
+- Kept historical migration notes below as an audit trail.
+
 ### 2026-04-17 - Round 1
 Completed:
 - Added vendor dependency audit document:

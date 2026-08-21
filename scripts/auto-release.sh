@@ -31,70 +31,78 @@ if [[ "$core_changed" -eq 0 ]]; then
   exit 0
 fi
 
-latest_tag="$(git tag --list 'v*' --sort=-v:refname | head -n1 || true)"
-has_latest_tag=1
-if [[ -z "$latest_tag" ]]; then
-  has_latest_tag=0
-  if [[ -f VERSION ]]; then
-    base_version="$(tr -d '[:space:]' <VERSION)"
-    if [[ "$base_version" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-      latest_tag="v${base_version}"
-    else
-      latest_tag="v0.0.0"
-    fi
-  else
-    latest_tag="v0.0.0"
+normalize_release_version() {
+  local value="$1"
+  local year month day normalized
+
+  if [[ ! "$value" =~ ^[0-9]{2}\.([1-9]|1[0-2])\.([1-9]|[12][0-9]|3[01])$ ]]; then
+    return 1
   fi
+
+  IFS='.' read -r year month day <<<"$value"
+  normalized="$(date -d "20${year}-${month}-${day}" '+%y.%-m.%-d' 2>/dev/null)" || return 1
+  [[ "$normalized" == "$value" ]]
+}
+
+release_timestamp="$(git show -s --format=%ct HEAD)"
+next_version="${LUOPO_RELEASE_VERSION:-$(TZ=Asia/Shanghai date -d "@${release_timestamp}" '+%y.%-m.%-d')}"
+if ! normalize_release_version "$next_version"; then
+  echo "Invalid calendar release version: $next_version"
+  exit 1
 fi
-
-latest_version="${latest_tag#v}"
-IFS='.' read -r major minor patch <<<"$latest_version"
-major="${major:-0}"
-minor="${minor:-0}"
-patch="${patch:-0}"
-
-# Auto release only increments the patch version.
-# Minor/major releases are intentionally manual and controlled by the maintainer.
-next_patch=$((patch + 1))
-next_version="${major}.${minor}.${next_patch}"
 next_tag="v${next_version}"
 
 if git rev-parse "$next_tag" >/dev/null 2>&1; then
-  echo "Tag $next_tag already exists, skip."
+  echo "Release $next_tag already exists for today, skip duplicate release."
   echo "SKIP_RELEASE=1" >>"$GITHUB_ENV"
   exit 0
 fi
 
-log_range="${latest_tag}..HEAD"
-if [[ "$has_latest_tag" -eq 0 ]]; then
+latest_tag="$(git tag --merged HEAD --list 'v*' --sort=-creatordate | head -n1 || true)"
+if [[ -n "$latest_tag" ]]; then
+  log_range="${latest_tag}..HEAD"
+else
   log_range="HEAD"
 fi
 
 release_notes_file="$ROOT_DIR/.release-notes.md"
-{
-  echo "## ${next_tag}"
-  echo
-  echo "### 主要变化"
-  git log --pretty='- %s (%h)' "$log_range"
-} >"$release_notes_file"
+if grep -qFx "## $next_version" CHANGELOG.md; then
+  {
+    echo "## ${next_tag}"
+    awk -v version="$next_version" '
+      $0 == "## " version { in_section=1; next }
+      in_section && /^## / { exit }
+      in_section { print }
+    ' CHANGELOG.md
+  } >"$release_notes_file"
+else
+  {
+    echo "## ${next_tag}"
+    echo
+    echo "### 主要变化"
+    git log --pretty='- %s (%h)' "$log_range"
+  } >"$release_notes_file"
+
+  tmp_changelog="$(mktemp)"
+  {
+    echo "# Changelog"
+    echo
+    echo "## ${next_version}"
+    echo
+    echo "### 主要变化"
+    git log --pretty='- %s (%h)' "$log_range"
+    echo
+    tail -n +3 CHANGELOG.md 2>/dev/null || true
+  } >"$tmp_changelog"
+  mv "$tmp_changelog" CHANGELOG.md
+fi
 
 echo "$next_version" >VERSION
 
-tmp_changelog="$(mktemp)"
-{
-  echo "# Changelog"
-  echo
-  echo "## ${next_version}"
-  echo
-  echo "### 主要变化"
-  git log --pretty='- %s (%h)' "$log_range"
-  echo
-  tail -n +3 CHANGELOG.md 2>/dev/null || true
-} >"$tmp_changelog"
-mv "$tmp_changelog" CHANGELOG.md
-
 git add VERSION CHANGELOG.md
-git commit -m "chore(release): ${next_tag}"
+if ! git diff --cached --quiet; then
+  git commit -m "chore(release): ${next_tag}"
+fi
 
 {
   echo "SKIP_RELEASE=0"

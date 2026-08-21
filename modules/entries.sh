@@ -22,8 +22,6 @@ source "$MODULE_DIR/entry_warp_management.sh"
 # shellcheck disable=SC1091
 source "$MODULE_DIR/entry_network_test_suite.sh"
 # shellcheck disable=SC1091
-source "$MODULE_DIR/entry_oracle_cloud_suite.sh"
-# shellcheck disable=SC1091
 source "$MODULE_DIR/entry_ldnmp_site_suite.sh"
 # shellcheck disable=SC1091
 source "$MODULE_DIR/entry_app_marketplace.sh"
@@ -31,8 +29,6 @@ source "$MODULE_DIR/entry_app_marketplace.sh"
 source "$MODULE_DIR/entry_workspace_suite.sh"
 # shellcheck disable=SC1091
 source "$MODULE_DIR/entry_system_tools_suite.sh"
-# shellcheck disable=SC1091
-source "$MODULE_DIR/entry_cluster_control_suite.sh"
 # shellcheck disable=SC1091
 source "$MODULE_DIR/entry_uninstall.sh"
 # shellcheck disable=SC1091

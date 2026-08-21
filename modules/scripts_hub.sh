@@ -11,8 +11,18 @@ source "$ROOT_DIR/integrations/verifier.sh"
 source "$ROOT_DIR/integrations/runners.sh"
 
 require_jq() {
+  if command -v jq >/dev/null 2>&1; then
+    return 0
+  fi
+
+  echo "脚本中心需要 jq，正在自动安装..."
+  if ! declare -F install >/dev/null 2>&1 || ! install jq; then
+    echo "jq 安装失败，请手动安装后重试"
+    return 1
+  fi
+
   if ! command -v jq >/dev/null 2>&1; then
-    echo "缺少 jq，安装命令: apt-get update && apt-get install -y jq"
+    echo "jq 安装完成后仍不可用，请检查 PATH"
     return 1
   fi
 }
@@ -57,25 +67,31 @@ run_integration_script() {
 
 scripts_hub() {
   local index_file="$ROOT_DIR/integrations/index.json"
-  local choice selected_id
-  local -a selected_ids
-  local -a script_entries
+  local choice entries_output selected_id
+  local -a selected_ids=()
+  local -a script_entries=()
   local i
 
   if ! require_jq; then
-    return 1
+    press_enter
+    return 0
   fi
 
   if [[ ! -f "$index_file" ]]; then
     echo "脚本索引文件不存在: $index_file"
-    return 1
+    press_enter
+    return 0
   fi
 
-  mapfile -t script_entries < <(jq -r '.scripts[] | select(.enabled == true and (.tags | index("self-project"))) | [.id, .name] | @tsv' "$index_file")
-
-  if [[ "${#script_entries[@]}" -eq 0 ]]; then
-    echo "暂无可用脚本"
+  if ! entries_output="$(jq -r '.scripts[] | select(.enabled == true and (.tags | index("self-project"))) | [.id, .name] | @tsv' "$index_file")"; then
+    echo "脚本索引解析失败: $index_file"
+    log_error "scripts_hub:index_parse_failed"
+    press_enter
     return 0
+  fi
+
+  if [[ -n "$entries_output" ]]; then
+    mapfile -t script_entries <<<"$entries_output"
   fi
 
   echo "========================================"
@@ -89,6 +105,10 @@ scripts_hub() {
     ((i++))
   done
 
+  if [[ "${#script_entries[@]}" -eq 0 ]]; then
+    echo " 暂无可用脚本"
+  fi
+
   echo "----------------------------------------"
   menu_item "0" "返回上级菜单"
   echo "========================================"
@@ -99,6 +119,10 @@ scripts_hub() {
   fi
   if ! [[ "$choice" =~ ^[0-9]+$ ]]; then
     echo "无效选项"
+    return 1
+  fi
+  if [[ "${#selected_ids[@]}" -eq 0 ]]; then
+    echo "暂无可用脚本"
     return 1
   fi
   if ((choice < 1 || choice > ${#selected_ids[@]})); then

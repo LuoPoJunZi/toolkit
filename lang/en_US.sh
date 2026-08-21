@@ -28,7 +28,6 @@ declare -A I18N=(
   [menu_label_12]="Workspace"
   [menu_label_13]="System tools"
   [menu_label_14]="System tools"
-  [menu_label_15]="Server cluster control"
   [menu_label_99]="Update toolkit"
   [menu_label_88]="Uninstall toolkit"
   [menu_label_0]="Exit script"

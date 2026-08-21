@@ -18,18 +18,10 @@ LUOPO_BASIC_TOOLS_HELPERS_FILE="$ROOT_DIR/modules/luopo/basic_tools/helpers.sh"
 LUOPO_BBR_MENU_FILE="$ROOT_DIR/modules/luopo/bbr_management/menu.sh"
 LUOPO_BBR_ACTIONS_FILE="$ROOT_DIR/modules/luopo/bbr_management/actions.sh"
 LUOPO_BBR_HELPERS_FILE="$ROOT_DIR/modules/luopo/bbr_management/helpers.sh"
-LUOPO_ORACLE_CLOUD_MENU_FILE="$ROOT_DIR/modules/luopo/oracle_cloud/menu.sh"
-LUOPO_ORACLE_CLOUD_REGISTRY_FILE="$ROOT_DIR/modules/luopo/oracle_cloud/registry.sh"
-LUOPO_ORACLE_CLOUD_ACTIONS_FILE="$ROOT_DIR/modules/luopo/oracle_cloud/actions.sh"
-LUOPO_ORACLE_CLOUD_HELPERS_FILE="$ROOT_DIR/modules/luopo/oracle_cloud/helpers.sh"
 LUOPO_WORKSPACE_MENU_FILE="$ROOT_DIR/modules/luopo/workspace/menu.sh"
 LUOPO_WORKSPACE_REGISTRY_FILE="$ROOT_DIR/modules/luopo/workspace/registry.sh"
 LUOPO_WORKSPACE_ACTIONS_FILE="$ROOT_DIR/modules/luopo/workspace/actions.sh"
 LUOPO_WORKSPACE_HELPERS_FILE="$ROOT_DIR/modules/luopo/workspace/helpers.sh"
-LUOPO_CLUSTER_MENU_FILE="$ROOT_DIR/modules/luopo/cluster_control/menu.sh"
-LUOPO_CLUSTER_REGISTRY_FILE="$ROOT_DIR/modules/luopo/cluster_control/registry.sh"
-LUOPO_CLUSTER_ACTIONS_FILE="$ROOT_DIR/modules/luopo/cluster_control/actions.sh"
-LUOPO_CLUSTER_HELPERS_FILE="$ROOT_DIR/modules/luopo/cluster_control/helpers.sh"
 LUOPO_DOCKER_MANAGER_FILE="$ROOT_DIR/modules/luopo/docker/manager.sh"
 LUOPO_DOCKER_COMMON_FILE="$ROOT_DIR/modules/luopo/docker/parts/common.sh"
 LUOPO_DOCKER_INSTALL_STATUS_FILE="$ROOT_DIR/modules/luopo/docker/parts/install_status.sh"
@@ -158,6 +150,8 @@ GITATTRIBUTES_FILE="$ROOT_DIR/.gitattributes"
 SHELLCHECK_CONFIG_FILE="$ROOT_DIR/.shellcheckrc"
 LINT_FILE="$ROOT_DIR/scripts/lint.sh"
 PREFLIGHT_SH_FILE="$ROOT_DIR/scripts/preflight.sh"
+AUTO_RELEASE_FILE="$ROOT_DIR/scripts/auto-release.sh"
+VERSION_CHECK_FILE="$ROOT_DIR/scripts/check-version-sync.sh"
 
 fail() {
   echo "::error title=smoke_menu::$*"
@@ -168,6 +162,12 @@ fail() {
 assert_file() {
   file="$1"
   [[ -f "$file" ]] || fail "missing file: $file"
+}
+
+assert_not_path() {
+  path="$1"
+  desc="$2"
+  [[ ! -e "$path" ]] || fail "$desc (unexpected path: $path)"
 }
 
 assert_contains_fixed() {
@@ -235,6 +235,30 @@ assert_not_contains_fixed() {
   fi
 }
 
+assert_scripts_hub_menu() {
+  local output
+
+  output="$({
+    # shellcheck disable=SC1090
+    source "$ROOT_DIR/lang/zh_CN.sh"
+    # shellcheck disable=SC1090
+    source "$ROOT_DIR/core/ui.sh"
+    # shellcheck disable=SC1090
+    source "$SCRIPTS_HUB_FILE"
+    # scripts_hub discovers this test double dynamically with command -v.
+    # shellcheck disable=SC2329
+    jq() {
+      printf '%s\n' \
+        $'luopojunzi-hysteria2-luopo\tHysteria2 一键脚本' \
+        $'luopojunzi-sing-box-ev\tSing-box 一键脚本'
+    }
+    scripts_hub <<<"0"
+  })" || fail "script hub should render indexed self-project scripts"
+
+  [[ "$output" == *"【落魄】 Hysteria2 一键脚本"* ]] || fail "script hub should render Hysteria2"
+  [[ "$output" == *"【落魄】 Sing-box 一键脚本"* ]] || fail "script hub should render Sing-box"
+}
+
 # The assertions below intentionally use single-quoted source text literally.
 # shellcheck disable=SC2016
 main() {
@@ -250,18 +274,10 @@ main() {
   assert_file "$LUOPO_BBR_MENU_FILE"
   assert_file "$LUOPO_BBR_ACTIONS_FILE"
   assert_file "$LUOPO_BBR_HELPERS_FILE"
-  assert_file "$LUOPO_ORACLE_CLOUD_MENU_FILE"
-  assert_file "$LUOPO_ORACLE_CLOUD_REGISTRY_FILE"
-  assert_file "$LUOPO_ORACLE_CLOUD_ACTIONS_FILE"
-  assert_file "$LUOPO_ORACLE_CLOUD_HELPERS_FILE"
   assert_file "$LUOPO_WORKSPACE_MENU_FILE"
   assert_file "$LUOPO_WORKSPACE_REGISTRY_FILE"
   assert_file "$LUOPO_WORKSPACE_ACTIONS_FILE"
   assert_file "$LUOPO_WORKSPACE_HELPERS_FILE"
-  assert_file "$LUOPO_CLUSTER_MENU_FILE"
-  assert_file "$LUOPO_CLUSTER_REGISTRY_FILE"
-  assert_file "$LUOPO_CLUSTER_ACTIONS_FILE"
-  assert_file "$LUOPO_CLUSTER_HELPERS_FILE"
   assert_file "$LUOPO_DOCKER_MANAGER_FILE"
   assert_file "$LUOPO_DOCKER_COMMON_FILE"
   assert_file "$LUOPO_DOCKER_INSTALL_STATUS_FILE"
@@ -342,6 +358,8 @@ main() {
   assert_file "$SHELLCHECK_CONFIG_FILE"
   assert_file "$LINT_FILE"
   assert_file "$PREFLIGHT_SH_FILE"
+  assert_file "$AUTO_RELEASE_FILE"
+  assert_file "$VERSION_CHECK_FILE"
 
   assert_contains_fixed "$EDITORCONFIG_FILE" 'indent_size = 2' "EditorConfig should enforce two-space indentation"
   assert_contains_fixed "$GITATTRIBUTES_FILE" '*.sh text eol=lf' "Bash files should use LF line endings"
@@ -353,6 +371,11 @@ main() {
   assert_contains_fixed "$PREFLIGHT_SH_FILE" 'bash -n "${shell_files[@]}"' "Bash preflight should syntax-check every tracked shell file"
   assert_contains_fixed "$PREFLIGHT_SH_FILE" 'bash scripts/lint.sh' "Bash preflight should run strict lint when tools are available"
   assert_contains_fixed "$PREFLIGHT_SH_FILE" 'bash scripts/check-version-sync.sh' "Bash preflight should validate version metadata"
+  assert_contains_fixed "$AUTO_RELEASE_FILE" 'TZ=Asia/Shanghai' "auto release should use the maintainer timezone"
+  assert_contains_fixed "$AUTO_RELEASE_FILE" 'git show -s --format=%ct HEAD' "auto release should use the triggering commit date"
+  assert_contains_fixed "$AUTO_RELEASE_FILE" "'+%y.%-m.%-d'" "auto release should generate YY.M.D versions"
+  assert_not_contains_fixed "$AUTO_RELEASE_FILE" 'next_patch=' "auto release should not increment semantic patch versions"
+  assert_contains_fixed "$VERSION_CHECK_FILE" 'VERSION must use YY.M.D calendar format' "version check should enforce calendar versions"
   assert_not_contains_fixed "$LUOPO_WARP_ACTIONS_FILE" '[option] [lisence/url/token]' "WARP launcher should not pass placeholder arguments"
   assert_contains_fixed "$LUOPO_WARP_ACTIONS_FILE" 'if ! "$handler"; then' "WARP action failures should not be confused with the return-menu signal"
   assert_contains_fixed "$LUOPO_SYSTEM_TOOLS_ACTIONS_ACCESS_FILE" 'shortcut_conflict=0' "shortcut setup should protect existing system commands"
@@ -362,8 +385,12 @@ main() {
   for label in 1 2 3 4 5 6 7 8 9 10 11 12 13 99 88 0; do
     assert_contains_fixed "$REGISTRY_FILE" "\"${label}|menu_label_${label}" "missing menu registry item ${label}"
   done
-  assert_not_contains_fixed "$REGISTRY_FILE" 'entry_oracle_cloud_suite' "oracle cloud should be hidden from main menu registry"
-  assert_not_contains_fixed "$REGISTRY_FILE" 'entry_cluster_control_suite' "cluster control should be hidden from main menu registry"
+  assert_not_contains_fixed "$REGISTRY_FILE" 'entry_oracle_cloud_suite' "oracle cloud should not exist in main menu registry"
+  assert_not_contains_fixed "$REGISTRY_FILE" 'entry_cluster_control_suite' "cluster control should not exist in main menu registry"
+  assert_not_path "$ROOT_DIR/modules/entry_oracle_cloud_suite.sh" "oracle cloud entry should be removed"
+  assert_not_path "$ROOT_DIR/modules/entry_cluster_control_suite.sh" "cluster control entry should be removed"
+  assert_not_path "$ROOT_DIR/modules/luopo/oracle_cloud" "oracle cloud module should be removed"
+  assert_not_path "$ROOT_DIR/modules/luopo/cluster_control" "cluster control module should be removed"
 
   assert_contains_fixed "$MENU_FILE" 'source "$ROOT_DIR/core/menu_registry.sh"' "menu should load registry"
   assert_contains_fixed "$MENU_FILE" 'source "$ROOT_DIR/core/menu_dispatcher.sh"' "menu should load dispatcher"
@@ -381,6 +408,9 @@ main() {
   assert_contains_fixed "$ZH_LANG_FILE" '[title_main_fmt]="LuoPo VPS Toolkit v%s (快捷启动: z)"' "Chinese title should keep current quick-start wording"
   assert_contains_fixed "$SCRIPTS_HUB_FILE" 'echo "脚本中心"' "menu 4 runtime title should use current wording"
   assert_not_contains_fixed "$SCRIPTS_HUB_FILE" 'echo "一键脚本中心"' "menu 4 runtime title should not use legacy wording"
+  assert_contains_fixed "$SCRIPTS_HUB_FILE" 'install jq' "script hub should install jq when the dependency is missing"
+  assert_contains_fixed "$SCRIPTS_HUB_FILE" '脚本索引解析失败' "script hub should report index parsing failures"
+  assert_scripts_hub_menu
 
   assert_contains_fixed "$DISPATCHER_FILE" 'entry_exit' "dispatcher should support exit handler"
   assert_contains_fixed "$DISPATCHER_FILE" 'run_action "$action_name" "$handler"' "dispatcher should execute handler via run_action"
@@ -399,12 +429,10 @@ main() {
     entry_docker_management.sh \
     entry_warp_management.sh \
     entry_network_test_suite.sh \
-    entry_oracle_cloud_suite.sh \
     entry_ldnmp_site_suite.sh \
     entry_app_marketplace.sh \
     entry_workspace_suite.sh \
     entry_system_tools_suite.sh \
-    entry_cluster_control_suite.sh \
     entry_uninstall.sh \
     entry_self_update.sh \
     entry_exit.sh; do
@@ -455,13 +483,6 @@ main() {
   assert_contains_regex "$LUOPO_NETWORK_TEST_ACTIONS_FILE" '^luopo_network_test_chatgpt_unlock\(\) \{' "missing LuoPo network test action"
   assert_contains_regex "$LUOPO_NETWORK_TEST_HELPERS_FILE" '^luopo_network_test_run_shell\(\) \{' "missing LuoPo network test helper"
   assert_not_contains_fixed "$LUOPO_NETWORK_TEST_HELPERS_FILE" 'ensure_luopo_vendor_loaded' "network test should no longer bootstrap vendor runtime"
-  assert_contains_fixed "$ROOT_DIR/modules/entry_oracle_cloud_suite.sh" 'source "$ROOT_DIR/modules/luopo/oracle_cloud/menu.sh"' "oracle cloud entry should source LuoPo menu"
-  assert_contains_fixed "$ROOT_DIR/modules/entry_oracle_cloud_suite.sh" 'luopo_oracle_cloud_menu' "oracle cloud entry should call LuoPo menu"
-  assert_contains_regex "$LUOPO_ORACLE_CLOUD_MENU_FILE" '^luopo_oracle_cloud_menu\(\) \{' "missing LuoPo oracle cloud menu entry"
-  assert_not_contains_fixed "$LUOPO_ORACLE_CLOUD_HELPERS_FILE" 'ensure_luopo_vendor_loaded' "oracle cloud should no longer bootstrap vendor runtime"
-  assert_contains_regex "$LUOPO_ORACLE_CLOUD_REGISTRY_FILE" '^LUOPO_ORACLE_CLOUD_ITEMS=\(' "missing LuoPo oracle cloud registry"
-  assert_contains_regex "$LUOPO_ORACLE_CLOUD_ACTIONS_FILE" '^luopo_oracle_cloud_install_lookbusy\(\) \{' "missing LuoPo oracle cloud action"
-  assert_contains_regex "$LUOPO_ORACLE_CLOUD_HELPERS_FILE" '^luopo_oracle_cloud_run_shell\(\) \{' "missing LuoPo oracle cloud helper"
   assert_contains_fixed "$ROOT_DIR/modules/entry_ldnmp_site_suite.sh" 'source "$ROOT_DIR/modules/luopo/ldnmp/menu.sh"' "ldnmp entry should source LuoPo menu"
   assert_contains_fixed "$ROOT_DIR/modules/entry_ldnmp_site_suite.sh" 'luopo_ldnmp_menu' "ldnmp entry should call LuoPo menu"
   assert_contains_regex "$LUOPO_LDNMP_MENU_FILE" '^luopo_ldnmp_menu\(\) \{' "missing LuoPo ldnmp menu entry"
@@ -569,14 +590,6 @@ main() {
   assert_contains_regex "$LUOPO_WORKSPACE_REGISTRY_FILE" '^LUOPO_WORKSPACE_ITEMS=\(' "missing LuoPo workspace registry"
   assert_contains_regex "$LUOPO_WORKSPACE_ACTIONS_FILE" '^luopo_workspace_manage_ssh_mode\(\) \{' "missing LuoPo workspace action"
   assert_contains_regex "$LUOPO_WORKSPACE_HELPERS_FILE" '^luopo_workspace_run_named_session\(\) \{' "missing LuoPo workspace helper"
-  assert_contains_fixed "$ROOT_DIR/modules/entry_cluster_control_suite.sh" 'source "$ROOT_DIR/modules/luopo/cluster_control/menu.sh"' "cluster entry should source LuoPo menu"
-  assert_contains_fixed "$ROOT_DIR/modules/entry_cluster_control_suite.sh" 'luopo_cluster_control_menu' "cluster entry should call LuoPo menu"
-  assert_contains_regex "$LUOPO_CLUSTER_MENU_FILE" '^luopo_cluster_control_menu\(\) \{' "missing LuoPo cluster menu entry"
-  assert_contains_regex "$LUOPO_CLUSTER_REGISTRY_FILE" '^LUOPO_CLUSTER_ITEMS=\(' "missing LuoPo cluster registry"
-  assert_contains_regex "$LUOPO_CLUSTER_ACTIONS_FILE" '^luopo_cluster_install_toolkit\(\) \{' "missing LuoPo cluster action"
-  assert_contains_regex "$LUOPO_CLUSTER_HELPERS_FILE" '^luopo_cluster_bootstrap\(\) \{' "missing LuoPo cluster helper"
-  assert_not_contains_fixed "$LUOPO_CLUSTER_HELPERS_FILE" 'ensure_luopo_vendor_loaded' "cluster control should no longer bootstrap vendor runtime"
-  assert_contains_regex "$LUOPO_CLUSTER_HELPERS_FILE" '^luopo_cluster_run_commands_on_servers\(\) \{' "cluster control should define native remote runner"
   assert_contains_fixed "$ROOT_DIR/modules/entry_app_marketplace.sh" 'source "$ROOT_DIR/modules/luopo/app_marketplace/menu.sh"' "app market entry should source LuoPo menu"
   assert_contains_fixed "$ROOT_DIR/modules/entry_app_marketplace.sh" 'luopo_app_marketplace_menu' "app market entry should call LuoPo menu"
   assert_contains_regex "$LUOPO_APP_MARKET_MENU_FILE" '^luopo_app_marketplace_menu\(\) \{' "missing LuoPo app market menu entry"

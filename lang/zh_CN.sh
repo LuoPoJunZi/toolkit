@@ -28,7 +28,6 @@ declare -A I18N=(
   [menu_label_12]="后台工作"
   [menu_label_13]="系统工具"
   [menu_label_14]="系统工具"
-  [menu_label_15]="服务器集群控制"
   [menu_label_99]="更新脚本"
   [menu_label_88]="卸载脚本"
   [menu_label_0]="退出脚本"

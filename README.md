@@ -77,7 +77,7 @@ LuoPo VPS Toolkit v{VERSION} (快捷启动: z)
 
 ## 复刻说明
 
-- 当前可见主菜单入口 `5-13` 基于 `kejilion/sh` 的 `4-14` 功能体系做了本地模块化复刻；甲骨文云脚本合集和服务器集群控制代码仍保留在仓库中，但不在主菜单展示。
+- 当前可见主菜单入口 `5-13` 基于 `kejilion/sh` 的相关功能体系做了本地模块化复刻；甲骨文云脚本合集和服务器集群控制已从项目代码中移除。
 - 本地模块优先保留上游菜单结构、子菜单层级、外部脚本调用方式与运行习惯，便于后续继续二次开发。
 - 上游来源与本地适配说明见：[docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md)。
 - 当前本地适配主要包括：关闭上游遥测、关闭上游自安装副作用、将活动菜单迁移到 `modules/luopo/` 原生模块。`vendor/luopo.sh` 仅允许作为本地来源参考文件保留，不再上传到 GitHub 仓库。
@@ -183,7 +183,8 @@ Windows 预检会检查全部 Bash 文件的语法并运行菜单烟测；本机
 
 - `VERSION` + `CHANGELOG.md` 管理版本历史。
 - GitHub Actions 执行 `ci` 与 `release` 工作流。
-- 自动发布只递增 patch 小版本；minor/major 版本由维护者手动控制。
+- 版本号使用修改提交时间转换到上海时区后的 `YY.M.D` 格式，例如 `2026-08-21` 的修改发布为 `26.8.21`。
+- 同一天只创建一个版本标签，避免重复发布或移动已有标签。
 - 发布 GitHub Release 时，版本描述必须包含简洁的“主要变化”说明，便于区分不同版本之间的差异。
 - Release 页面：<https://github.com/LuoPoJunZi/toolkit/releases>
 - 当前目录结构说明：[docs/DIRECTORY_STRUCTURE.md](docs/DIRECTORY_STRUCTURE.md)
@@ -192,4 +193,4 @@ Windows 预检会检查全部 Bash 文件的语法并运行菜单烟测；本机
 ## 开源协议
 
 - 本项目基于 [GPL-3.0 License](LICENSE) 开源。
-- 可见 `5-13` 模块及隐藏保留模块包含来自 `kejilion/sh` 的 Apache-2.0 授权代码与适配修改，详细说明见 [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md)。
+- 可见 `5-13` 模块包含来自 `kejilion/sh` 的 Apache-2.0 授权代码与适配修改，详细说明见 [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md)。
