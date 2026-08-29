@@ -16,9 +16,10 @@ luopo_app_marketplace_memos_install() {
 
 luopo_app_marketplace_memos_update() {
   local app_port="$1"
-  docker rm -f memos >/dev/null 2>&1 || true
-  docker rmi -f neosmemo/memos:stable >/dev/null 2>&1 || true
-  luopo_app_marketplace_memos_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "neosmemo/memos:stable" \
+    luopo_app_marketplace_memos_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_memos_uninstall() {
@@ -44,9 +45,26 @@ luopo_app_marketplace_memos_menu() {
 
 luopo_app_marketplace_siyuan_install() {
   local app_port="$1"
-  local app_passwd
-  read -r -p "设置思源笔记登录密码: " app_passwd
+  local app_passwd="${2:-}"
+  local auth_file="/home/docker/siyuan/access_auth_code"
+
+  if [[ -z "$app_passwd" && -f "$auth_file" ]]; then
+    app_passwd="$(cat "$auth_file")"
+  fi
+  if [[ -z "$app_passwd" ]]; then
+    app_passwd="$(luopo_app_marketplace_native_container_arg siyuan "--accessAuthCode=" || true)"
+  fi
+  if [[ -z "$app_passwd" ]]; then
+    read -r -p "设置思源笔记登录密码: " app_passwd
+  fi
+  if [[ -z "$app_passwd" ]]; then
+    echo "登录密码不能为空"
+    return 1
+  fi
+
   mkdir -p /home/docker/siyuan/workspace
+  printf '%s\n' "$app_passwd" >"$auth_file"
+  chmod 600 "$auth_file"
   docker rm -f siyuan >/dev/null 2>&1 || true
   docker run -d \
     --name siyuan \
@@ -62,9 +80,10 @@ luopo_app_marketplace_siyuan_install() {
 
 luopo_app_marketplace_siyuan_update() {
   local app_port="$1"
-  docker rm -f siyuan >/dev/null 2>&1 || true
-  docker rmi -f b3log/siyuan >/dev/null 2>&1 || true
-  luopo_app_marketplace_siyuan_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "b3log/siyuan" \
+    luopo_app_marketplace_siyuan_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_siyuan_uninstall() {
@@ -91,28 +110,17 @@ luopo_app_marketplace_siyuan_menu() {
 luopo_app_marketplace_karakeep_install() {
   local app_port="$1"
   install git
-  rm -rf /home/docker/karakeep
-  mkdir -p /home/docker
-  cd /home/docker
-  git clone "${gh_proxy}github.com/karakeep-app/karakeep.git" karakeep
-  cd /home/docker/karakeep/docker
-  cp .env.sample .env
+  luopo_app_marketplace_native_repo_sync "${gh_proxy}github.com/karakeep-app/karakeep.git" /home/docker/karakeep || return 1
+  cd /home/docker/karakeep/docker || return 1
+  [[ -f .env ]] || cp .env.sample .env
   sed -i "s/3000:3000/${app_port}:3000/g" docker-compose.yml
-  docker compose up -d
+  docker compose pull || return 1
+  docker compose up -d --remove-orphans || return 1
 }
 
 luopo_app_marketplace_karakeep_update() {
   local app_port="$1"
-  if [[ -d /home/docker/karakeep/docker ]]; then
-    cd /home/docker/karakeep/docker && docker compose down --rmi all
-    if cd /home/docker/karakeep; then
-      git pull origin main >/dev/null 2>&1 || true
-    fi
-    sed -i "s/[0-9]\\+:3000/${app_port}:3000/g" /home/docker/karakeep/docker/docker-compose.yml
-    cd /home/docker/karakeep/docker && docker compose up -d
-  else
-    luopo_app_marketplace_karakeep_install "$app_port"
-  fi
+  luopo_app_marketplace_karakeep_install "$app_port"
 }
 
 luopo_app_marketplace_karakeep_uninstall() {
@@ -142,10 +150,10 @@ luopo_app_marketplace_linkwarden_install() {
   local admin_password nextauth_secret postgres_password
   install curl openssl
   mkdir -p /home/docker/linkwarden
-  cd /home/docker/linkwarden
-  curl -fsSL "${gh_proxy}raw.githubusercontent.com/linkwarden/linkwarden/refs/heads/main/docker-compose.yml" -o docker-compose.yml
+  cd /home/docker/linkwarden || return 1
+  curl -fsSL "${gh_proxy}raw.githubusercontent.com/linkwarden/linkwarden/refs/heads/main/docker-compose.yml" -o docker-compose.yml || return 1
   if [[ ! -f .env ]]; then
-    curl -fsSL "${gh_proxy}raw.githubusercontent.com/linkwarden/linkwarden/refs/heads/main/.env.sample" -o .env
+    curl -fsSL "${gh_proxy}raw.githubusercontent.com/linkwarden/linkwarden/refs/heads/main/.env.sample" -o .env || return 1
     admin_password="$(openssl rand -hex 8)"
     nextauth_secret="$(openssl rand -base64 32)"
     postgres_password="$(openssl rand -base64 16)"
@@ -159,7 +167,8 @@ luopo_app_marketplace_linkwarden_install() {
   sed -i "s/3000:3000/${app_port}:3000/g" docker-compose.yml
   luopo_app_marketplace_native_set_env_value .env NEXTAUTH_URL "http://localhost:${app_port}"
   luopo_app_marketplace_native_set_env_value .env NEXT_PUBLIC_CREDENTIALS_ENABLED "true"
-  docker compose up -d
+  docker compose pull || return 1
+  docker compose up -d --remove-orphans || return 1
   if [[ -n "$admin_password" ]]; then
     echo "默认管理员: admin@example.com"
     echo "默认密码: ${admin_password}"
@@ -171,9 +180,6 @@ luopo_app_marketplace_linkwarden_install() {
 luopo_app_marketplace_linkwarden_update() {
   local app_port="$1"
   luopo_app_marketplace_linkwarden_install "$app_port"
-  cd /home/docker/linkwarden
-  docker compose pull || true
-  docker compose up -d --remove-orphans
 }
 
 luopo_app_marketplace_linkwarden_uninstall() {

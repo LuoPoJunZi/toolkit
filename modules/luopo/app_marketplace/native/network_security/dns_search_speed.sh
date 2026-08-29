@@ -16,9 +16,10 @@ luopo_app_marketplace_ddns_go_install() {
 
 luopo_app_marketplace_ddns_go_update() {
   local app_port="$1"
-  docker rm -f ddns-go >/dev/null 2>&1 || true
-  docker rmi -f jeessy/ddns-go >/dev/null 2>&1 || true
-  luopo_app_marketplace_ddns_go_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "jeessy/ddns-go" \
+    luopo_app_marketplace_ddns_go_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_ddns_go_uninstall() {
@@ -56,9 +57,10 @@ luopo_app_marketplace_searxng_install() {
 
 luopo_app_marketplace_searxng_update() {
   local app_port="$1"
-  docker rm -f searxng >/dev/null 2>&1 || true
-  docker rmi -f searxng/searxng >/dev/null 2>&1 || true
-  luopo_app_marketplace_searxng_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "searxng/searxng" \
+    luopo_app_marketplace_searxng_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_searxng_uninstall() {
@@ -94,9 +96,10 @@ luopo_app_marketplace_librespeed_install() {
 
 luopo_app_marketplace_librespeed_update() {
   local app_port="$1"
-  docker rm -f speedtest >/dev/null 2>&1 || true
-  docker rmi -f ghcr.io/librespeed/speedtest >/dev/null 2>&1 || true
-  luopo_app_marketplace_librespeed_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "ghcr.io/librespeed/speedtest" \
+    luopo_app_marketplace_librespeed_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_librespeed_uninstall() {
@@ -136,9 +139,10 @@ luopo_app_marketplace_adguardhome_install() {
 
 luopo_app_marketplace_adguardhome_update() {
   local app_port="$1"
-  docker rm -f adguardhome >/dev/null 2>&1 || true
-  docker rmi -f adguard/adguardhome >/dev/null 2>&1 || true
-  luopo_app_marketplace_adguardhome_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "adguard/adguardhome" \
+    luopo_app_marketplace_adguardhome_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_adguardhome_uninstall() {
@@ -174,9 +178,10 @@ luopo_app_marketplace_myip_install() {
 
 luopo_app_marketplace_myip_update() {
   local app_port="$1"
-  docker rm -f myip >/dev/null 2>&1 || true
-  docker rmi -f jason5ng32/myip:latest >/dev/null 2>&1 || true
-  luopo_app_marketplace_myip_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "jason5ng32/myip:latest" \
+    luopo_app_marketplace_myip_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_myip_uninstall() {

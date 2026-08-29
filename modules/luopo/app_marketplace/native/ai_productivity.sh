@@ -16,9 +16,10 @@ luopo_app_marketplace_uptime_kuma_install() {
 
 luopo_app_marketplace_uptime_kuma_update() {
   local app_port="$1"
-  docker rm -f uptime-kuma >/dev/null 2>&1 || true
-  docker rmi -f louislam/uptime-kuma:latest >/dev/null 2>&1 || true
-  luopo_app_marketplace_uptime_kuma_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "louislam/uptime-kuma:latest" \
+    luopo_app_marketplace_uptime_kuma_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_uptime_kuma_uninstall() {
@@ -56,9 +57,10 @@ luopo_app_marketplace_beszel_install() {
 
 luopo_app_marketplace_beszel_update() {
   local app_port="$1"
-  docker rm -f beszel >/dev/null 2>&1 || true
-  docker rmi -f henrygd/beszel >/dev/null 2>&1 || true
-  luopo_app_marketplace_beszel_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "henrygd/beszel" \
+    luopo_app_marketplace_beszel_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_beszel_uninstall() {
@@ -99,9 +101,10 @@ luopo_app_marketplace_komari_install() {
 
 luopo_app_marketplace_komari_update() {
   local app_port="$1"
-  docker rm -f komari >/dev/null 2>&1 || true
-  docker rmi -f ghcr.io/komari-monitor/komari:latest >/dev/null 2>&1 || true
-  luopo_app_marketplace_komari_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "ghcr.io/komari-monitor/komari:latest" \
+    luopo_app_marketplace_komari_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_komari_uninstall() {
@@ -143,19 +146,20 @@ luopo_app_marketplace_stirling_pdf_install() {
     -v /home/docker/s-pdf/extraConfigs:/configs \
     -v /home/docker/s-pdf/logs:/logs \
     -e DOCKER_ENABLE_SECURITY=false \
-    frooodle/s-pdf:latest
+    stirlingtools/stirling-pdf:latest
 }
 
 luopo_app_marketplace_stirling_pdf_update() {
   local app_port="$1"
-  docker rm -f s-pdf >/dev/null 2>&1 || true
-  docker rmi -f frooodle/s-pdf:latest >/dev/null 2>&1 || true
-  luopo_app_marketplace_stirling_pdf_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "stirlingtools/stirling-pdf:latest" \
+    luopo_app_marketplace_stirling_pdf_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_stirling_pdf_uninstall() {
   docker rm -f s-pdf >/dev/null 2>&1 || true
-  docker rmi -f frooodle/s-pdf:latest >/dev/null 2>&1 || true
+  docker rmi -f stirlingtools/stirling-pdf:latest frooodle/s-pdf:latest >/dev/null 2>&1 || true
   rm -rf /home/docker/s-pdf
   echo "应用已卸载"
 }
@@ -165,7 +169,7 @@ luopo_app_marketplace_stirling_pdf_menu() {
     "67" \
     "StirlingPDF工具大全" \
     "s-pdf" \
-    "frooodle/s-pdf:latest" \
+    "stirlingtools/stirling-pdf:latest" \
     "8031" \
     "强大的本地托管 PDF 操作工具，支持拆分、合并、转换、压缩等。" \
     "官网介绍: https://github.com/Stirling-Tools/Stirling-PDF" \
@@ -188,9 +192,10 @@ luopo_app_marketplace_drawio_install() {
 
 luopo_app_marketplace_drawio_update() {
   local app_port="$1"
-  docker rm -f drawio >/dev/null 2>&1 || true
-  docker rmi -f jgraph/drawio >/dev/null 2>&1 || true
-  luopo_app_marketplace_drawio_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "jgraph/drawio" \
+    luopo_app_marketplace_drawio_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_drawio_uninstall() {
@@ -226,9 +231,10 @@ luopo_app_marketplace_it_tools_install() {
 
 luopo_app_marketplace_it_tools_update() {
   local app_port="$1"
-  docker rm -f it-tools >/dev/null 2>&1 || true
-  docker rmi -f corentinth/it-tools:latest >/dev/null 2>&1 || true
-  luopo_app_marketplace_it_tools_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "corentinth/it-tools:latest" \
+    luopo_app_marketplace_it_tools_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_it_tools_uninstall() {
@@ -253,9 +259,26 @@ luopo_app_marketplace_it_tools_menu() {
 
 luopo_app_marketplace_gpt_load_install() {
   local app_port="$1"
-  local app_passwd
-  read -r -p "设置 gpt-load 登录密钥（建议 sk- 开头）: " app_passwd
+  local app_passwd="${2:-}"
+  local auth_file="/home/docker/gpt-load/auth_key"
+
+  if [[ -z "$app_passwd" && -f "$auth_file" ]]; then
+    app_passwd="$(cat "$auth_file")"
+  fi
+  if [[ -z "$app_passwd" ]]; then
+    app_passwd="$(luopo_app_marketplace_native_container_env gpt-load AUTH_KEY || true)"
+  fi
+  if [[ -z "$app_passwd" ]]; then
+    read -r -p "设置 gpt-load 登录密钥（建议 sk- 开头）: " app_passwd
+  fi
+  if [[ -z "$app_passwd" ]]; then
+    echo "登录密钥不能为空"
+    return 1
+  fi
+
   mkdir -p /home/docker/gpt-load/data
+  printf '%s\n' "$app_passwd" >"$auth_file"
+  chmod 600 "$auth_file"
   docker rm -f gpt-load >/dev/null 2>&1 || true
   docker run -d \
     --name gpt-load \
@@ -268,9 +291,10 @@ luopo_app_marketplace_gpt_load_install() {
 
 luopo_app_marketplace_gpt_load_update() {
   local app_port="$1"
-  docker rm -f gpt-load >/dev/null 2>&1 || true
-  docker rmi -f tbphp/gpt-load:latest >/dev/null 2>&1 || true
-  luopo_app_marketplace_gpt_load_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "tbphp/gpt-load:latest" \
+    luopo_app_marketplace_gpt_load_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_gpt_load_uninstall() {
@@ -308,9 +332,10 @@ luopo_app_marketplace_openwebui_install() {
 
 luopo_app_marketplace_openwebui_update() {
   local app_port="$1"
-  docker rm -f open-webui >/dev/null 2>&1 || true
-  docker rmi -f ghcr.io/open-webui/open-webui:main >/dev/null 2>&1 || true
-  luopo_app_marketplace_openwebui_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "ghcr.io/open-webui/open-webui:main" \
+    luopo_app_marketplace_openwebui_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_openwebui_uninstall() {
@@ -336,29 +361,50 @@ luopo_app_marketplace_openwebui_menu() {
 
 luopo_app_marketplace_n8n_install() {
   local app_port="$1"
-  luopo_app_marketplace_add_yuming
+  local app_domain="${2:-}"
+  local configure_proxy="0"
+  local domain_file="/home/docker/n8n/domain.conf"
+
+  if [[ -z "$app_domain" && -f "$domain_file" ]]; then
+    app_domain="$(cat "$domain_file")"
+  fi
+  if [[ -z "$app_domain" ]]; then
+    app_domain="$(luopo_app_marketplace_native_container_env n8n N8N_HOST || true)"
+  fi
+  if [[ -z "$app_domain" ]]; then
+    luopo_app_marketplace_add_yuming
+    app_domain="$yuming"
+    configure_proxy="1"
+  fi
+
   mkdir -p /home/docker/n8n
   chmod -R 777 /home/docker/n8n
+  printf '%s\n' "$app_domain" >"$domain_file"
   docker rm -f n8n >/dev/null 2>&1 || true
   docker run -d \
     --name n8n \
     --restart=always \
     -p "${app_port}:5678" \
     -v /home/docker/n8n:/home/node/.n8n \
-    -e N8N_HOST="${yuming}" \
+    -e N8N_HOST="${app_domain}" \
     -e N8N_PORT=5678 \
     -e N8N_PROTOCOL=https \
-    -e WEBHOOK_URL="https://${yuming}/" \
+    -e WEBHOOK_URL="https://${app_domain}/" \
     docker.n8n.io/n8nio/n8n
-  luopo_ldnmp_proxy_site "${yuming}" 127.0.0.1 "${app_port}"
+
+  luopo_app_marketplace_ip_address
+  if [[ "$configure_proxy" == "1" ]]; then
+    luopo_ldnmp_proxy_site "${app_domain}" 127.0.0.1 "${app_port}"
+  fi
   luopo_app_marketplace_block_container_port n8n "$ipv4_address"
 }
 
 luopo_app_marketplace_n8n_update() {
   local app_port="$1"
-  docker rm -f n8n >/dev/null 2>&1 || true
-  docker rmi -f docker.n8n.io/n8nio/n8n >/dev/null 2>&1 || true
-  luopo_app_marketplace_n8n_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "docker.n8n.io/n8nio/n8n" \
+    luopo_app_marketplace_n8n_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_n8n_uninstall() {
@@ -385,12 +431,13 @@ luopo_app_marketplace_n8n_menu() {
 luopo_app_marketplace_dify_install() {
   local app_port="$1"
   install git
-  luopo_app_marketplace_native_repo_sync "${gh_proxy}github.com/langgenius/dify.git" /home/docker/dify
-  cd /home/docker/dify/docker
+  luopo_app_marketplace_native_repo_sync "${gh_proxy}github.com/langgenius/dify.git" /home/docker/dify || return 1
+  cd /home/docker/dify/docker || return 1
   [[ -f .env ]] || cp .env.example .env
   luopo_app_marketplace_native_set_env_value .env EXPOSE_NGINX_PORT "${app_port}"
   luopo_app_marketplace_native_set_env_value .env EXPOSE_NGINX_SSL_PORT "8858"
-  docker compose up -d
+  docker compose pull || return 1
+  docker compose up -d --remove-orphans || return 1
   chown -R 1001:1001 /home/docker/dify/docker/volumes/app/storage 2>/dev/null || true
   chmod -R 755 /home/docker/dify/docker/volumes/app/storage 2>/dev/null || true
 }
@@ -398,9 +445,6 @@ luopo_app_marketplace_dify_install() {
 luopo_app_marketplace_dify_update() {
   local app_port="$1"
   luopo_app_marketplace_dify_install "$app_port"
-  cd /home/docker/dify/docker
-  docker compose pull || true
-  docker compose up -d --remove-orphans
 }
 
 luopo_app_marketplace_dify_uninstall() {
@@ -428,22 +472,20 @@ luopo_app_marketplace_dify_menu() {
 luopo_app_marketplace_newapi_install() {
   local app_port="$1"
   install git
-  luopo_app_marketplace_native_repo_sync "${gh_proxy}github.com/Calcium-Ion/new-api.git" /home/docker/new-api
-  cd /home/docker/new-api
+  luopo_app_marketplace_native_repo_sync "${gh_proxy}github.com/Calcium-Ion/new-api.git" /home/docker/new-api || return 1
+  cd /home/docker/new-api || return 1
   sed -i \
     -e "s/- \"3000:3000\"/- \"${app_port}:3000\"/g" \
     -e 's/container_name: redis/container_name: redis-new-api/g' \
     -e 's/container_name: mysql/container_name: mysql-new-api/g' \
     docker-compose.yml
-  docker compose up -d
+  docker compose pull || return 1
+  docker compose up -d --remove-orphans || return 1
 }
 
 luopo_app_marketplace_newapi_update() {
   local app_port="$1"
   luopo_app_marketplace_newapi_install "$app_port"
-  cd /home/docker/new-api
-  docker compose pull || true
-  docker compose up -d --remove-orphans
 }
 
 luopo_app_marketplace_newapi_uninstall() {

@@ -50,15 +50,15 @@ luopo_ldnmp_render_status_banner() {
 
 luopo_ldnmp_ip_address() {
   local public_ip isp_info
-  public_ip="$(curl -s --max-time 3 https://ipinfo.io/ip && echo)"
-  isp_info="$(curl -s --max-time 3 http://ipinfo.io/org)"
+  public_ip="$(curl -fsS --max-time 3 https://ipinfo.io/ip || true)"
+  isp_info="$(curl -fsS --max-time 3 https://ipinfo.io/org || true)"
 
   if echo "$isp_info" | grep -Eiq 'CHINANET|mobile|unicom|telecom'; then
     ipv4_address="$(ip route get 8.8.8.8 2>/dev/null | grep -oP 'src \K[^ ]+' || hostname -I 2>/dev/null | awk '{print $1}')"
   else
     ipv4_address="$public_ip"
   fi
-  ipv6_address="$(curl -s --max-time 1 https://v6.ipinfo.io/ip && echo)"
+  ipv6_address="$(curl -6 -fsS --max-time 2 https://api64.ipify.org || true)"
 }
 
 ip_address() {

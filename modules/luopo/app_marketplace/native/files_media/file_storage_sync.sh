@@ -18,9 +18,10 @@ luopo_app_marketplace_filebrowser_install() {
 
 luopo_app_marketplace_filebrowser_update() {
   local app_port="$1"
-  docker rm -f filebrowser >/dev/null 2>&1 || true
-  docker rmi -f hurlenko/filebrowser >/dev/null 2>&1 || true
-  luopo_app_marketplace_filebrowser_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "hurlenko/filebrowser" \
+    luopo_app_marketplace_filebrowser_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_filebrowser_uninstall() {
@@ -67,9 +68,10 @@ luopo_app_marketplace_zfile_install() {
 
 luopo_app_marketplace_zfile_update() {
   local app_port="$1"
-  docker rm -f zfile >/dev/null 2>&1 || true
-  docker rmi -f zhaojun1998/zfile:latest >/dev/null 2>&1 || true
-  luopo_app_marketplace_zfile_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "zhaojun1998/zfile:latest" \
+    luopo_app_marketplace_zfile_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_zfile_uninstall() {
@@ -107,9 +109,10 @@ luopo_app_marketplace_dufs_install() {
 
 luopo_app_marketplace_dufs_update() {
   local app_port="$1"
-  docker rm -f dufs >/dev/null 2>&1 || true
-  docker rmi -f sigoden/dufs >/dev/null 2>&1 || true
-  luopo_app_marketplace_dufs_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "sigoden/dufs" \
+    luopo_app_marketplace_dufs_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_dufs_uninstall() {
@@ -151,9 +154,10 @@ luopo_app_marketplace_syncthing_install() {
 
 luopo_app_marketplace_syncthing_update() {
   local app_port="$1"
-  docker rm -f syncthing >/dev/null 2>&1 || true
-  docker rmi -f syncthing/syncthing:latest >/dev/null 2>&1 || true
-  luopo_app_marketplace_syncthing_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "syncthing/syncthing:latest" \
+    luopo_app_marketplace_syncthing_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_syncthing_uninstall() {
@@ -192,9 +196,10 @@ luopo_app_marketplace_openlist_install() {
 
 luopo_app_marketplace_openlist_update() {
   local app_port="$1"
-  docker rm -f openlist >/dev/null 2>&1 || true
-  docker rmi -f openlistteam/openlist:latest-aria2 >/dev/null 2>&1 || true
-  luopo_app_marketplace_openlist_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "openlistteam/openlist:latest-aria2" \
+    luopo_app_marketplace_openlist_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_openlist_uninstall() {

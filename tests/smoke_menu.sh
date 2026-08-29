@@ -196,6 +196,14 @@ assert_native_contains_regex() {
   grep -Eq "$pattern" "${LUOPO_APP_MARKET_NATIVE_FILES[@]}" || fail "$desc (pattern: $pattern)"
 }
 
+assert_native_not_contains_regex() {
+  pattern="$1"
+  desc="$2"
+  if grep -Eq "$pattern" "${LUOPO_APP_MARKET_NATIVE_FILES[@]}"; then
+    fail "$desc (unexpected pattern: $pattern)"
+  fi
+}
+
 assert_system_misc_contains_regex() {
   pattern="$1"
   desc="$2"
@@ -481,6 +489,11 @@ main() {
   assert_contains_fixed "$LUOPO_NETWORK_TEST_MENU_FILE" 'echo "========================================"' "network test menu should use unified title separators"
   assert_contains_regex "$LUOPO_NETWORK_TEST_REGISTRY_FILE" '^LUOPO_NETWORK_TEST_ITEMS=\(' "missing LuoPo network test registry"
   assert_contains_regex "$LUOPO_NETWORK_TEST_ACTIONS_FILE" '^luopo_network_test_chatgpt_unlock\(\) \{' "missing LuoPo network test action"
+  assert_contains_fixed "$LUOPO_NETWORK_TEST_ACTIONS_FILE" 'raw.githubusercontent.com/lmc999/RegionRestrictionCheck/main/check.sh' "region unlock test should use the maintained source URL"
+  assert_contains_fixed "$LUOPO_NETWORK_TEST_ACTIONS_FILE" 'raw.githubusercontent.com/i-abc/GB5/main/gb5-test.sh' "GB5 test should use the maintained source URL"
+  assert_not_contains_fixed "$LUOPO_NETWORK_TEST_ACTIONS_FILE" 'check.unlock.media' "network test should not use the unavailable region-check short URL"
+  assert_not_contains_fixed "$LUOPO_NETWORK_TEST_ACTIONS_FILE" 'bash.icu/gb5' "network test should not use the unavailable GB5 short URL"
+  assert_not_contains_fixed "$LUOPO_NETWORK_TEST_ACTIONS_FILE" 'eval "curl nxtrace.org/nt' "nxtrace target input must not be executed through eval"
   assert_contains_regex "$LUOPO_NETWORK_TEST_HELPERS_FILE" '^luopo_network_test_run_shell\(\) \{' "missing LuoPo network test helper"
   assert_not_contains_fixed "$LUOPO_NETWORK_TEST_HELPERS_FILE" 'ensure_luopo_vendor_loaded' "network test should no longer bootstrap vendor runtime"
   assert_contains_fixed "$ROOT_DIR/modules/entry_ldnmp_site_suite.sh" 'source "$ROOT_DIR/modules/luopo/ldnmp/menu.sh"' "ldnmp entry should source LuoPo menu"
@@ -603,11 +616,19 @@ main() {
   assert_contains_regex "$LUOPO_APP_MARKET_ACTIONS_FILE" '^luopo_app_marketplace_backup_all\(\) \{' "missing native app market backup action"
   assert_contains_regex "$LUOPO_APP_MARKET_ACTIONS_FILE" '^luopo_app_marketplace_restore_all\(\) \{' "missing native app market restore action"
   assert_contains_regex "$LUOPO_APP_MARKET_HELPERS_FILE" '^luopo_app_marketplace_bootstrap\(\) \{' "missing LuoPo app market helper"
-  assert_contains_regex "$LUOPO_APP_MARKET_HELPERS_FILE" '^luopo_app_marketplace_sync_index\(\) \{' "missing LuoPo app market sync helper"
+  assert_not_contains_fixed "$LUOPO_APP_MARKET_MENU_FILE" 'luopo_app_marketplace_sync_index' "app market should not depend on an unused remote index"
+  assert_not_contains_fixed "$LUOPO_APP_MARKET_HELPERS_FILE" 'github.com/kejilion/apps.git' "app market should not clone the retired remote index"
   assert_contains_regex "$LUOPO_APP_MARKET_HELPERS_FILE" '^luopo_app_marketplace_render_cell\(\) \{' "missing LuoPo app market render helper"
   assert_contains_fixed "$LUOPO_APP_MARKET_HELPERS_FILE" 'source "$ROOT_DIR/modules/luopo/ldnmp/helpers.sh"' "app market helpers should source native ldnmp helpers"
   assert_not_contains_fixed "$LUOPO_APP_MARKET_HELPERS_FILE" 'legacy_bridge.sh' "app market helpers should not source legacy bridge"
   assert_native_contains_fixed 'luopo_ldnmp_proxy_site "${yuming}" 127.0.0.1 "${app_port}"' "app market should use native ldnmp proxy helper"
+  assert_contains_regex "$LUOPO_APP_MARKET_NATIVE_COMMON_FILE" '^luopo_app_marketplace_native_update_container\(\) \{' "app updates should pull images before recreating containers"
+  assert_contains_fixed "$LUOPO_APP_MARKET_NATIVE_COMMON_FILE" 'docker pull "$image_name" || return 1' "a failed image pull must stop the container update"
+  assert_contains_fixed "$LUOPO_APP_MARKET_NATIVE_COMMON_FILE" 'if ! "$update_fn" "$app_port"; then' "failed app updates must not be reported as successful"
+  assert_contains_fixed "$LUOPO_APP_MARKET_NATIVE_PANELS_FILE" 'portainer/portainer-ce:lts' "Portainer should use the maintained CE LTS image"
+  assert_contains_fixed "$LUOPO_APP_MARKET_NATIVE_AI_PRODUCTIVITY_FILE" 'stirlingtools/stirling-pdf:latest' "Stirling PDF should use the maintained image name"
+  assert_contains_fixed "$LUOPO_APP_MARKET_NATIVE_FILES_MEDIA_GALLERY_FILE" 'if [[ ! -f .env ]]; then' "Immich updates should preserve the existing environment file"
+  assert_contains_fixed "$LUOPO_APP_MARKET_NATIVE_FILES_MEDIA_DOCS_FILE" 'if [[ ! -f docker-compose.env ]]; then' "Paperless updates should preserve the existing environment file"
   assert_contains_fixed "$LUOPO_APP_MARKET_NATIVE_APPS_FILE" 'source "$LUOPO_APP_MARKETPLACE_NATIVE_MODULE_DIR/files_media.sh"' "app market native loader should source files/media apps"
   assert_contains_fixed "$LUOPO_APP_MARKET_NATIVE_FILES_MEDIA_FILE" 'source "$LUOPO_APP_MARKETPLACE_FILES_MEDIA_DIR/notes_bookmarks.sh"' "files/media loader should source notes/bookmarks apps"
   assert_contains_fixed "$LUOPO_APP_MARKET_NATIVE_FILES_MEDIA_FILE" 'source "$LUOPO_APP_MARKETPLACE_FILES_MEDIA_DIR/file_storage_sync.sh"' "files/media loader should source storage/sync apps"
@@ -722,6 +743,21 @@ main() {
   assert_native_contains_regex '^luopo_app_marketplace_zfile_menu\(\) \{' "missing native zfile menu"
   assert_native_contains_regex '^luopo_app_marketplace_karakeep_menu\(\) \{' "missing native karakeep menu"
   assert_native_contains_regex '^luopo_app_marketplace_lucky_menu\(\) \{' "missing native lucky menu"
+
+  local native_file
+  for native_file in "${LUOPO_APP_MARKET_NATIVE_FILES[@]}"; do
+    if awk '
+      /^luopo_app_marketplace_[a-z0-9_]+_update\(\) \{/ { in_update = 1 }
+      in_update { print }
+      in_update && /^}/ { in_update = 0 }
+    ' "$native_file" | grep -Eq 'docker (rm|rmi)|docker compose down'; then
+      fail "app update must fetch successfully before removing a container or compose stack: $native_file"
+    fi
+  done
+
+  assert_not_contains_fixed "$LUOPO_APP_MARKET_NATIVE_AI_PRODUCTIVITY_FILE" 'docker compose pull || true' "compose update failures must not be ignored"
+  assert_not_contains_fixed "$LUOPO_APP_MARKET_NATIVE_FILES_MEDIA_NOTES_FILE" 'docker compose pull || true' "compose update failures must not be ignored"
+  assert_native_not_contains_regex '^[[:space:]]*docker compose pull$' "compose pulls must return explicitly on failure"
   assert_contains_fixed "$ROOT_DIR/modules/entry_system_tools_suite.sh" 'source "$ROOT_DIR/modules/luopo/system_tools/menu.sh"' "system tools entry should source LuoPo menu"
   assert_contains_fixed "$ROOT_DIR/modules/entry_system_tools_suite.sh" 'luopo_system_tools_menu' "system tools entry should call LuoPo menu"
   assert_contains_regex "$LUOPO_SYSTEM_TOOLS_MENU_FILE" '^luopo_system_tools_menu\(\) \{' "missing LuoPo system tools menu entry"

@@ -20,9 +20,10 @@ luopo_app_marketplace_navidrome_install() {
 
 luopo_app_marketplace_navidrome_update() {
   local app_port="$1"
-  docker rm -f navidrome >/dev/null 2>&1 || true
-  docker rmi -f deluan/navidrome:latest >/dev/null 2>&1 || true
-  luopo_app_marketplace_navidrome_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "deluan/navidrome:latest" \
+    luopo_app_marketplace_navidrome_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_navidrome_uninstall() {
@@ -65,9 +66,10 @@ luopo_app_marketplace_jellyfin_install() {
 
 luopo_app_marketplace_jellyfin_update() {
   local app_port="$1"
-  docker rm -f jellyfin >/dev/null 2>&1 || true
-  docker rmi -f jellyfin/jellyfin >/dev/null 2>&1 || true
-  luopo_app_marketplace_jellyfin_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "jellyfin/jellyfin" \
+    luopo_app_marketplace_jellyfin_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_jellyfin_uninstall() {
@@ -95,18 +97,18 @@ luopo_app_marketplace_immich_install() {
   local app_port="$1"
   install git openssl wget
   mkdir -p /home/docker/immich_server
-  cd /home/docker/immich_server
-  wget -O docker-compose.yml "${gh_proxy}github.com/immich-app/immich/releases/latest/download/docker-compose.yml"
-  wget -O .env "${gh_proxy}github.com/immich-app/immich/releases/latest/download/example.env"
+  cd /home/docker/immich_server || return 1
+  wget -O docker-compose.yml "${gh_proxy}github.com/immich-app/immich/releases/latest/download/docker-compose.yml" || return 1
+  if [[ ! -f .env ]]; then
+    wget -O .env "${gh_proxy}github.com/immich-app/immich/releases/latest/download/example.env" || return 1
+  fi
   sed -i "s/2283:2283/${app_port}:2283/g" docker-compose.yml
-  docker compose up -d
+  docker compose pull || return 1
+  docker compose up -d --remove-orphans || return 1
 }
 
 luopo_app_marketplace_immich_update() {
   local app_port="$1"
-  if [[ -d /home/docker/immich_server ]]; then
-    cd /home/docker/immich_server && docker compose down --rmi all
-  fi
   luopo_app_marketplace_immich_install "$app_port"
 }
 

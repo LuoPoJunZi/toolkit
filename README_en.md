@@ -116,7 +116,7 @@ Retired menu drafts are kept locally and no longer uploaded to GitHub:
 | 8. WARP | Upstream WARP management script integration |
 | 9. Network test | Unlock tests, route tracing, bandwidth tests, hardware benchmarks, all-in-one test suites |
 | 10. Site builder | LDNMP, WordPress, reverse proxy, redirects, full-site backup/restore, security and tuning |
-| 11. App market | Upstream app-market driven deployment for a large catalog of Dockerized apps |
+| 11. App market | Locally maintained catalog with Docker app install, configuration-preserving updates, uninstall, backup, and restore |
 | 12. Workspace | Tmux workspaces, persistent SSH mode, custom workspaces, command injection |
 | 13. System tools | SSH, timezone, hostname, ports, swap, users, firewall, logs, environment variables, and more |
 

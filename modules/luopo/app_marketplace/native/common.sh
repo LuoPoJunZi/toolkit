@@ -126,16 +126,41 @@ luopo_app_marketplace_native_install_docker_runtime() {
   mkdir -p /home/docker
 }
 
+luopo_app_marketplace_native_update_container() {
+  local image_name="$1"
+  local install_fn="$2"
+  shift 2
+
+  docker pull "$image_name" || return 1
+  "$install_fn" "$@" || return 1
+}
+
+luopo_app_marketplace_native_container_env() {
+  local container_name="$1"
+  local env_name="$2"
+
+  docker inspect --format '{{range .Config.Env}}{{println .}}{{end}}' "$container_name" 2>/dev/null \
+    | awk -F= -v name="$env_name" '$1 == name {sub(/^[^=]*=/, ""); print; exit}'
+}
+
+luopo_app_marketplace_native_container_arg() {
+  local container_name="$1"
+  local arg_prefix="$2"
+
+  docker inspect --format '{{range .Config.Cmd}}{{println .}}{{end}}' "$container_name" 2>/dev/null \
+    | awk -v prefix="$arg_prefix" 'index($0, prefix) == 1 {print substr($0, length(prefix) + 1); exit}'
+}
+
 luopo_app_marketplace_native_repo_sync() {
   local repo_url="$1"
   local target_dir="$2"
 
   if [[ -d "${target_dir}/.git" ]]; then
-    git -C "$target_dir" fetch --depth 1 origin
-    git -C "$target_dir" reset --hard FETCH_HEAD
+    git -C "$target_dir" fetch --depth 1 origin || return 1
+    git -C "$target_dir" reset --hard FETCH_HEAD || return 1
   else
     rm -rf "$target_dir"
-    git clone --depth 1 "$repo_url" "$target_dir"
+    git clone --depth 1 "$repo_url" "$target_dir" || return 1
   fi
 }
 
@@ -250,7 +275,11 @@ luopo_app_marketplace_native_docker_app_menu() {
           app_port="$default_port"
         fi
         luopo_app_marketplace_native_install_docker_runtime
-        "$update_fn" "$app_port"
+        if ! "$update_fn" "$app_port"; then
+          echo "${app_name} 更新失败，原有应用状态已尽量保留。"
+          break_end
+          continue
+        fi
         luopo_app_marketplace_native_app_store_port "$container_name" "$app_port"
         luopo_app_marketplace_native_add_app_id "$app_id"
         clear
@@ -336,7 +365,11 @@ luopo_app_marketplace_native_container_action_menu() {
         ;;
       2)
         luopo_app_marketplace_native_install_docker_runtime
-        "$update_fn"
+        if ! "$update_fn"; then
+          echo "${app_name} 更新失败，原有应用状态已尽量保留。"
+          break_end
+          continue
+        fi
         luopo_app_marketplace_native_add_app_id "$app_id"
         [[ -n "$post_fn" ]] && "$post_fn"
         ;;

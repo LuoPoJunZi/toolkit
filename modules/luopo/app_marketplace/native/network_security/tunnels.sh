@@ -37,9 +37,9 @@ luopo_app_marketplace_frps_install() {
 }
 
 luopo_app_marketplace_frps_update() {
-  docker rm -f frps >/dev/null 2>&1 || true
-  docker rmi -f kjlion/frp:alpine >/dev/null 2>&1 || true
-  luopo_app_marketplace_frps_install
+  luopo_app_marketplace_native_update_container \
+    "kjlion/frp:alpine" \
+    luopo_app_marketplace_frps_install
 }
 
 luopo_app_marketplace_frps_uninstall() {
@@ -77,8 +77,11 @@ luopo_app_marketplace_frps_menu() {
         ;;
       2)
         luopo_app_marketplace_native_install_docker_runtime
-        luopo_app_marketplace_frps_update
-        luopo_app_marketplace_native_add_app_id "26"
+        if luopo_app_marketplace_frps_update; then
+          luopo_app_marketplace_native_add_app_id "26"
+        else
+          echo "FRP 服务端更新失败，原有容器已保留。"
+        fi
         ;;
       3)
         [[ -f /home/frp/frps.toml ]] && cat /home/frp/frps.toml || echo "未找到 /home/frp/frps.toml"
@@ -86,8 +89,11 @@ luopo_app_marketplace_frps_menu() {
       4)
         rm -f /home/frp/frps.toml
         luopo_app_marketplace_frps_write_config
-        luopo_app_marketplace_frps_update
-        luopo_app_marketplace_native_add_app_id "26"
+        if luopo_app_marketplace_frps_update; then
+          luopo_app_marketplace_native_add_app_id "26"
+        else
+          echo "FRP 服务端更新失败，请检查镜像与配置。"
+        fi
         ;;
       5)
         docker ps -a --filter name=frps --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'
@@ -136,9 +142,9 @@ luopo_app_marketplace_frpc_install() {
 }
 
 luopo_app_marketplace_frpc_update() {
-  docker rm -f frpc >/dev/null 2>&1 || true
-  docker rmi -f kjlion/frp:alpine >/dev/null 2>&1 || true
-  luopo_app_marketplace_frpc_install
+  luopo_app_marketplace_native_update_container \
+    "kjlion/frp:alpine" \
+    luopo_app_marketplace_frpc_install
 }
 
 luopo_app_marketplace_frpc_uninstall() {
@@ -176,8 +182,11 @@ luopo_app_marketplace_frpc_menu() {
         ;;
       2)
         luopo_app_marketplace_native_install_docker_runtime
-        luopo_app_marketplace_frpc_update
-        luopo_app_marketplace_native_add_app_id "27"
+        if luopo_app_marketplace_frpc_update; then
+          luopo_app_marketplace_native_add_app_id "27"
+        else
+          echo "FRP 客户端更新失败，原有容器已保留。"
+        fi
         ;;
       3)
         [[ -f /home/frp/frpc.toml ]] && cat /home/frp/frpc.toml || echo "未找到 /home/frp/frpc.toml"
@@ -185,8 +194,11 @@ luopo_app_marketplace_frpc_menu() {
       4)
         rm -f /home/frp/frpc.toml
         luopo_app_marketplace_frpc_write_config
-        luopo_app_marketplace_frpc_update
-        luopo_app_marketplace_native_add_app_id "27"
+        if luopo_app_marketplace_frpc_update; then
+          luopo_app_marketplace_native_add_app_id "27"
+        else
+          echo "FRP 客户端更新失败，请检查镜像与配置。"
+        fi
         ;;
       5)
         docker ps -a --filter name=frpc --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'

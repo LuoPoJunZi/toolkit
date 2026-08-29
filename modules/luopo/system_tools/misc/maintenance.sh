@@ -194,7 +194,7 @@ luopo_system_tools_feedback() {
   send_stats "反馈渠道"
   echo "欢迎反馈 LuoPo VPS Toolkit 的使用建议与问题。"
   echo "GitHub Issues: https://github.com/LuoPoJunZi/toolkit/issues"
-  echo "GitHub Discussions: https://github.com/LuoPoJunZi/toolkit/discussions"
+  echo "项目主页: https://github.com/LuoPoJunZi/toolkit"
   press_enter
 }
 

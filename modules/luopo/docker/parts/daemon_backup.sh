@@ -65,7 +65,7 @@ switch_docker_mirror() {
   echo "可选镜像源:"
   echo "1) DaoCloud: https://docker.m.daocloud.io"
   echo "2) 1Panel: https://docker.1panel.live"
-  echo "3) 腾讯云: https://mirror.ccs.tencentyun.com"
+  echo "3) 腾讯云内网: https://mirror.ccs.tencentyun.com"
   echo "4) 自定义镜像源"
   echo "5) 清空镜像源"
   read -r -p "请选择: " choice

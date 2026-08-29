@@ -14,15 +14,15 @@ luopo_app_marketplace_bootstrap() {
 luopo_app_marketplace_ip_address() {
   local public_ip isp_info
 
-  public_ip="$(curl -s --max-time 3 https://ipinfo.io/ip && echo)"
-  isp_info="$(curl -s --max-time 3 http://ipinfo.io/org)"
+  public_ip="$(curl -fsS --max-time 3 https://ipinfo.io/ip || true)"
+  isp_info="$(curl -fsS --max-time 3 https://ipinfo.io/org || true)"
 
   if echo "$isp_info" | grep -Eiq 'CHINANET|mobile|unicom|telecom'; then
     ipv4_address="$(ip route get 8.8.8.8 2>/dev/null | grep -oP 'src \K[^ ]+' || hostname -I 2>/dev/null | awk '{print $1}')"
   else
     ipv4_address="$public_ip"
   fi
-  ipv6_address="$(curl -s --max-time 1 https://v6.ipinfo.io/ip && echo)"
+  ipv6_address="$(curl -6 -fsS --max-time 2 https://api64.ipify.org || true)"
 }
 
 luopo_app_marketplace_add_yuming() {
@@ -84,19 +84,6 @@ luopo_app_marketplace_delete_proxy_domain() {
   rm -f "/home/web/certs/${target_domain}_key.pem"
   rm -f "/home/web/certs/${target_domain}_cert.pem"
   docker exec nginx nginx -s reload >/dev/null 2>&1 || true
-}
-
-luopo_app_marketplace_sync_index() {
-  clear
-  cd ~ || return 1
-  install git
-  echo -e "${gl_kjlan}正在更新应用列表请稍等……${gl_bai}"
-  if [[ ! -d apps/.git ]]; then
-    timeout 10s git clone "${gh_proxy}github.com/kejilion/apps.git"
-  else
-    cd apps || return 1
-    timeout 10s git pull "${gh_proxy}github.com/kejilion/apps.git" main >/dev/null 2>&1
-  fi
 }
 
 luopo_app_marketplace_installed_numbers() {

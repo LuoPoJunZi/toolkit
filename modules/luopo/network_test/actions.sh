@@ -6,7 +6,7 @@ luopo_network_test_chatgpt_unlock() {
 }
 
 luopo_network_test_region_unlock() {
-  luopo_network_test_run_shell "Region流媒体解锁测试" 'bash <(curl -L -s check.unlock.media)'
+  luopo_network_test_run_shell "Region流媒体解锁测试" "bash <(curl -fsSL ${gh_proxy}raw.githubusercontent.com/lmc999/RegionRestrictionCheck/main/check.sh)"
 }
 
 luopo_network_test_yeahwu_unlock() {
@@ -14,11 +14,11 @@ luopo_network_test_yeahwu_unlock() {
 }
 
 luopo_network_test_xykt_quality() {
-  luopo_network_test_run_shell "xykt_IP质量体检脚本" 'bash <(curl -Ls IP.Check.Place)'
+  luopo_network_test_run_shell "xykt_IP质量体检脚本" 'bash <(curl -fsSL https://IP.Check.Place)'
 }
 
 luopo_network_test_besttrace() {
-  luopo_network_test_run_shell "besttrace三网回程延迟路由测试" 'install wget; wget -qO- git.io/besttrace | bash'
+  luopo_network_test_run_shell "besttrace三网回程延迟路由测试" "bash <(curl -fsSL ${gh_proxy}raw.githubusercontent.com/zq/shell/master/autoBestTrace.sh)"
 }
 
 luopo_network_test_mtr_trace() {
@@ -30,7 +30,7 @@ luopo_network_test_superspeed() {
 }
 
 luopo_network_test_nxtrace_fast() {
-  luopo_network_test_run_shell "nxtrace快速回程测试脚本" 'curl nxtrace.org/nt | bash; nexttrace --fast-trace --tcp'
+  luopo_network_test_run_shell "nxtrace快速回程测试脚本" 'curl -fsSL https://nxtrace.org/nt | bash; nexttrace --fast-trace --tcp'
 }
 
 luopo_network_test_nxtrace_ip() {
@@ -44,7 +44,8 @@ luopo_network_test_nxtrace_ip() {
     return 0
   fi
   set +e
-  eval "curl nxtrace.org/nt | bash; nexttrace \"$testip\""
+  curl -fsSL https://nxtrace.org/nt | bash
+  nexttrace "$testip"
   set -e
   luopo_network_test_finish
   return 0
@@ -59,19 +60,19 @@ luopo_network_test_iabc_speedtest() {
 }
 
 luopo_network_test_netquality() {
-  luopo_network_test_run_shell "网络质量测试脚本" 'bash <(curl -sL Net.Check.Place)'
+  luopo_network_test_run_shell "网络质量测试脚本" 'bash <(curl -fsSL https://Net.Check.Place)'
 }
 
 luopo_network_test_yabs() {
-  luopo_network_test_run_shell "yabs性能测试" 'check_swap; curl -sL yabs.sh | bash -s -- -i -5'
+  luopo_network_test_run_shell "yabs性能测试" 'check_swap; curl -fsSL https://yabs.sh | bash -s -- -i -5'
 }
 
 luopo_network_test_gb5_cpu() {
-  luopo_network_test_run_shell "icu/gb5 CPU性能测试脚本" 'check_swap; bash <(curl -sL bash.icu/gb5)'
+  luopo_network_test_run_shell "icu/gb5 CPU性能测试脚本" "check_swap; bash <(curl -fsSL ${gh_proxy}raw.githubusercontent.com/i-abc/GB5/main/gb5-test.sh)"
 }
 
 luopo_network_test_bench() {
-  luopo_network_test_run_shell "bench性能测试" 'curl -Lso- bench.sh | bash'
+  luopo_network_test_run_shell "bench性能测试" 'curl -fsSL https://bench.sh | bash'
 }
 
 luopo_network_test_spiritysdx() {

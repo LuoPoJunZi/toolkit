@@ -39,7 +39,6 @@ luopo_render_app_marketplace_menu() {
 
 luopo_app_marketplace_menu() {
   luopo_app_marketplace_bootstrap || return 1
-  luopo_app_marketplace_sync_index || return 1
 
   while true; do
     clear

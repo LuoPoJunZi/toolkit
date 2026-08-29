@@ -12,19 +12,21 @@ luopo_app_marketplace_portainer_install() {
     -v /var/run/docker.sock:/var/run/docker.sock \
     -v /home/docker/portainer:/data \
     --restart=always \
-    portainer/portainer
+    portainer/portainer-ce:lts \
+    --http-enabled
 }
 
 luopo_app_marketplace_portainer_update() {
   local app_port="$1"
-  docker rm -f portainer >/dev/null 2>&1 || true
-  docker rmi -f portainer/portainer >/dev/null 2>&1 || true
-  luopo_app_marketplace_portainer_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "portainer/portainer-ce:lts" \
+    luopo_app_marketplace_portainer_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_portainer_uninstall() {
   docker rm -f portainer >/dev/null 2>&1 || true
-  docker rmi -f portainer/portainer >/dev/null 2>&1 || true
+  docker rmi -f portainer/portainer-ce:lts portainer/portainer >/dev/null 2>&1 || true
   rm -rf /home/docker/portainer
   echo "应用已卸载"
 }
@@ -34,7 +36,7 @@ luopo_app_marketplace_portainer_menu() {
     "6" \
     "portainer容器管理面板" \
     "portainer" \
-    "portainer/portainer" \
+    "portainer/portainer-ce:lts" \
     "8020" \
     "portainer 是一个轻量级的 Docker 容器管理面板" \
     "官网介绍: https://www.portainer.io/" \
@@ -60,9 +62,10 @@ luopo_app_marketplace_npm_install() {
 
 luopo_app_marketplace_npm_update() {
   local app_port="$1"
-  docker rm -f npm >/dev/null 2>&1 || true
-  docker rmi -f jc21/nginx-proxy-manager:latest >/dev/null 2>&1 || true
-  luopo_app_marketplace_npm_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "jc21/nginx-proxy-manager:latest" \
+    luopo_app_marketplace_npm_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_npm_uninstall() {
@@ -101,9 +104,10 @@ luopo_app_marketplace_qinglong_install() {
 
 luopo_app_marketplace_qinglong_update() {
   local app_port="$1"
-  docker rm -f qinglong >/dev/null 2>&1 || true
-  docker rmi -f whyour/qinglong:latest >/dev/null 2>&1 || true
-  luopo_app_marketplace_qinglong_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "whyour/qinglong:latest" \
+    luopo_app_marketplace_qinglong_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_qinglong_uninstall() {
@@ -141,9 +145,10 @@ luopo_app_marketplace_vscode_install() {
 
 luopo_app_marketplace_vscode_update() {
   local app_port="$1"
-  docker rm -f vscode-web >/dev/null 2>&1 || true
-  docker rmi -f codercom/code-server >/dev/null 2>&1 || true
-  luopo_app_marketplace_vscode_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "codercom/code-server" \
+    luopo_app_marketplace_vscode_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_vscode_uninstall() {
@@ -184,9 +189,10 @@ luopo_app_marketplace_dockge_install() {
 
 luopo_app_marketplace_dockge_update() {
   local app_port="$1"
-  docker rm -f dockge >/dev/null 2>&1 || true
-  docker rmi -f louislam/dockge >/dev/null 2>&1 || true
-  luopo_app_marketplace_dockge_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "louislam/dockge" \
+    luopo_app_marketplace_dockge_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_dockge_uninstall() {
@@ -382,8 +388,11 @@ luopo_app_marketplace_safeline_menu() {
         ;;
       2)
         luopo_app_marketplace_native_install_docker_runtime
-        luopo_app_marketplace_safeline_update
-        luopo_app_marketplace_native_add_app_id "5"
+        if luopo_app_marketplace_safeline_update; then
+          luopo_app_marketplace_native_add_app_id "5"
+        else
+          echo "雷池 WAF 更新失败，请检查网络和官方升级脚本。"
+        fi
         ;;
       3)
         docker exec safeline-mgt resetadmin 2>/dev/null || echo "未检测到 safeline-mgt 容器。"

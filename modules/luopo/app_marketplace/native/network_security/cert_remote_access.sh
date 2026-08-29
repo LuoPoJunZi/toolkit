@@ -21,9 +21,10 @@ luopo_app_marketplace_lucky_install() {
 
 luopo_app_marketplace_lucky_update() {
   local app_port="$1"
-  docker rm -f lucky >/dev/null 2>&1 || true
-  docker rmi -f gdy666/lucky:v2 >/dev/null 2>&1 || true
-  luopo_app_marketplace_lucky_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "gdy666/lucky:v2" \
+    luopo_app_marketplace_lucky_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_lucky_uninstall() {
@@ -69,9 +70,10 @@ luopo_app_marketplace_allinssl_install() {
 
 luopo_app_marketplace_allinssl_update() {
   local app_port="$1"
-  docker rm -f allinssl >/dev/null 2>&1 || true
-  docker rmi -f allinssl/allinssl:latest >/dev/null 2>&1 || true
-  luopo_app_marketplace_allinssl_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "allinssl/allinssl:latest" \
+    luopo_app_marketplace_allinssl_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_allinssl_uninstall() {
@@ -114,9 +116,9 @@ luopo_app_marketplace_rustdesk_hbbs_install() {
 }
 
 luopo_app_marketplace_rustdesk_hbbs_update() {
-  docker rm -f hbbs >/dev/null 2>&1 || true
-  docker rmi -f rustdesk/rustdesk-server >/dev/null 2>&1 || true
-  luopo_app_marketplace_rustdesk_hbbs_install
+  luopo_app_marketplace_native_update_container \
+    "rustdesk/rustdesk-server" \
+    luopo_app_marketplace_rustdesk_hbbs_install
 }
 
 luopo_app_marketplace_rustdesk_hbbs_uninstall() {
@@ -158,8 +160,11 @@ luopo_app_marketplace_rustdesk_hbbs_menu() {
         ;;
       2)
         luopo_app_marketplace_native_install_docker_runtime
-        luopo_app_marketplace_rustdesk_hbbs_update
-        luopo_app_marketplace_native_add_app_id "24"
+        if luopo_app_marketplace_rustdesk_hbbs_update; then
+          luopo_app_marketplace_native_add_app_id "24"
+        else
+          echo "RustDesk 服务端更新失败，原有容器已保留。"
+        fi
         ;;
       3)
         if [[ -f /home/docker/hbbs/data/id_ed25519.pub ]]; then
@@ -201,9 +206,9 @@ luopo_app_marketplace_rustdesk_hbbr_install() {
 }
 
 luopo_app_marketplace_rustdesk_hbbr_update() {
-  docker rm -f hbbr >/dev/null 2>&1 || true
-  docker rmi -f rustdesk/rustdesk-server >/dev/null 2>&1 || true
-  luopo_app_marketplace_rustdesk_hbbr_install
+  luopo_app_marketplace_native_update_container \
+    "rustdesk/rustdesk-server" \
+    luopo_app_marketplace_rustdesk_hbbr_install
 }
 
 luopo_app_marketplace_rustdesk_hbbr_uninstall() {
@@ -239,8 +244,11 @@ luopo_app_marketplace_rustdesk_hbbr_menu() {
         ;;
       2)
         luopo_app_marketplace_native_install_docker_runtime
-        luopo_app_marketplace_rustdesk_hbbr_update
-        luopo_app_marketplace_native_add_app_id "25"
+        if luopo_app_marketplace_rustdesk_hbbr_update; then
+          luopo_app_marketplace_native_add_app_id "25"
+        else
+          echo "RustDesk 中继端更新失败，原有容器已保留。"
+        fi
         ;;
       3)
         docker ps -a --filter name=hbbr --format 'table {{.Names}}\t{{.Status}}\t{{.Ports}}'

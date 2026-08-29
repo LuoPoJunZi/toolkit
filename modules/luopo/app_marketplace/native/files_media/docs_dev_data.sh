@@ -17,9 +17,10 @@ luopo_app_marketplace_bitwarden_install() {
 
 luopo_app_marketplace_bitwarden_update() {
   local app_port="$1"
-  docker rm -f bitwarden >/dev/null 2>&1 || true
-  docker rmi -f vaultwarden/server >/dev/null 2>&1 || true
-  luopo_app_marketplace_bitwarden_install "$app_port"
+  luopo_app_marketplace_native_update_container \
+    "vaultwarden/server" \
+    luopo_app_marketplace_bitwarden_install \
+    "$app_port"
 }
 
 luopo_app_marketplace_bitwarden_uninstall() {
@@ -46,17 +47,15 @@ luopo_app_marketplace_bitwarden_menu() {
 luopo_app_marketplace_gitea_install() {
   local app_port="$1"
   mkdir -p /home/docker/gitea/gitea /home/docker/gitea/data /home/docker/gitea/postgres
-  cd /home/docker/gitea
-  curl -fsSL -o docker-compose.yml "${gh_proxy}raw.githubusercontent.com/kejilion/docker/main/gitea-docker-compose.yml"
+  cd /home/docker/gitea || return 1
+  curl -fsSL -o docker-compose.yml "${gh_proxy}raw.githubusercontent.com/kejilion/docker/main/gitea-docker-compose.yml" || return 1
   sed -i "s/3000:3000/${app_port}:3000/g" docker-compose.yml
-  docker compose up -d
+  docker compose pull || return 1
+  docker compose up -d --remove-orphans || return 1
 }
 
 luopo_app_marketplace_gitea_update() {
   local app_port="$1"
-  if [[ -d /home/docker/gitea ]]; then
-    cd /home/docker/gitea && docker compose down --rmi all
-  fi
   luopo_app_marketplace_gitea_install "$app_port"
 }
 
@@ -85,18 +84,18 @@ luopo_app_marketplace_gitea_menu() {
 luopo_app_marketplace_paperless_install() {
   local app_port="$1"
   mkdir -p /home/docker/paperless/export /home/docker/paperless/consume
-  cd /home/docker/paperless
-  curl -fsSL -o docker-compose.yml "${gh_proxy}raw.githubusercontent.com/paperless-ngx/paperless-ngx/refs/heads/main/docker/compose/docker-compose.postgres-tika.yml"
-  curl -fsSL -o docker-compose.env "${gh_proxy}raw.githubusercontent.com/paperless-ngx/paperless-ngx/refs/heads/main/docker/compose/.env"
+  cd /home/docker/paperless || return 1
+  curl -fsSL -o docker-compose.yml "${gh_proxy}raw.githubusercontent.com/paperless-ngx/paperless-ngx/refs/heads/main/docker/compose/docker-compose.postgres-tika.yml" || return 1
+  if [[ ! -f docker-compose.env ]]; then
+    curl -fsSL -o docker-compose.env "${gh_proxy}raw.githubusercontent.com/paperless-ngx/paperless-ngx/refs/heads/main/docker/compose/.env" || return 1
+  fi
   sed -i "s/8000:8000/${app_port}:8000/g" docker-compose.yml
-  docker compose up -d
+  docker compose pull || return 1
+  docker compose up -d --remove-orphans || return 1
 }
 
 luopo_app_marketplace_paperless_update() {
   local app_port="$1"
-  if [[ -d /home/docker/paperless ]]; then
-    cd /home/docker/paperless && docker compose down --rmi all
-  fi
   luopo_app_marketplace_paperless_install "$app_port"
 }
 
@@ -125,25 +124,16 @@ luopo_app_marketplace_paperless_menu() {
 luopo_app_marketplace_umami_install() {
   local app_port="$1"
   install git
-  rm -rf /home/docker/umami
-  mkdir -p /home/docker
-  cd /home/docker
-  git clone "${gh_proxy}github.com/umami-software/umami.git" umami
-  cd /home/docker/umami
+  luopo_app_marketplace_native_repo_sync "${gh_proxy}github.com/umami-software/umami.git" /home/docker/umami || return 1
+  cd /home/docker/umami || return 1
   sed -i "s/3000:3000/${app_port}:3000/g" docker-compose.yml
-  docker compose up -d
+  docker compose pull || return 1
+  docker compose up -d --remove-orphans || return 1
 }
 
 luopo_app_marketplace_umami_update() {
   local app_port="$1"
-  if [[ -d /home/docker/umami ]]; then
-    cd /home/docker/umami && docker compose down --rmi all
-    git pull origin main >/dev/null 2>&1 || true
-    sed -i "s/[0-9]\\+:3000/${app_port}:3000/g" docker-compose.yml
-    docker compose up -d
-  else
-    luopo_app_marketplace_umami_install "$app_port"
-  fi
+  luopo_app_marketplace_umami_install "$app_port"
 }
 
 luopo_app_marketplace_umami_uninstall() {
