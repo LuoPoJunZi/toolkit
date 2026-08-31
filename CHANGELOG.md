@@ -1,5 +1,11 @@
 # Changelog
 
+## 26.8.31
+
+### 主要变化
+- feat: remove script hub from main menu (b400814)
+- chore(release): keep version for script hub fallback (0461edb)
+
 ## 26.8.29
 
 ### 主要变化
