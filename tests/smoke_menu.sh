@@ -267,6 +267,29 @@ assert_scripts_hub_menu() {
   [[ "$output" == *"【落魄】 Sing-box 一键脚本"* ]] || fail "script hub should render Sing-box"
 }
 
+assert_scripts_hub_fallback_menu() {
+  local output
+
+  output="$({
+    # shellcheck disable=SC1090
+    source "$ROOT_DIR/lang/zh_CN.sh"
+    # shellcheck disable=SC1090
+    source "$ROOT_DIR/core/ui.sh"
+    # shellcheck disable=SC1090
+    source "$SCRIPTS_HUB_FILE"
+    # Simulate an unavailable or broken jq before the user selects a script.
+    # shellcheck disable=SC2329
+    jq() {
+      return 1
+    }
+    scripts_hub <<<"0"
+  })" || fail "script hub should render fallback entries when jq cannot parse the index"
+
+  [[ "$output" == *"【落魄】 Hysteria2 一键脚本"* ]] || fail "script hub fallback should render Hysteria2"
+  [[ "$output" == *"【落魄】 Sing-box 一键脚本"* ]] || fail "script hub fallback should render Sing-box"
+  [[ "$output" != *"暂无可用脚本"* ]] || fail "script hub should not be empty when jq is unavailable"
+}
+
 # The assertions below intentionally use single-quoted source text literally.
 # shellcheck disable=SC2016
 main() {
@@ -417,8 +440,10 @@ main() {
   assert_contains_fixed "$SCRIPTS_HUB_FILE" 'echo "脚本中心"' "menu 4 runtime title should use current wording"
   assert_not_contains_fixed "$SCRIPTS_HUB_FILE" 'echo "一键脚本中心"' "menu 4 runtime title should not use legacy wording"
   assert_contains_fixed "$SCRIPTS_HUB_FILE" 'install jq' "script hub should install jq when the dependency is missing"
-  assert_contains_fixed "$SCRIPTS_HUB_FILE" '脚本索引解析失败' "script hub should report index parsing failures"
+  assert_contains_fixed "$SCRIPTS_HUB_FILE" 'SCRIPT_HUB_FALLBACK_ENTRIES=(' "script hub should provide built-in fallback entries"
+  assert_contains_fixed "$SCRIPTS_HUB_FILE" 'scripts_hub:using_fallback_entries' "script hub should log fallback usage"
   assert_scripts_hub_menu
+  assert_scripts_hub_fallback_menu
 
   assert_contains_fixed "$DISPATCHER_FILE" 'entry_exit' "dispatcher should support exit handler"
   assert_contains_fixed "$DISPATCHER_FILE" 'run_action "$action_name" "$handler"' "dispatcher should execute handler via run_action"

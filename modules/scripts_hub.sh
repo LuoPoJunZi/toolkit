@@ -10,6 +10,29 @@ source "$ROOT_DIR/integrations/verifier.sh"
 # shellcheck disable=SC1091
 source "$ROOT_DIR/integrations/runners.sh"
 
+SCRIPT_HUB_FALLBACK_ENTRIES=(
+  $'luopojunzi-hysteria2-luopo\tHysteria2 一键脚本'
+  $'luopojunzi-sing-box-ev\tSing-box 一键脚本'
+)
+
+load_script_hub_entries() {
+  local index_file="$1"
+  local entries_output=""
+
+  if command -v jq >/dev/null 2>&1 && [[ -f "$index_file" ]]; then
+    if entries_output="$(jq -r '.scripts[] | select(.enabled == true and ((.tags // []) | index("self-project"))) | [.id, .name] | @tsv' "$index_file")" \
+      && [[ -n "$entries_output" ]]; then
+      printf '%s\n' "$entries_output"
+      return 0
+    fi
+  fi
+
+  if declare -F log_error >/dev/null 2>&1; then
+    log_error "scripts_hub:using_fallback_entries"
+  fi
+  printf '%s\n' "${SCRIPT_HUB_FALLBACK_ENTRIES[@]}"
+}
+
 require_jq() {
   if command -v jq >/dev/null 2>&1; then
     return 0
@@ -72,23 +95,7 @@ scripts_hub() {
   local -a script_entries=()
   local i
 
-  if ! require_jq; then
-    press_enter
-    return 0
-  fi
-
-  if [[ ! -f "$index_file" ]]; then
-    echo "脚本索引文件不存在: $index_file"
-    press_enter
-    return 0
-  fi
-
-  if ! entries_output="$(jq -r '.scripts[] | select(.enabled == true and (.tags | index("self-project"))) | [.id, .name] | @tsv' "$index_file")"; then
-    echo "脚本索引解析失败: $index_file"
-    log_error "scripts_hub:index_parse_failed"
-    press_enter
-    return 0
-  fi
+  entries_output="$(load_script_hub_entries "$index_file")"
 
   if [[ -n "$entries_output" ]]; then
     mapfile -t script_entries <<<"$entries_output"
@@ -131,6 +138,17 @@ scripts_hub() {
   fi
 
   selected_id="${selected_ids[$((choice - 1))]}"
+
+  if ! require_jq; then
+    press_enter
+    return 0
+  fi
+  if [[ ! -f "$index_file" ]]; then
+    echo "脚本索引文件不存在: $index_file"
+    press_enter
+    return 0
+  fi
+
   log_action "scripts_hub:run:$selected_id"
   run_integration_script "$selected_id"
 }
