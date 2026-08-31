@@ -57,16 +57,15 @@ LuoPo VPS Toolkit v{VERSION} (Quick start: z)
  1.  Overview
  2.  Update
  3.  Cleanup
- 4.  Script hub
- 5.  Tools
- 6.  BBR
- 7.  Docker
- 8.  WARP
- 9.  Network test
- 10. Site builder
- 11. App market
- 12. Workspace
- 13. System tools
+ 4.  Tools
+ 5.  BBR
+ 6.  Docker
+ 7.  WARP
+ 8.  Network test
+ 9.  Site builder
+ 10. App market
+ 11. Workspace
+ 12. System tools
 ----------------------------------------
  99. Update toolkit
  88. Uninstall toolkit
@@ -77,7 +76,7 @@ Enter choice:
 
 ## Clone Layer Notes
 
-- Visible main menu entries `5-13` are local modular mirrors of the relevant `kejilion/sh` features; the Oracle Cloud tools and server cluster control code have been removed from the project.
+- Visible main menu entries `4-12` are local modular mirrors of the relevant `kejilion/sh` features; the Oracle Cloud tools and server cluster control code have been removed from the project.
 - These local modules intentionally keep the upstream menu structure, submenu depth, external-script integrations, and operating style as close as possible for later second-stage customization.
 - Upstream source and local adaptation notes are documented in [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md).
 - Local adaptations currently include disabling upstream telemetry, disabling upstream self-install side effects, and migrating active menus into native `modules/luopo/` modules. `vendor/luopo.sh` may be kept locally as a source-reference snapshot, but it is no longer uploaded to the GitHub repository.
@@ -89,7 +88,7 @@ Enter choice:
 - Main menu registry: `core/menu_registry.sh`
 - Main menu dispatcher: `core/menu_dispatcher.sh`
 - Active feature modules: `modules/luopo/`
-- One-click script index: `integrations/index.json`
+- Retained but inactive: script hub code at `modules/scripts_hub.sh` and index at `integrations/index.json`
 - Upstream reference backup: `vendor/luopo.sh` may be kept locally, but is not uploaded to GitHub
 
 The active runtime path no longer depends on:
@@ -109,23 +108,15 @@ Retired menu drafts are kept locally and no longer uploaded to GitHub:
 
 | Menu | Highlights |
 | --- | --- |
-| 4. Script hub | LuoPo-maintained scripts with cached download + SHA256 verification before execution |
-| 5. Tools | Common packages, terminal utilities, editors, small CLI tools, bulk install/remove |
-| 6. BBR | BBR / BBRv3 management and upstream network-acceleration script integration |
-| 7. Docker | Install/upgrade, global status, container/image/network/volume management, IPv6, backup/migrate/restore |
-| 8. WARP | Upstream WARP management script integration |
-| 9. Network test | Unlock tests, route tracing, bandwidth tests, hardware benchmarks, all-in-one test suites |
-| 10. Site builder | LDNMP, WordPress, reverse proxy, redirects, full-site backup/restore, security and tuning |
-| 11. App market | Locally maintained catalog with Docker app install, configuration-preserving updates, uninstall, backup, and restore |
-| 12. Workspace | Tmux workspaces, persistent SSH mode, custom workspaces, command injection |
-| 13. System tools | SSH, timezone, hostname, ports, swap, users, firewall, logs, environment variables, and more |
-
-## One-Click Script List (Menu 4)
-
-1. [LuoPo] Hysteria2 install script
-2. [LuoPo] Sing-box install script
-
-Script index: `integrations/index.json`
+| 4. Tools | Common packages, terminal utilities, editors, small CLI tools, bulk install/remove |
+| 5. BBR | BBR / BBRv3 management and upstream network-acceleration script integration |
+| 6. Docker | Install/upgrade, global status, container/image/network/volume management, IPv6, backup/migrate/restore |
+| 7. WARP | Upstream WARP management script integration |
+| 8. Network test | Unlock tests, route tracing, bandwidth tests, hardware benchmarks, all-in-one test suites |
+| 9. Site builder | LDNMP, WordPress, reverse proxy, redirects, full-site backup/restore, security and tuning |
+| 10. App market | Locally maintained catalog with Docker app install, configuration-preserving updates, uninstall, backup, and restore |
+| 11. Workspace | Tmux workspaces, persistent SSH mode, custom workspaces, command injection |
+| 12. System tools | SSH, timezone, hostname, ports, swap, users, firewall, logs, environment variables, and more |
 
 ## Update and Rollback
 
@@ -193,4 +184,4 @@ Version and release:
 ## License
 
 - This project is released under the [GPL-3.0 License](LICENSE).
-- The visible `5-13` modules include Apache-2.0 licensed upstream code from `kejilion/sh` plus local adaptations. See [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md).
+- The visible `4-12` modules include Apache-2.0 licensed upstream code from `kejilion/sh` plus local adaptations. See [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md).

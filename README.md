@@ -57,16 +57,15 @@ LuoPo VPS Toolkit v{VERSION} (快捷启动: z)
  1.  系统概览
  2.  系统更新
  3.  系统清理
- 4.  脚本中心
- 5.  基础工具
- 6.  BBR管理
- 7.  Docker
- 8.  WARP管理
- 9.  网络测试
- 10. 建站管理
- 11. 应用市场
- 12. 后台工作
- 13. 系统工具
+ 4.  基础工具
+ 5.  BBR管理
+ 6.  Docker
+ 7.  WARP管理
+ 8.  网络测试
+ 9.  建站管理
+ 10. 应用市场
+ 11. 后台工作
+ 12. 系统工具
 ----------------------------------------
  99. 更新脚本
  88. 卸载脚本
@@ -77,7 +76,7 @@ LuoPo VPS Toolkit v{VERSION} (快捷启动: z)
 
 ## 复刻说明
 
-- 当前可见主菜单入口 `5-13` 基于 `kejilion/sh` 的相关功能体系做了本地模块化复刻；甲骨文云脚本合集和服务器集群控制已从项目代码中移除。
+- 当前可见主菜单入口 `4-12` 基于 `kejilion/sh` 的相关功能体系做了本地模块化复刻；甲骨文云脚本合集和服务器集群控制已从项目代码中移除。
 - 本地模块优先保留上游菜单结构、子菜单层级、外部脚本调用方式与运行习惯，便于后续继续二次开发。
 - 上游来源与本地适配说明见：[docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md)。
 - 当前本地适配主要包括：关闭上游遥测、关闭上游自安装副作用、将活动菜单迁移到 `modules/luopo/` 原生模块。`vendor/luopo.sh` 仅允许作为本地来源参考文件保留，不再上传到 GitHub 仓库。
@@ -89,7 +88,7 @@ LuoPo VPS Toolkit v{VERSION} (快捷启动: z)
 - 主菜单注册：`core/menu_registry.sh`
 - 主菜单分发：`core/menu_dispatcher.sh`
 - 活动功能模块：`modules/luopo/`
-- 一键脚本索引：`integrations/index.json`
+- 保留但未启用：脚本中心代码 `modules/scripts_hub.sh` 与索引 `integrations/index.json`
 - 上游参考备份：`vendor/luopo.sh` 可本地保留，但不上传 GitHub
 
 当前活动运行路径不再依赖：
@@ -109,23 +108,15 @@ LuoPo VPS Toolkit v{VERSION} (快捷启动: z)
 
 | 菜单 | 主要能力 |
 | --- | --- |
-| 4. 脚本中心 | 集成落魄自研脚本，下载缓存 + SHA256 校验后执行 |
-| 5. 基础工具 | 常用系统包、终端工具、编辑器、实用小工具与批量安装/卸载 |
-| 6. BBR管理 | BBR / BBRv3 相关管理与上游网络加速脚本接入 |
-| 7. Docker | Docker 安装升级、全局状态、容器/镜像/网络/卷管理、IPv6、备份迁移还原 |
-| 8. WARP管理 | 接入上游 WARP 管理脚本 |
-| 9. 网络测试 | 解锁检测、回程测试、测速脚本、硬件性能与综合测评 |
-| 10. 建站管理 | LDNMP、WordPress、站点反代、重定向、全站备份恢复、防护优化 |
-| 11. 应用市场 | 本地维护应用清单，提供 Docker 应用安装、保留配置更新、卸载与数据备份还原 |
-| 12. 后台工作 | Tmux 工作区、常驻 SSH 模式、自定义工作区与命令注入 |
-| 13. 系统工具 | SSH、时区、主机名、端口、swap、用户、防火墙、日志、环境变量等 |
-
-## 一键脚本清单（菜单 4）
-
-1. 【落魄】 Hysteria2 一键脚本
-2. 【落魄】 Sing-box 一键脚本
-
-脚本索引：`integrations/index.json`
+| 4. 基础工具 | 常用系统包、终端工具、编辑器、实用小工具与批量安装/卸载 |
+| 5. BBR管理 | BBR / BBRv3 相关管理与上游网络加速脚本接入 |
+| 6. Docker | Docker 安装升级、全局状态、容器/镜像/网络/卷管理、IPv6、备份迁移还原 |
+| 7. WARP管理 | 接入上游 WARP 管理脚本 |
+| 8. 网络测试 | 解锁检测、回程测试、测速脚本、硬件性能与综合测评 |
+| 9. 建站管理 | LDNMP、WordPress、站点反代、重定向、全站备份恢复、防护优化 |
+| 10. 应用市场 | 本地维护应用清单，提供 Docker 应用安装、保留配置更新、卸载与数据备份还原 |
+| 11. 后台工作 | Tmux 工作区、常驻 SSH 模式、自定义工作区与命令注入 |
+| 12. 系统工具 | SSH、时区、主机名、端口、swap、用户、防火墙、日志、环境变量等 |
 
 ## 更新与回滚
 
@@ -193,4 +184,4 @@ Windows 预检会检查全部 Bash 文件的语法并运行菜单烟测；本机
 ## 开源协议
 
 - 本项目基于 [GPL-3.0 License](LICENSE) 开源。
-- 可见 `5-13` 模块包含来自 `kejilion/sh` 的 Apache-2.0 授权代码与适配修改，详细说明见 [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md)。
+- 可见 `4-12` 模块包含来自 `kejilion/sh` 的 Apache-2.0 授权代码与适配修改，详细说明见 [docs/UPSTREAM_ATTRIBUTION.md](docs/UPSTREAM_ATTRIBUTION.md)。

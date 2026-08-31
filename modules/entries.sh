@@ -10,8 +10,6 @@ source "$MODULE_DIR/entry_system_update.sh"
 # shellcheck disable=SC1091
 source "$MODULE_DIR/entry_system_cleanup.sh"
 # shellcheck disable=SC1091
-source "$MODULE_DIR/entry_scripts_hub.sh"
-# shellcheck disable=SC1091
 source "$MODULE_DIR/entry_basic_tools.sh"
 # shellcheck disable=SC1091
 source "$MODULE_DIR/entry_bbr_management.sh"

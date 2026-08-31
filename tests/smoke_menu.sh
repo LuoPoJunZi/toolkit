@@ -413,9 +413,11 @@ main() {
   assert_contains_fixed "$LUOPO_SYSTEM_TOOLS_OPERATIONS_SECURITY_MONITORING_FILE" '# luopo-traffic-reset' "traffic reboot cron should use an ownership marker"
   assert_not_contains_fixed "$LUOPO_SYSTEM_TOOLS_OPERATIONS_SECURITY_MONITORING_FILE" "luopo_system_tools_crontab_without 'reboot'" "traffic cron cleanup must preserve unrelated reboot jobs"
 
-  for label in 1 2 3 4 5 6 7 8 9 10 11 12 13 99 88 0; do
+  for label in 1 2 3 4 5 6 7 8 9 10 11 12 99 88 0; do
     assert_contains_fixed "$REGISTRY_FILE" "\"${label}|menu_label_${label}" "missing menu registry item ${label}"
   done
+  assert_not_contains_fixed "$REGISTRY_FILE" '"13|menu_label_13' "main menu should stop at item 12"
+  assert_not_contains_fixed "$REGISTRY_FILE" 'entry_scripts_hub' "script hub should not exist in main menu registry"
   assert_not_contains_fixed "$REGISTRY_FILE" 'entry_oracle_cloud_suite' "oracle cloud should not exist in main menu registry"
   assert_not_contains_fixed "$REGISTRY_FILE" 'entry_cluster_control_suite' "cluster control should not exist in main menu registry"
   assert_not_path "$ROOT_DIR/modules/entry_oracle_cloud_suite.sh" "oracle cloud entry should be removed"
@@ -429,6 +431,7 @@ main() {
   assert_not_contains_fixed "$MENU_FILE" 'modules/compat/load.sh' "menu should not load compat handlers"
   assert_not_contains_fixed "$MENU_FILE" 'source "$ROOT_DIR/modules/luopo_bridge.sh"' "menu should not source legacy bridge"
   assert_not_contains_fixed "$MENU_FILE" 'source "$ROOT_DIR/modules/features/load.sh"' "menu should not source legacy features loader"
+  assert_not_contains_fixed "$MENU_FILE" 'source "$ROOT_DIR/modules/scripts_hub.sh"' "main menu should not load the retained script hub"
   assert_contains_fixed "$MENU_FILE" 'for item in "${MENU_ITEMS[@]}"; do' "menu should render items from registry"
   assert_contains_fixed "$MENU_FILE" 'dispatch_menu_action "$choice"' "menu should dispatch choices via dispatcher"
   assert_contains_fixed "$MENU_FILE" 'if [[ "$choice" == "00" ]]; then' "menu should remap 00 to 99"
@@ -437,8 +440,14 @@ main() {
   assert_contains_fixed "$EN_LANG_FILE" '[title_main_fmt]="LuoPo VPS Toolkit v%s (Quick start: z)"' "English title should not show Chinese quick-start text"
   assert_contains_fixed "$EN_LANG_FILE" '[banner_quick_start]="Run z from the terminal to launch the toolkit quickly"' "English banner should not show Chinese quick-start text"
   assert_contains_fixed "$ZH_LANG_FILE" '[title_main_fmt]="LuoPo VPS Toolkit v%s (快捷启动: z)"' "Chinese title should keep current quick-start wording"
-  assert_contains_fixed "$SCRIPTS_HUB_FILE" 'echo "脚本中心"' "menu 4 runtime title should use current wording"
-  assert_not_contains_fixed "$SCRIPTS_HUB_FILE" 'echo "一键脚本中心"' "menu 4 runtime title should not use legacy wording"
+  assert_contains_fixed "$ZH_LANG_FILE" '[menu_label_4]="基础工具"' "Chinese menu item 4 should be basic tools"
+  assert_contains_fixed "$ZH_LANG_FILE" '[menu_label_12]="系统工具"' "Chinese main menu should end with system tools at item 12"
+  assert_not_contains_fixed "$ZH_LANG_FILE" '[menu_label_13]=' "Chinese menu should not keep an active item 13 label"
+  assert_contains_fixed "$EN_LANG_FILE" '[menu_label_4]="Tools"' "English menu item 4 should be tools"
+  assert_contains_fixed "$EN_LANG_FILE" '[menu_label_12]="System tools"' "English main menu should end with system tools at item 12"
+  assert_not_contains_fixed "$EN_LANG_FILE" '[menu_label_13]=' "English menu should not keep an active item 13 label"
+  assert_contains_fixed "$SCRIPTS_HUB_FILE" 'echo "脚本中心"' "retained script hub should keep its runtime title"
+  assert_not_contains_fixed "$SCRIPTS_HUB_FILE" 'echo "一键脚本中心"' "retained script hub should not use legacy wording"
   assert_contains_fixed "$SCRIPTS_HUB_FILE" 'install jq' "script hub should install jq when the dependency is missing"
   assert_contains_fixed "$SCRIPTS_HUB_FILE" 'SCRIPT_HUB_FALLBACK_ENTRIES=(' "script hub should provide built-in fallback entries"
   assert_contains_fixed "$SCRIPTS_HUB_FILE" 'scripts_hub:using_fallback_entries' "script hub should log fallback usage"
@@ -456,7 +465,6 @@ main() {
     entry_system_info.sh \
     entry_system_update.sh \
     entry_system_cleanup.sh \
-    entry_scripts_hub.sh \
     entry_basic_tools.sh \
     entry_bbr_management.sh \
     entry_docker_management.sh \
@@ -471,6 +479,7 @@ main() {
     entry_exit.sh; do
     assert_contains_fixed "$ENTRIES_LOAD_FILE" "$feature_file" "entries loader missing $feature_file"
   done
+  assert_not_contains_fixed "$ENTRIES_LOAD_FILE" 'entry_scripts_hub.sh' "entries loader should not activate the retained script hub"
 
   assert_contains_fixed "$ROOT_DIR/modules/entry_basic_tools.sh" 'source "$ROOT_DIR/modules/luopo/basic_tools/menu.sh"' "basic tools entry should source LuoPo menu"
   assert_contains_fixed "$ROOT_DIR/modules/entry_basic_tools.sh" 'luopo_basic_tools_menu' "basic tools entry should call LuoPo menu"
