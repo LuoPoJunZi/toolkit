@@ -41,7 +41,7 @@ luopo_app_marketplace_restore_all() {
     return 0
   fi
 
-  read -r -p "还原会覆盖 /home/docker 中同名数据，确认继续？(y/N): " confirm
+  read -r -p "还原会覆盖 /home/docker 中同名数据，确认继续？(Y/N): " confirm
   case "$confirm" in
     [Yy])
       mkdir -p /home

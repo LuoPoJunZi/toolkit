@@ -177,7 +177,7 @@ backup_docker_data_dir() {
   fi
 
   read -r -p "备份文件路径(如 /root/docker-backups/docker-data.tar.gz): " out_file
-  read -r -p "将临时停止Docker进行打包，确认继续？(y/N): " ans
+  read -r -p "将临时停止Docker进行打包，确认继续？(Y/N): " ans
   if [[ "$ans" != "y" && "$ans" != "Y" ]]; then
     echo "已取消"
     return 0

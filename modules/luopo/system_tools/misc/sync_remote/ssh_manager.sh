@@ -141,7 +141,7 @@ luopo_system_tools_ssh_delete_connection() {
   fi
 
   IFS='|' read -r name host user port auth_method secret <<<"$connection"
-  read -r -p "确认删除连接 $name ? (y/N): " confirm
+  read -r -p "确认删除连接 $name ? (Y/N): " confirm
   case "$confirm" in
     [Yy])
       if [[ "$auth_method" == "key" && "$secret" == "$key_dir"* ]]; then

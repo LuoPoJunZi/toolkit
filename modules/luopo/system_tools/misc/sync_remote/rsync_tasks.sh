@@ -129,7 +129,7 @@ luopo_system_tools_rsync_delete_task() {
   fi
 
   IFS='|' read -r name local_path remote_user remote_host remote_path port options auth_method secret <<<"$task"
-  read -r -p "确认删除任务 $name ? (y/N): " confirm
+  read -r -p "确认删除任务 $name ? (Y/N): " confirm
   case "$confirm" in
     [Yy])
       if [[ "$auth_method" == "key" && "$secret" == "$key_dir"* ]]; then

@@ -45,20 +45,21 @@ toolkit/
 │  ├─ system_info.sh                  # 1. system information
 │  ├─ system_update.sh                # 2. full system update
 │  ├─ system_cleanup.sh               # 3. system cleanup
-│  ├─ scripts_hub.sh                  # 4. script hub
+│  ├─ scripts_hub.sh                  # Retained inactive script hub
 │  └─ luopo/
-│     ├─ basic_tools/                 # 5. basic tools
-│     ├─ bbr_management/              # 6. BBR management
-│     ├─ docker/                      # 7. Docker management
+│     ├─ basic_tools/                 # 4. basic tools
+│     ├─ bbr_management/              # 5. BBR management
+│     ├─ docker/                      # 6. Docker management
 │     │  ├─ manager.sh                # Docker menu loader and main menu
 │     │  └─ parts/
 │     │     ├─ common.sh
 │     │     ├─ install_status.sh
+│     │     ├─ resource_selectors.sh  # Numbered Docker resource selectors
 │     │     ├─ resources.sh
 │     │     └─ daemon_backup.sh
-│     ├─ warp_management/             # 8. WARP management
-│     ├─ network_test/                # 9. test script suite
-│     ├─ ldnmp/                       # 10. LDNMP site builder
+│     ├─ warp_management/             # 7. WARP management
+│     ├─ network_test/                # 8. test script suite
+│     ├─ ldnmp/                       # 9. LDNMP site builder
 │     │  ├─ menu.sh
 │     │  ├─ registry.sh
 │     │  ├─ actions.sh
@@ -78,7 +79,7 @@ toolkit/
 │     │  ├─ helpers_install.sh
 │     │  ├─ helpers_runtime.sh
 │     │  └─ helpers_site.sh
-│     ├─ app_marketplace/             # 11. app market
+│     ├─ app_marketplace/             # 10. app market
 │     │  ├─ menu.sh
 │     │  ├─ registry.sh
 │     │  ├─ actions.sh
@@ -99,8 +100,8 @@ toolkit/
 │     │     │  ├─ cert_remote_access.sh
 │     │     │  └─ tunnels.sh
 │     │     └─ ai_productivity.sh
-│     ├─ workspace/                   # 12. background workspace
-│     ├─ system_tools/                # 13. system tools
+│     ├─ workspace/                   # 11. background workspace
+│     ├─ system_tools/                # 12. system tools
 │     │  ├─ menu.sh
 │     │  ├─ registry.sh
 │     │  ├─ actions.sh

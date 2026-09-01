@@ -69,7 +69,7 @@ self_update() {
     return 0
   fi
 
-  read -r -p "发现新版本，是否立即更新？(y/N): " ans
+  read -r -p "发现新版本，是否立即更新？(Y/N): " ans
   if [[ "$ans" != "y" && "$ans" != "Y" ]]; then
     echo "已取消更新"
     return 0

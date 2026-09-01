@@ -110,7 +110,7 @@ luopo_system_tools_elrepo_menu() {
 
     case "$sub_choice" in
       1)
-        read -r -p "确认安装/更新 ELRepo mainline kernel? (y/N): " confirm
+        read -r -p "确认安装/更新 ELRepo mainline kernel? (Y/N): " confirm
         [[ "$confirm" =~ ^[Yy]$ ]] || {
           echo "已取消。"
           break_end
@@ -127,7 +127,7 @@ luopo_system_tools_elrepo_menu() {
         echo "ELRepo kernel-ml 已安装/更新，建议确认启动项后重启。"
         ;;
       2)
-        read -r -p "确认卸载 ELRepo kernel-ml? (y/N): " confirm
+        read -r -p "确认卸载 ELRepo kernel-ml? (Y/N): " confirm
         [[ "$confirm" =~ ^[Yy]$ ]] || {
           echo "已取消。"
           break_end

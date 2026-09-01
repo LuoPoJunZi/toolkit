@@ -50,7 +50,7 @@ docker_cleanup_all() {
     return 1
   fi
 
-  read -r -p "将执行 docker system prune -a --volumes -f，确认继续？(y/N): " ans
+  read -r -p "将执行 docker system prune -a --volumes -f，确认继续？(Y/N): " ans
   if [[ "$ans" != "y" && "$ans" != "Y" ]]; then
     echo "已取消"
     return 0
@@ -64,7 +64,7 @@ uninstall_docker_env() {
     return 1
   fi
 
-  read -r -p "将卸载 Docker 并删除全部数据，确认继续？(y/N): " ans
+  read -r -p "将卸载 Docker 并删除全部数据，确认继续？(Y/N): " ans
   if [[ "$ans" != "y" && "$ans" != "Y" ]]; then
     echo "已取消"
     return 0

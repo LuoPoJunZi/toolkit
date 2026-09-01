@@ -10,7 +10,7 @@ uninstall_toolkit() {
   echo "即将完全卸载 LuoPo VPS Toolkit。"
   echo "将删除目录: $INSTALL_DIR"
   echo "将删除命令: $LAUNCHER"
-  read -r -p "确认继续？此操作不可恢复 (y/N): " ans
+  read -r -p "确认继续？此操作不可恢复 (Y/N): " ans
   if [[ "$ans" != "y" && "$ans" != "Y" ]]; then
     echo "已取消卸载"
     return 0

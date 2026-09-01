@@ -25,6 +25,7 @@ LUOPO_WORKSPACE_HELPERS_FILE="$ROOT_DIR/modules/luopo/workspace/helpers.sh"
 LUOPO_DOCKER_MANAGER_FILE="$ROOT_DIR/modules/luopo/docker/manager.sh"
 LUOPO_DOCKER_COMMON_FILE="$ROOT_DIR/modules/luopo/docker/parts/common.sh"
 LUOPO_DOCKER_INSTALL_STATUS_FILE="$ROOT_DIR/modules/luopo/docker/parts/install_status.sh"
+LUOPO_DOCKER_RESOURCE_SELECTORS_FILE="$ROOT_DIR/modules/luopo/docker/parts/resource_selectors.sh"
 LUOPO_DOCKER_RESOURCES_FILE="$ROOT_DIR/modules/luopo/docker/parts/resources.sh"
 LUOPO_DOCKER_DAEMON_BACKUP_FILE="$ROOT_DIR/modules/luopo/docker/parts/daemon_backup.sh"
 LUOPO_APP_MARKET_MENU_FILE="$ROOT_DIR/modules/luopo/app_marketplace/menu.sh"
@@ -290,9 +291,64 @@ assert_scripts_hub_fallback_menu() {
   [[ "$output" != *"暂无可用脚本"* ]] || fail "script hub should not be empty when jq is unavailable"
 }
 
+assert_docker_container_delete_selector() {
+  local output
+  output="$({
+    # These mocks are invoked indirectly by the sourced Docker modules.
+    # shellcheck disable=SC2329
+    menu_item() {
+      printf ' %s. %s\n' "$1" "$2"
+    }
+    # shellcheck disable=SC2329
+    docker_check_ready() {
+      return 0
+    }
+    # shellcheck disable=SC2329
+    docker() {
+      case "$1" in
+        ps)
+          printf 'aaa111\tweb [aaa111] | Up 2 hours | nginx:latest\n'
+          printf 'bbb222\tdatabase [bbb222] | Exited (0) | mariadb:latest\n'
+          ;;
+        rm)
+          printf 'REMOVED=%s\n' "$3"
+          ;;
+        *) return 1 ;;
+      esac
+    }
+    # shellcheck disable=SC1090
+    source "$LUOPO_DOCKER_RESOURCE_SELECTORS_FILE"
+    # shellcheck disable=SC1090
+    source "$LUOPO_DOCKER_RESOURCES_FILE"
+    docker_remove_selected_container <<<$'2\ny'
+  })" || fail "Docker container delete selector should complete with mocked resources"
+
+  [[ "$output" == *"web [aaa111] | Up 2 hours | nginx:latest"* ]] || fail "container delete selector should show running containers"
+  [[ "$output" == *"database [bbb222] | Exited (0) | mariadb:latest"* ]] || fail "container delete selector should show stopped containers"
+  [[ "$output" == *"REMOVED=bbb222"* ]] || fail "container delete selector should remove the chosen container"
+}
+
+assert_docker_confirmation_case_handling() {
+  local answer
+  # shellcheck disable=SC1090
+  source "$LUOPO_DOCKER_RESOURCE_SELECTORS_FILE"
+
+  for answer in y Y; do
+    docker_confirm_action "确认测试" <<<"$answer" >/dev/null || fail "confirmation should accept $answer"
+  done
+  for answer in n N; do
+    if docker_confirm_action "确认测试" <<<"$answer" >/dev/null; then
+      fail "confirmation should cancel on $answer"
+    fi
+  done
+}
+
 # The assertions below intentionally use single-quoted source text literally.
 # shellcheck disable=SC2016
 main() {
+  local legacy_confirm
+  legacy_confirm="(y""/N)"
+
   assert_file "$MENU_FILE"
   assert_file "$LUOPO_NETWORK_TEST_MENU_FILE"
   assert_file "$LUOPO_NETWORK_TEST_REGISTRY_FILE"
@@ -312,6 +368,7 @@ main() {
   assert_file "$LUOPO_DOCKER_MANAGER_FILE"
   assert_file "$LUOPO_DOCKER_COMMON_FILE"
   assert_file "$LUOPO_DOCKER_INSTALL_STATUS_FILE"
+  assert_file "$LUOPO_DOCKER_RESOURCE_SELECTORS_FILE"
   assert_file "$LUOPO_DOCKER_RESOURCES_FILE"
   assert_file "$LUOPO_DOCKER_DAEMON_BACKUP_FILE"
   assert_file "$LUOPO_APP_MARKET_MENU_FILE"
@@ -440,6 +497,8 @@ main() {
   assert_contains_fixed "$EN_LANG_FILE" '[title_main_fmt]="LuoPo VPS Toolkit v%s (Quick start: z)"' "English title should not show Chinese quick-start text"
   assert_contains_fixed "$EN_LANG_FILE" '[banner_quick_start]="Run z from the terminal to launch the toolkit quickly"' "English banner should not show Chinese quick-start text"
   assert_contains_fixed "$ZH_LANG_FILE" '[title_main_fmt]="LuoPo VPS Toolkit v%s (快捷启动: z)"' "Chinese title should keep current quick-start wording"
+  assert_contains_fixed "$ZH_LANG_FILE" '[prompt_confirm]="确认执行？(Y/N): "' "Chinese confirmation prompt should use balanced uppercase choices"
+  assert_contains_fixed "$EN_LANG_FILE" '[prompt_confirm]="Confirm? (Y/N): "' "English confirmation prompt should use balanced uppercase choices"
   assert_contains_fixed "$ZH_LANG_FILE" '[menu_label_4]="基础工具"' "Chinese menu item 4 should be basic tools"
   assert_contains_fixed "$ZH_LANG_FILE" '[menu_label_12]="系统工具"' "Chinese main menu should end with system tools at item 12"
   assert_not_contains_fixed "$ZH_LANG_FILE" '[menu_label_13]=' "Chinese menu should not keep an active item 13 label"
@@ -501,8 +560,25 @@ main() {
   assert_contains_regex "$LUOPO_DOCKER_MANAGER_FILE" '^docker_manager\(\) \{' "missing LuoPo docker manager entry"
   assert_contains_fixed "$LUOPO_DOCKER_MANAGER_FILE" 'source "$LUOPO_DOCKER_PARTS_DIR/common.sh"' "docker manager should load common helpers"
   assert_contains_fixed "$LUOPO_DOCKER_MANAGER_FILE" 'source "$LUOPO_DOCKER_PARTS_DIR/install_status.sh"' "docker manager should load install/status actions"
+  assert_contains_fixed "$LUOPO_DOCKER_MANAGER_FILE" 'source "$LUOPO_DOCKER_PARTS_DIR/resource_selectors.sh"' "docker manager should load numbered resource selectors"
   assert_contains_fixed "$LUOPO_DOCKER_MANAGER_FILE" 'source "$LUOPO_DOCKER_PARTS_DIR/resources.sh"' "docker manager should load resource menus"
   assert_contains_fixed "$LUOPO_DOCKER_MANAGER_FILE" 'source "$LUOPO_DOCKER_PARTS_DIR/daemon_backup.sh"' "docker manager should load daemon/backup actions"
+  assert_contains_regex "$LUOPO_DOCKER_RESOURCE_SELECTORS_FILE" '^docker_choose_resource\(\) \{' "Docker resources should share a numbered selector"
+  assert_contains_fixed "$LUOPO_DOCKER_RESOURCE_SELECTORS_FILE" 'args+=(-a)' "container selector should include stopped containers when requested"
+  assert_contains_regex "$LUOPO_DOCKER_RESOURCE_SELECTORS_FILE" '^docker_image_selection_rows\(\) \{' "Docker images should support numbered selection"
+  assert_contains_regex "$LUOPO_DOCKER_RESOURCE_SELECTORS_FILE" '^docker_network_selection_rows\(\) \{' "Docker networks should support numbered selection"
+  assert_contains_regex "$LUOPO_DOCKER_RESOURCE_SELECTORS_FILE" '^docker_volume_selection_rows\(\) \{' "Docker volumes should support numbered selection"
+  assert_contains_fixed "$LUOPO_DOCKER_RESOURCES_FILE" 'docker_choose_resource "选择要删除的容器"' "container deletion should show a numbered container list"
+  assert_contains_fixed "$LUOPO_DOCKER_RESOURCES_FILE" 'docker_confirm_action "确认强制删除容器' "container deletion should keep a second confirmation"
+  assert_contains_fixed "$LUOPO_DOCKER_RESOURCES_FILE" 'docker_confirm_action "确认删除镜像' "image deletion should require confirmation"
+  assert_contains_fixed "$LUOPO_DOCKER_RESOURCES_FILE" 'docker_confirm_action "确认删除网络' "network deletion should require confirmation"
+  assert_contains_fixed "$LUOPO_DOCKER_RESOURCES_FILE" 'docker_confirm_action "确认删除卷' "volume deletion should require confirmation"
+  assert_not_contains_fixed "$LUOPO_DOCKER_RESOURCE_SELECTORS_FILE" "$legacy_confirm" "Docker confirmation prompts should not mix lowercase and uppercase choices"
+  assert_not_contains_fixed "$LUOPO_DOCKER_RESOURCES_FILE" '输入容器名/容器ID' "Docker resource actions should not require a memorized container ID"
+  assert_not_contains_fixed "$LUOPO_DOCKER_RESOURCES_FILE" '输入镜像名/IMAGE ID' "image deletion should not require a memorized image ID"
+  assert_not_contains_fixed "$LUOPO_DOCKER_RESOURCES_FILE" '输入网络名/NETWORK ID' "network actions should not require a memorized network ID"
+  assert_docker_container_delete_selector
+  assert_docker_confirmation_case_handling
   assert_contains_fixed "$ROOT_DIR/modules/entry_warp_management.sh" 'source "$ROOT_DIR/modules/luopo/warp_management/menu.sh"' "warp entry should source LuoPo menu"
   assert_contains_fixed "$ROOT_DIR/modules/entry_warp_management.sh" 'luopo_warp_management_menu' "warp entry should call LuoPo menu"
   assert_contains_regex "$LUOPO_WARP_MENU_FILE" '^luopo_warp_management_menu\(\) \{' "missing LuoPo warp menu entry"
@@ -942,6 +1018,9 @@ main() {
   assert_contains_fixed "$UNINSTALL_FILE" 'rm -f /usr/local/bin/k /usr/bin/k' "uninstall should cleanup legacy k launchers"
   if git ls-files --error-unmatch vendor/luopo.sh >/dev/null 2>&1; then
     fail "vendor/luopo.sh should remain local-only and must not be tracked"
+  fi
+  if git grep -Fq "$legacy_confirm" -- '*.sh'; then
+    fail "confirmation prompts should consistently display (Y/N)"
   fi
 
   echo "[PASS] menu routing smoke checks passed"

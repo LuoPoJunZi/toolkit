@@ -540,3 +540,17 @@ Result:
 
 Remaining after round:
 - Run live Linux/VPS checks for operations that require Docker, iptables, cron, disks, or WARP services.
+
+### 2026-09-01 - Round 25
+Completed:
+- Added `docker/parts/resource_selectors.sh` as the shared numbered selector for containers, images, networks, and volumes.
+- Changed Docker resource actions to display current objects in place instead of requiring users to leave the action and memorize names or IDs.
+- Kept a second confirmation for destructive actions and added previews plus confirmation before image or volume cleanup.
+- Added mocked behavior coverage proving container deletion lists both running and stopped containers and removes the selected item.
+
+Result:
+- Container, image, network, and volume workflows now use a consistent `list -> numbered choice -> confirmation when destructive` interaction.
+- The audit found that comparable workspace, user, site, and backup deletion flows already display their current objects in the same screen.
+
+Remaining after round:
+- Run live Docker validation on a Linux VPS, especially network disconnect formatting and attached-resource failure messages.

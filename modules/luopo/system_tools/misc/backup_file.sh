@@ -78,7 +78,7 @@ luopo_system_tools_backup_restore() {
     return 1
   fi
 
-  read -r -p "确认恢复到系统根目录 / ? 此操作会覆盖同名文件 (y/N): " confirm
+  read -r -p "确认恢复到系统根目录 / ? 此操作会覆盖同名文件 (Y/N): " confirm
   case "$confirm" in
     [Yy])
       echo "正在恢复备份 $backup_name..."
@@ -102,7 +102,7 @@ luopo_system_tools_backup_delete() {
     return 1
   fi
 
-  read -r -p "确认删除 $backup_name ? (y/N): " confirm
+  read -r -p "确认删除 $backup_name ? (Y/N): " confirm
   case "$confirm" in
     [Yy])
       rm -f "$backup_dir/$backup_name"
@@ -208,7 +208,7 @@ luopo_system_tools_trash_menu() {
         fi
         ;;
       4)
-        read -r -p "确认清空回收站？(y/N): " confirm
+        read -r -p "确认清空回收站？(Y/N): " confirm
         case "$confirm" in
           [Yy])
             if command -v trash-empty >/dev/null 2>&1; then
@@ -283,7 +283,7 @@ luopo_system_tools_file_menu() {
         if [[ -z "$dirname" || ! -d "$dirname" ]]; then
           echo "目录不存在。"
         else
-          read -r -p "确认删除目录 $dirname ? (y/N): " confirm
+          read -r -p "确认删除目录 $dirname ? (Y/N): " confirm
           [[ "$confirm" =~ ^[Yy]$ ]] && rm -rf -- "$dirname" && echo "目录已删除" || echo "已取消"
         fi
         ;;
@@ -318,7 +318,7 @@ luopo_system_tools_file_menu() {
         if [[ -z "$filename" || ! -f "$filename" ]]; then
           echo "文件不存在。"
         else
-          read -r -p "确认删除文件 $filename ? (y/N): " confirm
+          read -r -p "确认删除文件 $filename ? (Y/N): " confirm
           [[ "$confirm" =~ ^[Yy]$ ]] && rm -f -- "$filename" && echo "文件已删除" || echo "已取消"
         fi
         ;;

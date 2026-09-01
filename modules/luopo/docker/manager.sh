@@ -9,6 +9,8 @@ source "$LUOPO_DOCKER_PARTS_DIR/common.sh"
 # shellcheck disable=SC1091
 source "$LUOPO_DOCKER_PARTS_DIR/install_status.sh"
 # shellcheck disable=SC1091
+source "$LUOPO_DOCKER_PARTS_DIR/resource_selectors.sh"
+# shellcheck disable=SC1091
 source "$LUOPO_DOCKER_PARTS_DIR/resources.sh"
 # shellcheck disable=SC1091
 source "$LUOPO_DOCKER_PARTS_DIR/daemon_backup.sh"

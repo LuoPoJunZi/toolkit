@@ -104,7 +104,7 @@ Retired menu drafts are kept locally and no longer uploaded to GitHub:
 | --- | --- |
 | 4. Tools | Common packages, terminal utilities, editors, small CLI tools, bulk install/remove |
 | 5. BBR | BBR / BBRv3 management and upstream network-acceleration script integration |
-| 6. Docker | Install/upgrade, global status, container/image/network/volume management, IPv6, backup/migrate/restore |
+| 6. Docker | Install/upgrade, global status, numbered container/image/network/volume selection, destructive-action confirmation, IPv6, backup/migrate/restore |
 | 7. WARP | Upstream WARP management script integration |
 | 8. Network test | Unlock tests, route tracing, bandwidth tests, hardware benchmarks, all-in-one test suites |
 | 9. Site builder | LDNMP, WordPress, reverse proxy, redirects, full-site backup/restore, security and tuning |
