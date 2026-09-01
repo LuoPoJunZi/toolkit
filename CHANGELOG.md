@@ -1,5 +1,11 @@
 # Changelog
 
+## 26.9.1
+
+### 主要变化
+- feat: improve Docker resource management UX (93fa696)
+- docs: use official GitHub install link (6650756)
+
 ## 26.8.31
 
 ### 主要变化
