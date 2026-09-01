@@ -27,16 +27,10 @@ Goal: **ready to use after install, clean menus, and low-friction daily operatio
 ### 1) Install (Recommended)
 
 ```bash
-bash <(curl -fsSL z.evzzz.com)
-```
-
-### 2) Fallback Install (GitHub Raw)
-
-```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/LuoPoJunZi/toolkit/main/install.sh)
 ```
 
-### 3) Launch Command
+### 2) Launch Command
 
 ```bash
 z
@@ -122,7 +116,7 @@ Retired menu drafts are kept locally and no longer uploaded to GitHub:
 
 - Use `99` to update toolkit.
 - Git install mode: `fetch + ff-only merge`, with rollback on failure.
-- Non-git install mode: fallback to remote bootstrap update (`https://z.evzzz.com`).
+- Non-git install mode: update through the official GitHub Raw installer.
 
 ## Uninstall
 

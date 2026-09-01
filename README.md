@@ -27,16 +27,10 @@
 ### 1) 一键安装（推荐）
 
 ```bash
-bash <(curl -fsSL z.evzzz.com)
-```
-
-### 2) 备用安装（GitHub Raw）
-
-```bash
 bash <(curl -fsSL https://raw.githubusercontent.com/LuoPoJunZi/toolkit/main/install.sh)
 ```
 
-### 3) 启动命令
+### 2) 启动命令
 
 ```bash
 z
@@ -122,7 +116,7 @@ LuoPo VPS Toolkit v{VERSION} (快捷启动: z)
 
 - 选择 `99` 可执行脚本更新。
 - Git 安装场景：`fetch + ff-only merge`，失败自动回滚。
-- 非 Git 安装场景：自动走远程引导更新（`https://z.evzzz.com`）。
+- 非 Git 安装场景：通过 GitHub 官方 Raw 安装脚本更新。
 
 ## 卸载
 
