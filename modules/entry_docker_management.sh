@@ -1,9 +1,6 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-# shellcheck disable=SC1091
-source "$ROOT_DIR/modules/luopo/docker/manager.sh"
-
 entry_docker_management() {
-  docker_manager
+  entry_run_module "$ROOT_DIR/modules/luopo/docker/manager.sh" docker_manager
 }

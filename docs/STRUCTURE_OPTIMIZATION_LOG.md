@@ -554,3 +554,20 @@ Result:
 
 Remaining after round:
 - Run live Docker validation on a Linux VPS, especially network disconnect formatting and attached-resource failure messages.
+
+### 2026-09-12 - Round 26
+Completed:
+- Added a shared lazy loader in `modules/entries.sh` and converted every active main-menu entry to load its business module on first use.
+- Removed eager business-module sourcing from `core/menu.sh` while keeping the registry, dispatcher, UI, environment, logging, and runtime layers available at startup.
+- Reworked app-market rendering to build label and installed-state associative lookups once per render instead of repeatedly scanning the registry and `/home/docker/appno.txt` for every item.
+- Deferred all native app implementations until the user selects an app; opening, backing up, restoring, or leaving the app market no longer loads them.
+- Added isolated behavioral smoke coverage for entry lazy loading, legacy app ID compatibility, render caching, and deferred native-app loading.
+
+Result:
+- On the Windows Git Bash benchmark, median main-menu source time fell from about `3323 ms` to `803 ms` (about 76% faster).
+- Median app-market first-render time fell from about `13389 ms` to `1201 ms` (about 91% faster).
+- The first explicit native-app load measured about `1414 ms` including main-menu and app-market loader startup; this cost is paid only when an app is selected.
+
+Remaining after round:
+- Run the same timing checks on a Linux VPS, where process startup and filesystem behavior differ from Git Bash on Windows.
+- Run live install/update/uninstall checks for representative app-market entries.

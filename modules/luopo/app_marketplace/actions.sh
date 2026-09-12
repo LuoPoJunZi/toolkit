@@ -3,8 +3,21 @@ set -euo pipefail
 
 LUOPO_APP_MARKETPLACE_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 
-# shellcheck disable=SC1091
-source "$LUOPO_APP_MARKETPLACE_DIR/native_apps.sh"
+luopo_app_marketplace_load_native_apps() {
+  if declare -F luopo_app_marketplace_native_docker_app_menu >/dev/null; then
+    return 0
+  fi
+
+  # shellcheck disable=SC1091
+  if ! source "$LUOPO_APP_MARKETPLACE_DIR/native_apps.sh"; then
+    echo "应用功能模块加载失败。"
+    return 1
+  fi
+  if ! declare -F luopo_app_marketplace_native_docker_app_menu >/dev/null; then
+    echo "应用功能入口未定义。"
+    return 1
+  fi
+}
 
 luopo_app_marketplace_backup_all() {
   mkdir -p /home
@@ -69,6 +82,22 @@ luopo_app_marketplace_dispatch_choice() {
       luopo_app_marketplace_restore_all
       return 0
       ;;
+  esac
+
+  if [[ ! "$choice" =~ ^[0-9]+$ ]]; then
+    luopo_app_marketplace_invalid_choice
+    return 0
+  fi
+  if [[ "$LUOPO_APP_MARKETPLACE_RENDER_CACHE_READY" != "1" ]]; then
+    luopo_app_marketplace_refresh_render_cache
+  fi
+  if [[ -z "${LUOPO_APP_MARKETPLACE_LABELS[$choice]:-}" ]]; then
+    luopo_app_marketplace_invalid_choice
+    return 0
+  fi
+  luopo_app_marketplace_load_native_apps || return 0
+
+  case "$choice" in
     1)
       luopo_app_marketplace_onepanel_menu
       return 0
@@ -253,8 +282,9 @@ luopo_app_marketplace_dispatch_choice() {
       luopo_app_marketplace_gitea_menu
       return 0
       ;;
+    *)
+      luopo_app_marketplace_invalid_choice
+      return 0
+      ;;
   esac
-
-  luopo_app_marketplace_invalid_choice
-  return 0
 }

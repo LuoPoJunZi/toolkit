@@ -7,6 +7,57 @@ ROOT_DIR="$(cd "$LUOPO_APP_MARKETPLACE_DIR/../../.." && pwd)"
 # shellcheck disable=SC1091
 source "$ROOT_DIR/modules/luopo/ldnmp/helpers.sh"
 
+LUOPO_APP_MARKETPLACE_STATE_FILE="/home/docker/appno.txt"
+
+declare -A LUOPO_APP_MARKETPLACE_LEGACY_IDS=(
+  [3]="4"
+  [4]="5"
+  [5]="7"
+  [6]="8"
+  [7]="21"
+  [8]="9"
+  [9]="10"
+  [10]="60"
+  [11]="63"
+  [12]="3"
+  [13]="67"
+  [14]="68"
+  [15]="80"
+  [16]="69"
+  [17]="64"
+  [18]="83"
+  [21]="6"
+  [22]="23"
+  [23]="26"
+  [24]="27"
+  [25]="28"
+  [26]="29"
+  [27]="30"
+  [28]="45"
+  [29]="46"
+  [30]="48"
+  [31]="85"
+  [41]="40"
+  [42]="41"
+  [43]="42"
+  [45]="62"
+  [51]="47"
+  [52]="65"
+  [61]="20"
+  [62]="61"
+  [63]="81"
+  [64]="82"
+  [65]="84"
+  [66]="43"
+  [67]="24"
+  [68]="25"
+  [69]="22"
+  [71]="66"
+)
+declare -A LUOPO_APP_MARKETPLACE_LABELS=()
+declare -A LUOPO_APP_MARKETPLACE_INSTALLED_IDS=()
+LUOPO_APP_MARKETPLACE_RENDER_CACHE_READY=0
+
 luopo_app_marketplace_bootstrap() {
   return 0
 }
@@ -86,107 +137,49 @@ luopo_app_marketplace_delete_proxy_domain() {
   docker exec nginx nginx -s reload >/dev/null 2>&1 || true
 }
 
-luopo_app_marketplace_installed_numbers() {
-  if [[ -f /home/docker/appno.txt ]]; then
-    cat /home/docker/appno.txt
+luopo_app_marketplace_refresh_render_cache() {
+  local item number label
+  LUOPO_APP_MARKETPLACE_LABELS=()
+  LUOPO_APP_MARKETPLACE_INSTALLED_IDS=()
+
+  for item in "${LUOPO_APP_MARKETPLACE_ITEMS[@]}"; do
+    IFS='|' read -r number label <<<"$item"
+    LUOPO_APP_MARKETPLACE_LABELS["$number"]="$label"
+  done
+
+  if [[ -f "$LUOPO_APP_MARKETPLACE_STATE_FILE" ]]; then
+    while IFS= read -r number || [[ -n "$number" ]]; do
+      [[ "$number" =~ ^[0-9]+$ ]] || continue
+      LUOPO_APP_MARKETPLACE_INSTALLED_IDS["$number"]=1
+    done <"$LUOPO_APP_MARKETPLACE_STATE_FILE"
   fi
+
+  LUOPO_APP_MARKETPLACE_RENDER_CACHE_READY=1
 }
 
 luopo_app_marketplace_is_installed() {
   local number="$1"
   local legacy_number
-  if luopo_app_marketplace_installed_numbers | grep -q "^${number}$"; then
+  if [[ "$LUOPO_APP_MARKETPLACE_RENDER_CACHE_READY" != "1" ]]; then
+    luopo_app_marketplace_refresh_render_cache
+  fi
+  if [[ -n "${LUOPO_APP_MARKETPLACE_INSTALLED_IDS[$number]+x}" ]]; then
     return 0
   fi
-  while IFS= read -r legacy_number; do
-    [[ -z "$legacy_number" ]] && continue
-    if luopo_app_marketplace_installed_numbers | grep -q "^${legacy_number}$"; then
-      return 0
-    fi
-  done < <(luopo_app_marketplace_legacy_numbers "$number")
-  return 1
-}
 
-luopo_app_marketplace_legacy_numbers() {
-  local number="$1"
-  case "$number" in
-    3) echo "4" ;;
-    4) echo "5" ;;
-    5) echo "7" ;;
-    6) echo "8" ;;
-    7) echo "21" ;;
-    8) echo "9" ;;
-    9) echo "10" ;;
-    10) echo "60" ;;
-    11) echo "63" ;;
-    12) echo "3" ;;
-    13) echo "67" ;;
-    14) echo "68" ;;
-    15) echo "80" ;;
-    16) echo "69" ;;
-    17) echo "64" ;;
-    18) echo "83" ;;
-    21) echo "6" ;;
-    22) echo "23" ;;
-    23) echo "26" ;;
-    24) echo "27" ;;
-    25) echo "28" ;;
-    26) echo "29" ;;
-    27) echo "30" ;;
-    28) echo "45" ;;
-    29) echo "46" ;;
-    30) echo "48" ;;
-    31) echo "85" ;;
-    41) echo "40" ;;
-    42) echo "41" ;;
-    43) echo "42" ;;
-    45) echo "62" ;;
-    51) echo "47" ;;
-    52) echo "65" ;;
-    61) echo "20" ;;
-    62) echo "61" ;;
-    63) echo "81" ;;
-    64) echo "82" ;;
-    65) echo "84" ;;
-    66) echo "43" ;;
-    67) echo "24" ;;
-    68) echo "25" ;;
-    69) echo "22" ;;
-    71) echo "66" ;;
-  esac
-}
-
-luopo_app_marketplace_find_item() {
-  local choice="$1"
-  local item
-  for item in "${LUOPO_APP_MARKETPLACE_ITEMS[@]}"; do
-    IFS='|' read -r number _ <<<"$item"
-    if [[ "$number" == "$choice" ]]; then
-      printf '%s\n' "$item"
-      return 0
-    fi
-  done
-  return 1
-}
-
-luopo_app_marketplace_item_label() {
-  local item="$1"
-  IFS='|' read -r _ label <<<"$item"
-  printf '%s\n' "$label"
-}
-
-luopo_app_marketplace_item_number() {
-  local item="$1"
-  IFS='|' read -r number _ <<<"$item"
-  printf '%s\n' "$number"
+  legacy_number="${LUOPO_APP_MARKETPLACE_LEGACY_IDS[$number]:-}"
+  [[ -n "$legacy_number" && -n "${LUOPO_APP_MARKETPLACE_INSTALLED_IDS[$legacy_number]+x}" ]]
 }
 
 luopo_app_marketplace_render_cell() {
   local key="$1"
-  local item color label
+  local color label
 
-  item="$(luopo_app_marketplace_find_item "$key")" || return 1
-  label="$(luopo_app_marketplace_item_label "$item")"
+  if [[ "$LUOPO_APP_MARKETPLACE_RENDER_CACHE_READY" != "1" ]]; then
+    luopo_app_marketplace_refresh_render_cache
+  fi
+  label="${LUOPO_APP_MARKETPLACE_LABELS[$key]:-}"
+  [[ -n "$label" ]] || return 1
   color="$gl_bai"
   if [[ "$key" =~ ^[0-9]+$ ]] && luopo_app_marketplace_is_installed "$key"; then
     color="$gl_lv"

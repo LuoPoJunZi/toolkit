@@ -81,7 +81,9 @@ LuoPo VPS Toolkit v{VERSION} (快捷启动: z)
 - 主菜单：`core/menu.sh`
 - 主菜单注册：`core/menu_registry.sh`
 - 主菜单分发：`core/menu_dispatcher.sh`
+- 功能加载：主菜单仅加载轻量入口，业务模块在首次选择时按需加载
 - 活动功能模块：`modules/luopo/`
+- 应用市场：首屏一次读取本地应用状态，具体应用实现仅在选择应用后加载
 - 保留但未启用：脚本中心代码 `modules/scripts_hub.sh` 与索引 `integrations/index.json`
 - 上游参考备份：`vendor/luopo.sh` 可本地保留，但不上传 GitHub
 

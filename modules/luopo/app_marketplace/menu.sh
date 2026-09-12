@@ -11,6 +11,8 @@ source "$LUOPO_APP_MARKETPLACE_DIR/registry.sh"
 source "$LUOPO_APP_MARKETPLACE_DIR/actions.sh"
 
 luopo_render_app_marketplace_menu() {
+  luopo_app_marketplace_refresh_render_cache
+
   echo "========================================"
   echo "应用市场"
   echo "========================================"

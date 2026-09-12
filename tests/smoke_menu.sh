@@ -343,6 +343,60 @@ assert_docker_confirmation_case_handling() {
   done
 }
 
+assert_lazy_entry_loading() {
+  if ! (
+    # shellcheck disable=SC1090
+    source "$MENU_FILE"
+
+    declare -F entry_system_info >/dev/null
+    declare -F entry_docker_management >/dev/null
+    ! declare -F show_system_info >/dev/null
+    ! declare -F docker_manager >/dev/null
+
+    entry_load_module "$ROOT_DIR/modules/system_info.sh" show_system_info
+    declare -F show_system_info >/dev/null
+    entry_load_module "$ROOT_DIR/modules/system_info.sh" show_system_info
+  ); then
+    fail "main-menu entries should load feature modules only when selected"
+  fi
+}
+
+assert_app_marketplace_lazy_loading_and_cache() {
+  local state_file
+  state_file="$(mktemp)"
+  printf '%s\n' 60 ignored >"$state_file"
+
+  if ! (
+    # shellcheck disable=SC1090
+    source "$LUOPO_APP_MARKET_MENU_FILE"
+    LUOPO_APP_MARKETPLACE_STATE_FILE="$state_file"
+
+    ! declare -F luopo_app_marketplace_native_docker_app_menu >/dev/null
+    if luopo_app_marketplace_dispatch_choice 0; then
+      exit 1
+    fi
+    ! declare -F luopo_app_marketplace_native_docker_app_menu >/dev/null
+    luopo_app_marketplace_refresh_render_cache
+    luopo_app_marketplace_is_installed 10
+    ! luopo_app_marketplace_is_installed 11
+    [[ "${LUOPO_APP_MARKETPLACE_LABELS[10]:-}" == "Beszel服务器监控" ]]
+
+    luopo_app_marketplace_load_native_apps
+    declare -F luopo_app_marketplace_native_docker_app_menu >/dev/null
+    luopo_app_marketplace_native_add_app_id 10
+    [[ "$LUOPO_APP_MARKETPLACE_RENDER_CACHE_READY" == "0" ]]
+    grep -qxF 10 "$state_file"
+    ! grep -qxF 60 "$state_file"
+    luopo_app_marketplace_native_remove_app_id 10
+    ! grep -qxF 10 "$state_file"
+  ); then
+    rm -f "$state_file"
+    fail "app market should cache menu state and defer native apps until selected"
+  fi
+
+  rm -f "$state_file"
+}
+
 # The assertions below intentionally use single-quoted source text literally.
 # shellcheck disable=SC2016
 main() {
@@ -489,6 +543,11 @@ main() {
   assert_not_contains_fixed "$MENU_FILE" 'source "$ROOT_DIR/modules/luopo_bridge.sh"' "menu should not source legacy bridge"
   assert_not_contains_fixed "$MENU_FILE" 'source "$ROOT_DIR/modules/features/load.sh"' "menu should not source legacy features loader"
   assert_not_contains_fixed "$MENU_FILE" 'source "$ROOT_DIR/modules/scripts_hub.sh"' "main menu should not load the retained script hub"
+  assert_not_contains_fixed "$MENU_FILE" 'source "$ROOT_DIR/core/self_update.sh"' "main menu should lazy-load self update"
+  assert_not_contains_fixed "$MENU_FILE" 'source "$ROOT_DIR/core/uninstall.sh"' "main menu should lazy-load uninstall"
+  assert_not_contains_fixed "$MENU_FILE" 'source "$ROOT_DIR/modules/system_info.sh"' "main menu should lazy-load system information"
+  assert_not_contains_fixed "$MENU_FILE" 'source "$ROOT_DIR/modules/system_update.sh"' "main menu should lazy-load system update"
+  assert_not_contains_fixed "$MENU_FILE" 'source "$ROOT_DIR/modules/system_cleanup.sh"' "main menu should lazy-load system cleanup"
   assert_contains_fixed "$MENU_FILE" 'for item in "${MENU_ITEMS[@]}"; do' "menu should render items from registry"
   assert_contains_fixed "$MENU_FILE" 'dispatch_menu_action "$choice"' "menu should dispatch choices via dispatcher"
   assert_contains_fixed "$MENU_FILE" 'if [[ "$choice" == "00" ]]; then' "menu should remap 00 to 99"
@@ -539,8 +598,16 @@ main() {
     assert_contains_fixed "$ENTRIES_LOAD_FILE" "$feature_file" "entries loader missing $feature_file"
   done
   assert_not_contains_fixed "$ENTRIES_LOAD_FILE" 'entry_scripts_hub.sh' "entries loader should not activate the retained script hub"
+  assert_contains_regex "$ENTRIES_LOAD_FILE" '^entry_load_module\(\) \{' "entries loader should define the shared lazy loader"
+  assert_contains_regex "$ENTRIES_LOAD_FILE" '^entry_run_module\(\) \{' "entries loader should define the shared lazy runner"
+  assert_lazy_entry_loading
 
-  assert_contains_fixed "$ROOT_DIR/modules/entry_basic_tools.sh" 'source "$ROOT_DIR/modules/luopo/basic_tools/menu.sh"' "basic tools entry should source LuoPo menu"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_system_info.sh" 'entry_run_module "$ROOT_DIR/modules/system_info.sh" show_system_info' "system information entry should lazy-load its module"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_system_update.sh" 'entry_run_module "$ROOT_DIR/modules/system_update.sh" system_update' "system update entry should lazy-load its module"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_system_cleanup.sh" 'entry_run_module "$ROOT_DIR/modules/system_cleanup.sh" system_cleanup' "system cleanup entry should lazy-load its module"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_self_update.sh" 'entry_run_module "$ROOT_DIR/core/self_update.sh" self_update' "self-update entry should lazy-load its module"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_uninstall.sh" 'entry_run_module "$ROOT_DIR/core/uninstall.sh" uninstall_toolkit' "uninstall entry should lazy-load its module"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_basic_tools.sh" 'entry_run_module "$ROOT_DIR/modules/luopo/basic_tools/menu.sh" luopo_basic_tools_menu' "basic tools entry should lazy-load LuoPo menu"
   assert_contains_fixed "$ROOT_DIR/modules/entry_basic_tools.sh" 'luopo_basic_tools_menu' "basic tools entry should call LuoPo menu"
   assert_contains_regex "$LUOPO_BASIC_TOOLS_MENU_FILE" '^luopo_basic_tools_menu\(\) \{' "missing LuoPo basic tools menu entry"
   assert_contains_fixed "$LUOPO_BASIC_TOOLS_MENU_FILE" 'echo "========================================"' "basic tools menu should use unified title separators"
@@ -548,14 +615,14 @@ main() {
   assert_contains_regex "$LUOPO_BASIC_TOOLS_ACTIONS_FILE" '^luopo_basic_tools_install_curl\(\) \{' "missing LuoPo basic tools action"
   assert_contains_regex "$LUOPO_BASIC_TOOLS_HELPERS_FILE" '^luopo_basic_tools_detect_package_manager\(\) \{' "missing LuoPo basic tools helper"
   assert_not_contains_fixed "$LUOPO_BASIC_TOOLS_HELPERS_FILE" 'ensure_luopo_vendor_loaded' "basic tools should no longer bootstrap vendor runtime"
-  assert_contains_fixed "$ROOT_DIR/modules/entry_bbr_management.sh" 'source "$ROOT_DIR/modules/luopo/bbr_management/menu.sh"' "bbr entry should source LuoPo menu"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_bbr_management.sh" 'entry_run_module "$ROOT_DIR/modules/luopo/bbr_management/menu.sh" luopo_bbr_management_menu' "bbr entry should lazy-load LuoPo menu"
   assert_contains_fixed "$ROOT_DIR/modules/entry_bbr_management.sh" 'luopo_bbr_management_menu' "bbr entry should call LuoPo menu"
   assert_contains_regex "$LUOPO_BBR_MENU_FILE" '^luopo_bbr_management_menu\(\) \{' "missing LuoPo bbr menu entry"
   assert_contains_fixed "$LUOPO_BBR_MENU_FILE" 'echo "========================================"' "bbr menu should use unified title separators"
   assert_not_contains_fixed "$LUOPO_BBR_HELPERS_FILE" 'ensure_luopo_vendor_loaded' "bbr should no longer bootstrap vendor runtime"
   assert_contains_regex "$LUOPO_BBR_ACTIONS_FILE" '^luopo_bbr_enable_alpine\(\) \{' "missing LuoPo bbr action"
   assert_contains_regex "$LUOPO_BBR_HELPERS_FILE" '^luopo_bbr_current_algorithms\(\) \{' "missing LuoPo bbr helper"
-  assert_contains_fixed "$ROOT_DIR/modules/entry_docker_management.sh" 'source "$ROOT_DIR/modules/luopo/docker/manager.sh"' "docker entry should source LuoPo docker manager"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_docker_management.sh" 'entry_run_module "$ROOT_DIR/modules/luopo/docker/manager.sh" docker_manager' "docker entry should lazy-load LuoPo docker manager"
   assert_contains_fixed "$ROOT_DIR/modules/entry_docker_management.sh" 'docker_manager' "docker entry should call native docker manager"
   assert_contains_regex "$LUOPO_DOCKER_MANAGER_FILE" '^docker_manager\(\) \{' "missing LuoPo docker manager entry"
   assert_contains_fixed "$LUOPO_DOCKER_MANAGER_FILE" 'source "$LUOPO_DOCKER_PARTS_DIR/common.sh"' "docker manager should load common helpers"
@@ -579,7 +646,7 @@ main() {
   assert_not_contains_fixed "$LUOPO_DOCKER_RESOURCES_FILE" '输入网络名/NETWORK ID' "network actions should not require a memorized network ID"
   assert_docker_container_delete_selector
   assert_docker_confirmation_case_handling
-  assert_contains_fixed "$ROOT_DIR/modules/entry_warp_management.sh" 'source "$ROOT_DIR/modules/luopo/warp_management/menu.sh"' "warp entry should source LuoPo menu"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_warp_management.sh" 'entry_run_module "$ROOT_DIR/modules/luopo/warp_management/menu.sh" luopo_warp_management_menu' "warp entry should lazy-load LuoPo menu"
   assert_contains_fixed "$ROOT_DIR/modules/entry_warp_management.sh" 'luopo_warp_management_menu' "warp entry should call LuoPo menu"
   assert_contains_regex "$LUOPO_WARP_MENU_FILE" '^luopo_warp_management_menu\(\) \{' "missing LuoPo warp menu entry"
   assert_contains_regex "$LUOPO_WARP_MENU_FILE" '^luopo_render_warp_menu\(\) \{' "missing LuoPo warp render menu"
@@ -593,7 +660,7 @@ main() {
   assert_contains_regex "$LUOPO_WARP_ACTIONS_FILE" '^luopo_warp_status\(\) \{' "missing LuoPo warp status action"
   assert_contains_regex "$LUOPO_WARP_HELPERS_FILE" '^luopo_warp_bootstrap\(\) \{' "missing LuoPo warp helper"
   assert_not_contains_fixed "$LUOPO_WARP_HELPERS_FILE" 'ensure_luopo_vendor_loaded' "warp should no longer bootstrap vendor runtime"
-  assert_contains_fixed "$ROOT_DIR/modules/entry_network_test_suite.sh" 'source "$ROOT_DIR/modules/luopo/network_test/menu.sh"' "network test entry should source LuoPo menu"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_network_test_suite.sh" 'entry_run_module "$ROOT_DIR/modules/luopo/network_test/menu.sh" luopo_network_test_menu' "network test entry should lazy-load LuoPo menu"
   assert_contains_fixed "$ROOT_DIR/modules/entry_network_test_suite.sh" 'luopo_network_test_menu' "network test entry should call LuoPo menu"
   assert_contains_regex "$LUOPO_NETWORK_TEST_MENU_FILE" '^luopo_network_test_menu\(\) \{' "missing LuoPo network test menu entry"
   assert_contains_fixed "$LUOPO_NETWORK_TEST_MENU_FILE" 'echo "========================================"' "network test menu should use unified title separators"
@@ -606,7 +673,7 @@ main() {
   assert_not_contains_fixed "$LUOPO_NETWORK_TEST_ACTIONS_FILE" 'eval "curl nxtrace.org/nt' "nxtrace target input must not be executed through eval"
   assert_contains_regex "$LUOPO_NETWORK_TEST_HELPERS_FILE" '^luopo_network_test_run_shell\(\) \{' "missing LuoPo network test helper"
   assert_not_contains_fixed "$LUOPO_NETWORK_TEST_HELPERS_FILE" 'ensure_luopo_vendor_loaded' "network test should no longer bootstrap vendor runtime"
-  assert_contains_fixed "$ROOT_DIR/modules/entry_ldnmp_site_suite.sh" 'source "$ROOT_DIR/modules/luopo/ldnmp/menu.sh"' "ldnmp entry should source LuoPo menu"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_ldnmp_site_suite.sh" 'entry_run_module "$ROOT_DIR/modules/luopo/ldnmp/menu.sh" luopo_ldnmp_menu' "ldnmp entry should lazy-load LuoPo menu"
   assert_contains_fixed "$ROOT_DIR/modules/entry_ldnmp_site_suite.sh" 'luopo_ldnmp_menu' "ldnmp entry should call LuoPo menu"
   assert_contains_regex "$LUOPO_LDNMP_MENU_FILE" '^luopo_ldnmp_menu\(\) \{' "missing LuoPo ldnmp menu entry"
   assert_contains_fixed "$LUOPO_LDNMP_MENU_FILE" 'echo "========================================"' "ldnmp menu should use unified title separators"
@@ -706,14 +773,14 @@ main() {
   assert_contains_regex "$LUOPO_LDNMP_HELPERS_FILE" '^luopo_ldnmp_render_cell\(\) \{' "missing LuoPo ldnmp render helper"
   assert_contains_fixed "$LUOPO_LDNMP_MENU_FILE" 'luopo_ldnmp_render_status_banner' "ldnmp menu should render status banner through helper"
   assert_not_contains_fixed "$LUOPO_LDNMP_MENU_FILE" 'luopo_print_two_column_cells' "ldnmp should render as single column"
-  assert_contains_fixed "$ROOT_DIR/modules/entry_workspace_suite.sh" 'source "$ROOT_DIR/modules/luopo/workspace/menu.sh"' "workspace entry should source LuoPo menu"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_workspace_suite.sh" 'entry_run_module "$ROOT_DIR/modules/luopo/workspace/menu.sh" luopo_workspace_menu' "workspace entry should lazy-load LuoPo menu"
   assert_contains_fixed "$ROOT_DIR/modules/entry_workspace_suite.sh" 'luopo_workspace_menu' "workspace entry should call LuoPo menu"
   assert_contains_regex "$LUOPO_WORKSPACE_MENU_FILE" '^luopo_workspace_menu\(\) \{' "missing LuoPo workspace menu entry"
   assert_not_contains_fixed "$LUOPO_WORKSPACE_HELPERS_FILE" 'ensure_luopo_vendor_loaded' "workspace should no longer bootstrap vendor runtime"
   assert_contains_regex "$LUOPO_WORKSPACE_REGISTRY_FILE" '^LUOPO_WORKSPACE_ITEMS=\(' "missing LuoPo workspace registry"
   assert_contains_regex "$LUOPO_WORKSPACE_ACTIONS_FILE" '^luopo_workspace_manage_ssh_mode\(\) \{' "missing LuoPo workspace action"
   assert_contains_regex "$LUOPO_WORKSPACE_HELPERS_FILE" '^luopo_workspace_run_named_session\(\) \{' "missing LuoPo workspace helper"
-  assert_contains_fixed "$ROOT_DIR/modules/entry_app_marketplace.sh" 'source "$ROOT_DIR/modules/luopo/app_marketplace/menu.sh"' "app market entry should source LuoPo menu"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_app_marketplace.sh" 'entry_run_module "$ROOT_DIR/modules/luopo/app_marketplace/menu.sh" luopo_app_marketplace_menu' "app market entry should lazy-load LuoPo menu"
   assert_contains_fixed "$ROOT_DIR/modules/entry_app_marketplace.sh" 'luopo_app_marketplace_menu' "app market entry should call LuoPo menu"
   assert_contains_regex "$LUOPO_APP_MARKET_MENU_FILE" '^luopo_app_marketplace_menu\(\) \{' "missing LuoPo app market menu entry"
   assert_contains_regex "$LUOPO_APP_MARKET_REGISTRY_FILE" '^LUOPO_APP_MARKETPLACE_ITEMS=\(' "missing LuoPo app market registry"
@@ -729,6 +796,10 @@ main() {
   assert_not_contains_fixed "$LUOPO_APP_MARKET_MENU_FILE" 'luopo_app_marketplace_sync_index' "app market should not depend on an unused remote index"
   assert_not_contains_fixed "$LUOPO_APP_MARKET_HELPERS_FILE" 'github.com/kejilion/apps.git' "app market should not clone the retired remote index"
   assert_contains_regex "$LUOPO_APP_MARKET_HELPERS_FILE" '^luopo_app_marketplace_render_cell\(\) \{' "missing LuoPo app market render helper"
+  assert_contains_regex "$LUOPO_APP_MARKET_HELPERS_FILE" '^luopo_app_marketplace_refresh_render_cache\(\) \{' "app market should cache labels and installed state per render"
+  assert_contains_fixed "$LUOPO_APP_MARKET_HELPERS_FILE" 'LUOPO_APP_MARKETPLACE_STATE_FILE="/home/docker/appno.txt"' "app market should use one canonical local state path"
+  assert_contains_regex "$LUOPO_APP_MARKET_ACTIONS_FILE" '^luopo_app_marketplace_load_native_apps\(\) \{' "app market should define a lazy native-app loader"
+  assert_app_marketplace_lazy_loading_and_cache
   assert_contains_fixed "$LUOPO_APP_MARKET_HELPERS_FILE" 'source "$ROOT_DIR/modules/luopo/ldnmp/helpers.sh"' "app market helpers should source native ldnmp helpers"
   assert_not_contains_fixed "$LUOPO_APP_MARKET_HELPERS_FILE" 'legacy_bridge.sh' "app market helpers should not source legacy bridge"
   assert_native_contains_fixed 'luopo_ldnmp_proxy_site "${yuming}" 127.0.0.1 "${app_port}"' "app market should use native ldnmp proxy helper"
@@ -868,7 +939,7 @@ main() {
   assert_not_contains_fixed "$LUOPO_APP_MARKET_NATIVE_AI_PRODUCTIVITY_FILE" 'docker compose pull || true' "compose update failures must not be ignored"
   assert_not_contains_fixed "$LUOPO_APP_MARKET_NATIVE_FILES_MEDIA_NOTES_FILE" 'docker compose pull || true' "compose update failures must not be ignored"
   assert_native_not_contains_regex '^[[:space:]]*docker compose pull$' "compose pulls must return explicitly on failure"
-  assert_contains_fixed "$ROOT_DIR/modules/entry_system_tools_suite.sh" 'source "$ROOT_DIR/modules/luopo/system_tools/menu.sh"' "system tools entry should source LuoPo menu"
+  assert_contains_fixed "$ROOT_DIR/modules/entry_system_tools_suite.sh" 'entry_run_module "$ROOT_DIR/modules/luopo/system_tools/menu.sh" luopo_system_tools_menu' "system tools entry should lazy-load LuoPo menu"
   assert_contains_fixed "$ROOT_DIR/modules/entry_system_tools_suite.sh" 'luopo_system_tools_menu' "system tools entry should call LuoPo menu"
   assert_contains_regex "$LUOPO_SYSTEM_TOOLS_MENU_FILE" '^luopo_system_tools_menu\(\) \{' "missing LuoPo system tools menu entry"
   assert_contains_regex "$LUOPO_SYSTEM_TOOLS_MENU_FILE" '^luopo_render_system_tools_menu\(\) \{' "missing LuoPo system tools render menu"

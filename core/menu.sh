@@ -12,16 +12,6 @@ source "$ROOT_DIR/core/logger.sh"
 # shellcheck disable=SC1091
 source "$ROOT_DIR/core/runtime.sh"
 # shellcheck disable=SC1091
-source "$ROOT_DIR/core/self_update.sh"
-# shellcheck disable=SC1091
-source "$ROOT_DIR/core/uninstall.sh"
-# shellcheck disable=SC1091
-source "$ROOT_DIR/modules/system_info.sh"
-# shellcheck disable=SC1091
-source "$ROOT_DIR/modules/system_update.sh"
-# shellcheck disable=SC1091
-source "$ROOT_DIR/modules/system_cleanup.sh"
-# shellcheck disable=SC1091
 source "$ROOT_DIR/modules/entries.sh"
 # shellcheck disable=SC1091
 source "$ROOT_DIR/core/menu_registry.sh"

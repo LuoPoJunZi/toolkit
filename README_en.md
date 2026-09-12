@@ -81,7 +81,9 @@ Enter choice:
 - Main menu: `core/menu.sh`
 - Main menu registry: `core/menu_registry.sh`
 - Main menu dispatcher: `core/menu_dispatcher.sh`
+- Feature loading: the main menu loads lightweight entries, then loads feature modules on first use
 - Active feature modules: `modules/luopo/`
+- App market: the first screen reads local app state once and loads app implementations only after selection
 - Retained but inactive: script hub code at `modules/scripts_hub.sh` and index at `integrations/index.json`
 - Upstream reference backup: `vendor/luopo.sh` may be kept locally, but is not uploaded to GitHub
 

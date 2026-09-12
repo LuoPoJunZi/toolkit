@@ -2,5 +2,5 @@
 set -euo pipefail
 
 entry_uninstall() {
-  uninstall_toolkit
+  entry_run_module "$ROOT_DIR/core/uninstall.sh" uninstall_toolkit
 }

@@ -40,8 +40,8 @@ toolkit/
 │  ├─ zh_CN.sh
 │  └─ en_US.sh
 ├─ modules/
-│  ├─ entries.sh                      # Loads all main-menu entry files
-│  ├─ entry_*.sh                      # Thin main-menu entry wrappers
+│  ├─ entries.sh                      # Loads entry wrappers and provides lazy module loading
+│  ├─ entry_*.sh                      # Thin lazy main-menu entry wrappers
 │  ├─ system_info.sh                  # 1. system information
 │  ├─ system_update.sh                # 2. full system update
 │  ├─ system_cleanup.sh               # 3. system cleanup
@@ -82,9 +82,9 @@ toolkit/
 │     ├─ app_marketplace/             # 10. app market
 │     │  ├─ menu.sh
 │     │  ├─ registry.sh
-│     │  ├─ actions.sh
-│     │  ├─ helpers.sh
-│     │  ├─ native_apps.sh            # native app loader
+│     │  ├─ actions.sh                # Dispatch and lazy native-app loading
+│     │  ├─ helpers.sh                # Menu rendering and per-render state cache
+│     │  ├─ native_apps.sh            # Native app loader, sourced after selection
 │     │  └─ native/                   # split native app implementations
 │     │     ├─ common.sh
 │     │     ├─ panels.sh
@@ -166,7 +166,7 @@ toolkit.sh
      -> core/menu_dispatcher.sh
      -> modules/entries.sh
         -> modules/entry_*.sh
-           -> modules/luopo/*/menu.sh
+           -(on selection)-> modules/luopo/*/menu.sh
 ```
 
 ## Vendor / Legacy Policy
@@ -190,6 +190,8 @@ toolkit.sh
 
 - `data/state/`, `data/backups/`, `data/cache/`, and `logs/` are runtime-generated and ignored.
 - `integrations/index.json` is the source of truth for one-click script definitions.
+- Main-menu entry wrappers lazy-load their business modules on first use; do not restore eager feature sourcing in `core/menu.sh`.
+- App-market rendering builds its labels and installed-state lookup once per render; native app implementations load only after an app is selected.
 - Tracked Bash files use two-space indentation and are checked by `bash -n`, ShellCheck, and read-only shfmt validation through `scripts/lint.sh`.
 - Shell and documentation files use LF line endings on every platform.
 - Main menu numbering is registry-driven and currently reserves:

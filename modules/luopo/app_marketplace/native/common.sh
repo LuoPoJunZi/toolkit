@@ -59,25 +59,27 @@ luopo_app_marketplace_native_app_store_port() {
 luopo_app_marketplace_native_add_app_id() {
   local app_id="$1"
   local legacy_app_id
-  mkdir -p /home/docker
-  touch /home/docker/appno.txt
-  while IFS= read -r legacy_app_id; do
-    [[ -z "$legacy_app_id" ]] && continue
-    sed -i "/\b${legacy_app_id}\b/d" /home/docker/appno.txt
-  done < <(luopo_app_marketplace_legacy_numbers "$app_id")
-  grep -qxF "$app_id" /home/docker/appno.txt || printf '%s\n' "$app_id" >>/home/docker/appno.txt
+  mkdir -p "$(dirname "$LUOPO_APP_MARKETPLACE_STATE_FILE")"
+  touch "$LUOPO_APP_MARKETPLACE_STATE_FILE"
+  legacy_app_id="${LUOPO_APP_MARKETPLACE_LEGACY_IDS[$app_id]:-}"
+  if [[ -n "$legacy_app_id" ]]; then
+    sed -i "/\b${legacy_app_id}\b/d" "$LUOPO_APP_MARKETPLACE_STATE_FILE"
+  fi
+  grep -qxF "$app_id" "$LUOPO_APP_MARKETPLACE_STATE_FILE" || printf '%s\n' "$app_id" >>"$LUOPO_APP_MARKETPLACE_STATE_FILE"
+  LUOPO_APP_MARKETPLACE_RENDER_CACHE_READY=0
 }
 
 luopo_app_marketplace_native_remove_app_id() {
   local app_id="$1"
   local legacy_app_id
-  if [[ -f /home/docker/appno.txt ]]; then
-    sed -i "/\b${app_id}\b/d" /home/docker/appno.txt
-    while IFS= read -r legacy_app_id; do
-      [[ -z "$legacy_app_id" ]] && continue
-      sed -i "/\b${legacy_app_id}\b/d" /home/docker/appno.txt
-    done < <(luopo_app_marketplace_legacy_numbers "$app_id")
+  if [[ -f "$LUOPO_APP_MARKETPLACE_STATE_FILE" ]]; then
+    sed -i "/\b${app_id}\b/d" "$LUOPO_APP_MARKETPLACE_STATE_FILE"
+    legacy_app_id="${LUOPO_APP_MARKETPLACE_LEGACY_IDS[$app_id]:-}"
+    if [[ -n "$legacy_app_id" ]]; then
+      sed -i "/\b${legacy_app_id}\b/d" "$LUOPO_APP_MARKETPLACE_STATE_FILE"
+    fi
   fi
+  LUOPO_APP_MARKETPLACE_RENDER_CACHE_READY=0
 }
 
 luopo_app_marketplace_native_prompt_port() {
