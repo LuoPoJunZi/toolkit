@@ -150,7 +150,7 @@ function Show-BashFallback {
   Write-Host "  cd $RepoRoot"
   Write-Host "  git diff --check"
   Write-Host "  mapfile -t shell_files < <(git ls-files '*.sh')"
-  Write-Host '  bash -n "${shell_files[@]}"'
+  Write-Host '  for file in "${shell_files[@]}"; do [[ ! -f "$file" ]] || bash -n "$file" || exit; done'
   Write-Host "  bash scripts/lint.sh  # requires shellcheck and shfmt"
   Write-Host "  bash tests/smoke_menu.sh"
   Write-Host "  # Or run all Bash checks with: bash scripts/preflight.sh"

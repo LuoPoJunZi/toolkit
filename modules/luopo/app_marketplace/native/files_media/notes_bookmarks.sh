@@ -136,7 +136,7 @@ luopo_app_marketplace_karakeep_menu() {
     "65" \
     "Karakeep书签管理" \
     "docker-web-1" \
-    "karakeep" \
+    "" \
     "8110" \
     "自托管书签应用，带有 AI 辅助能力。" \
     "官网介绍: https://github.com/karakeep-app/karakeep" \
@@ -195,7 +195,7 @@ luopo_app_marketplace_linkwarden_menu() {
     "62" \
     "linkwarden书签管理" \
     "linkwarden-linkwarden-1" \
-    "linkwarden" \
+    "" \
     "8080" \
     "团队与个人书签归档管理工具。" \
     "官网介绍: https://github.com/linkwarden/linkwarden" \

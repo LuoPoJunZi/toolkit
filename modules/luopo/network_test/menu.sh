@@ -11,7 +11,7 @@ source "$LUOPO_NETWORK_TEST_DIR/registry.sh"
 source "$LUOPO_NETWORK_TEST_DIR/actions.sh"
 
 luopo_render_network_test_menu() {
-  local section section_key section_title item
+  local section section_key section_title item number label group
   echo "========================================"
   echo "测试脚本合集"
   echo "========================================"
@@ -19,10 +19,9 @@ luopo_render_network_test_menu() {
     IFS='|' read -r section_key section_title <<<"$section"
     echo "[ ${section_title} ]"
     for item in "${LUOPO_NETWORK_TEST_ITEMS[@]}"; do
-      if [[ "$(luopo_network_test_item_group "$item")" != "$section_key" ]]; then
-        continue
-      fi
-      printf " %-3s %s\n" "$(luopo_network_test_item_number "$item")." "$(luopo_network_test_item_label "$item")"
+      IFS='|' read -r number label _ group <<<"$item"
+      [[ "$group" == "$section_key" ]] || continue
+      menu_item "$number" "$label"
     done
     echo "----------------------------------------"
   done
@@ -44,7 +43,7 @@ luopo_dispatch_network_test_action() {
     return 0
   fi
 
-  handler="$(luopo_network_test_item_handler "$item")"
+  IFS='|' read -r _ _ handler _ <<<"$item"
   "$handler"
 }
 
@@ -54,7 +53,7 @@ luopo_network_test_menu() {
   while true; do
     clear
     luopo_render_network_test_menu
-    read -r -p "请输入你的选择: " sub_choice
+    read -r -p "请输入你的选择: " sub_choice || return 0
 
     if ! luopo_dispatch_network_test_action "$sub_choice"; then
       return 0

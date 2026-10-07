@@ -26,6 +26,8 @@ if ((${#missing_tools[@]} > 0)); then
   exit 127
 fi
 
-bash -n "${shell_files[@]}"
+for file in "${shell_files[@]}"; do
+  bash -n "$file"
+done
 shellcheck "${shell_files[@]}"
 shfmt -d -i 2 -ci -bn "${shell_files[@]}"

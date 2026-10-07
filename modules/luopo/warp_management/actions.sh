@@ -141,7 +141,7 @@ luopo_warp_dispatch_choice() {
     return 0
   fi
 
-  handler="$(luopo_warp_item_handler "$item")"
+  IFS='|' read -r _ _ handler _ <<<"$item"
   if ! "$handler"; then
     echo "WARP 操作执行失败，请查看上方输出。"
   fi

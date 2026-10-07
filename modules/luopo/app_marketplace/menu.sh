@@ -45,7 +45,7 @@ luopo_app_marketplace_menu() {
   while true; do
     clear
     luopo_render_app_marketplace_menu
-    read -r -p "请输入你的选择: " sub_choice
+    read -r -p "请输入你的选择: " sub_choice || return 0
     if ! luopo_app_marketplace_dispatch_choice "$sub_choice"; then
       return 0
     fi

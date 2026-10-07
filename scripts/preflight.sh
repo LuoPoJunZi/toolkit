@@ -14,9 +14,9 @@ for file in "${tracked_shell_files[@]}"; do
   fi
 done
 
-if ((${#shell_files[@]} > 0)); then
-  bash -n "${shell_files[@]}"
-fi
+for file in "${shell_files[@]}"; do
+  bash -n "$file"
+done
 
 if command -v shellcheck >/dev/null 2>&1 && command -v shfmt >/dev/null 2>&1; then
   bash scripts/lint.sh

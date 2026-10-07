@@ -20,33 +20,42 @@ luopo_app_marketplace_load_native_apps() {
 }
 
 luopo_app_marketplace_backup_all() {
-  mkdir -p /home
-  local backup_file
-  backup_file="/home/luopo-app-market-$(date +%Y%m%d%H%M%S).tar.gz"
+  local data_dir backup_dir backup_file temporary_file timestamp
+  data_dir="${LUOPO_APP_MARKETPLACE_STATE_FILE%/*}"
+  backup_dir="$(dirname "$data_dir")"
 
-  if [[ ! -d /home/docker ]]; then
-    echo "未检测到 /home/docker，暂无应用数据可备份。"
+  if [[ ! -d "$data_dir" ]]; then
+    echo "未检测到 $data_dir，暂无应用数据可备份。"
     return 0
   fi
 
+  timestamp="$(date +%Y%m%d%H%M%S)"
+  temporary_file="$(mktemp "$backup_dir/.luopo-app-market-${timestamp}.XXXXXX")" || return 1
+  backup_file="$backup_dir/luopo-app-market-${timestamp}-${temporary_file##*.}.tar.gz"
   echo "正在备份应用市场数据..."
-  tar -czf "$backup_file" -C /home docker
+  if ! tar -czf "$temporary_file" -C "$backup_dir" "$(basename "$data_dir")" || ! mv -- "$temporary_file" "$backup_file"; then
+    rm -f -- "$temporary_file"
+    echo "备份失败，未保存不完整的备份文件。"
+    return 1
+  fi
   echo "备份完成: $backup_file"
 }
 
 luopo_app_marketplace_restore_all() {
+  local backup_file confirm data_dir backup_dir
+  data_dir="${LUOPO_APP_MARKETPLACE_STATE_FILE%/*}"
+  backup_dir="$(dirname "$data_dir")"
   echo "可用备份文件:"
-  luopo_ldnmp_list_files_by_mtime /home 'luopo-app-market-*.tar.gz'
+  luopo_ldnmp_list_files_by_mtime "$backup_dir" 'luopo-app-market-*.tar.gz'
   echo
 
-  local backup_file
-  read -r -p "回车还原最新备份，输入备份文件路径/文件名还原指定备份，输入0取消: " backup_file
+  read -r -p "回车还原最新备份，输入备份文件路径/文件名还原指定备份，输入0取消: " backup_file || return 0
   [[ "$backup_file" == "0" ]] && return 0
 
   if [[ -z "$backup_file" ]]; then
-    backup_file="$(luopo_ldnmp_latest_file /home 'luopo-app-market-*.tar.gz')"
+    backup_file="$(luopo_ldnmp_latest_file "$backup_dir" 'luopo-app-market-*.tar.gz' || true)"
   elif [[ "$backup_file" != /* ]]; then
-    backup_file="/home/$backup_file"
+    backup_file="$backup_dir/$backup_file"
   fi
 
   if [[ -z "$backup_file" || ! -f "$backup_file" ]]; then
@@ -54,11 +63,18 @@ luopo_app_marketplace_restore_all() {
     return 0
   fi
 
-  read -r -p "还原会覆盖 /home/docker 中同名数据，确认继续？(Y/N): " confirm
+  read -r -p "还原会覆盖 $data_dir 中同名数据，确认继续？(Y/N): " confirm || return 0
   case "$confirm" in
     [Yy])
-      mkdir -p /home
-      tar -xzf "$backup_file" -C /home
+      if ! tar -tzf "$backup_file" >/dev/null; then
+        echo "备份文件不可读取或不完整，未执行还原。"
+        return 1
+      fi
+      if ! tar -xzf "$backup_file" -C "$backup_dir"; then
+        echo "还原失败，可能已有部分文件写入，请检查上方错误信息。"
+        return 1
+      fi
+      LUOPO_APP_MARKETPLACE_RENDER_CACHE_READY=0
       echo "还原完成: $backup_file"
       ;;
     *)

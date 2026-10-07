@@ -26,7 +26,7 @@ toolkit/
 ├─ CHANGELOG.md
 ├─ VERSION
 ├─ core/
-│  ├─ menu.sh                         # Main menu renderer and dispatcher entry
+│  ├─ menu.sh                         # Independent main-menu renderer and interactive loop
 │  ├─ menu_registry.sh                # Main menu registry
 │  ├─ menu_dispatcher.sh              # Main menu action dispatcher
 │  ├─ ui.sh                           # UI output and prompt helpers
@@ -87,6 +87,7 @@ toolkit/
 │     │  ├─ native_apps.sh            # Native app loader, sourced after selection
 │     │  └─ native/                   # split native app implementations
 │     │     ├─ common.sh
+│     │     ├─ ports.sh               # Port validation, selection, detection, and atomic saving
 │     │     ├─ panels.sh
 │     │     ├─ files_media.sh
 │     │     ├─ files_media/
@@ -144,7 +145,9 @@ toolkit/
 │  ├─ preflight.sh
 │  └─ preflight.ps1
 ├─ tests/
-│  └─ smoke_menu.sh
+│  ├─ smoke_menu.sh                   # Static routing checks and runtime suite entry
+│  ├─ menu_runtime.sh                 # Lazy-loading, rendering, dispatch, and EOF behavior
+│  └─ app_marketplace_runtime.sh      # Port, failure-path, and backup/restore behavior
 ├─ docs/
 │  ├─ DIRECTORY_STRUCTURE.md
 │  ├─ RUN_CHECKLIST.md
@@ -191,7 +194,11 @@ toolkit.sh
 - `data/state/`, `data/backups/`, `data/cache/`, and `logs/` are runtime-generated and ignored.
 - `integrations/index.json` is the source of truth for one-click script definitions.
 - Main-menu entry wrappers lazy-load their business modules on first use; do not restore eager feature sourcing in `core/menu.sh`.
+- Arrays declared by lazily sourced modules must use `declare -gA` when they need to survive the loader's function scope.
+- Main and category menus parse each registry row with Bash `read`; avoid command substitutions for individual fields inside render loops.
 - App-market rendering builds its labels and installed-state lookup once per render; native app implementations load only after an app is selected.
+- Native app port helpers live in `app_marketplace/native/ports.sh`; diagnostics go to stderr so captured stdout remains a single validated port.
+- Shared app workflows handle failed dependencies, unavailable Docker, callbacks, and persistence explicitly rather than relying on `set -e` inside conditional calls.
 - Tracked Bash files use two-space indentation and are checked by `bash -n`, ShellCheck, and read-only shfmt validation through `scripts/lint.sh`.
 - Shell and documentation files use LF line endings on every platform.
 - Main menu numbering is registry-driven and currently reserves:

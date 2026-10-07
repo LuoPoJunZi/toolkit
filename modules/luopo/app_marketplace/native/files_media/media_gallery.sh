@@ -125,7 +125,7 @@ luopo_app_marketplace_immich_menu() {
     "17" \
     "immich图片视频管理器" \
     "immich_server" \
-    "immich" \
+    "" \
     "8085" \
     "高性能自托管照片和视频管理解决方案。" \
     "官网介绍: https://github.com/immich-app/immich" \

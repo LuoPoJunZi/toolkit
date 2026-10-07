@@ -26,40 +26,38 @@ run_action() {
   fi
 }
 
+render_main_menu() {
+  local version title item number label_key group
+  version="$(get_toolkit_version)"
+  title="$(msg title_main_fmt "$version")"
+
+  echo "========================================"
+  color_text 36 "$title"
+  echo
+  echo "========================================"
+  for item in "${MENU_ITEMS[@]}"; do
+    IFS='|' read -r number label_key _ _ _ group <<<"$item"
+    [[ "$group" == "primary" ]] || continue
+    menu_item_message "$number" "$label_key"
+  done
+  echo "----------------------------------------"
+  for item in "${MENU_ITEMS[@]}"; do
+    IFS='|' read -r number label_key _ _ _ group <<<"$item"
+    [[ "$group" == "secondary" ]] || continue
+    menu_item_message "$number" "$label_key"
+  done
+  echo "========================================"
+}
+
 main_menu() {
+  local choice
   require_root
   detect_os >/dev/null
 
   while true; do
     clear
-    local version title
-    version="$(get_toolkit_version)"
-    title="$(msg title_main_fmt "$version")"
-
-    echo "========================================"
-    color_text 36 "$title"
-    echo
-    echo "========================================"
-    local item label_key group
-    for item in "${MENU_ITEMS[@]}"; do
-      group="$(menu_item_group "$item")"
-      if [[ "$group" != "primary" ]]; then
-        continue
-      fi
-      label_key="$(menu_item_label_key "$item")"
-      menu_item "$(menu_item_number "$item")" "$(msg "$label_key")"
-    done
-    echo "----------------------------------------"
-    for item in "${MENU_ITEMS[@]}"; do
-      group="$(menu_item_group "$item")"
-      if [[ "$group" != "secondary" ]]; then
-        continue
-      fi
-      label_key="$(menu_item_label_key "$item")"
-      menu_item "$(menu_item_number "$item")" "$(msg "$label_key")"
-    done
-    echo "========================================"
-    read_menu_choice choice
+    render_main_menu
+    read_menu_choice choice || return 0
     if [[ "$choice" == "00" ]]; then
       choice="99"
     fi

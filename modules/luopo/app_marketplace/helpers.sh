@@ -9,7 +9,8 @@ source "$ROOT_DIR/modules/luopo/ldnmp/helpers.sh"
 
 LUOPO_APP_MARKETPLACE_STATE_FILE="/home/docker/appno.txt"
 
-declare -A LUOPO_APP_MARKETPLACE_LEGACY_IDS=(
+# Modules are sourced inside the lazy loader; cache arrays must outlive it.
+declare -gA LUOPO_APP_MARKETPLACE_LEGACY_IDS=(
   [3]="4"
   [4]="5"
   [5]="7"
@@ -54,8 +55,8 @@ declare -A LUOPO_APP_MARKETPLACE_LEGACY_IDS=(
   [69]="22"
   [71]="66"
 )
-declare -A LUOPO_APP_MARKETPLACE_LABELS=()
-declare -A LUOPO_APP_MARKETPLACE_INSTALLED_IDS=()
+declare -gA LUOPO_APP_MARKETPLACE_LABELS=()
+declare -gA LUOPO_APP_MARKETPLACE_INSTALLED_IDS=()
 LUOPO_APP_MARKETPLACE_RENDER_CACHE_READY=0
 
 luopo_app_marketplace_bootstrap() {

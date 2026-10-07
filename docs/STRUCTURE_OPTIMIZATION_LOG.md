@@ -571,3 +571,45 @@ Result:
 Remaining after round:
 - Run the same timing checks on a Linux VPS, where process startup and filesystem behavior differ from Git Bash on Windows.
 - Run live install/update/uninstall checks for representative app-market entries.
+
+### 2026-10-07 - Round 27
+Completed:
+- Reviewed upstream `kejilion.sh` 4.5.11 at commit `6beba29450a31525fd38d02a36487841934febf3`, focusing on menus and application state/validation.
+- Fixed an app-market lazy-loading regression: associative arrays declared inside the module loader now explicitly use global scope and retain legacy ID mappings after the loader returns.
+- Extracted `render_main_menu` from the interactive loop and removed repeated field-extraction command substitutions from main-menu rendering and dispatch.
+- Applied direct registry-row parsing to Tools, WARP, Network test, and Workspace menus while preserving their labels, ordering, categories, and alignment.
+- Removed a nested translation-formatting subshell and reused the shared UI renderer for submenu rows.
+- Added `tests/menu_runtime.sh` for real lazy loading, bilingual rows, dispatch/pause behavior, app marker migration/cache invalidation, and EOF handling. Every behavioral assertion has an explicit failure path.
+- Main-menu and affected submenu loops now return cleanly when input ends.
+- Fixed both quality-check entrypoints to invoke `bash -n` once per file: passing multiple script paths to one invocation only checks the first script. Updated the Windows fallback command accordingly.
+
+Result:
+- On the same Windows Git Bash benchmark, median main-menu startup plus one render improved from `3849 ms` to `549 ms` (about 86% less time).
+- Median network-test menu startup plus one render improved from `3916 ms` to `500 ms` (about 87% less time).
+- The benchmark measures rendering, whereas Round 26's main-menu measurement only loaded the menu module; their numbers should not be compared directly.
+
+Remaining after round:
+- Measure representative menu timings and run live operations on a Linux VPS.
+- Review application marker identity/migration and atomic persistence before changing the state-file format.
+
+### 2026-10-07 - Round 28
+Completed:
+- Reproduced a shared app-install bug where port-conflict diagnostics on stdout became part of the captured Docker port argument.
+- Extracted `native/ports.sh` for integer/range validation, normalized ports, cancellation/EOF, exact socket checks with ss/netstat, saved-port fallback, and atomic port-file replacement.
+- Changed individual container status checks from a full container list plus grep to exact Docker container inspection.
+- Added explicit dependency and Docker-daemon checks. Shared app menus stop on failed install/update/uninstall callbacks or persistence instead of recording success or continuing post-install hooks.
+- Shared single-container installation now pulls the target image before invoking an installer that may remove an existing container. Eight Compose wrappers pass an empty single-image argument and retain their own `docker compose pull` workflows.
+- Application marker helpers explicitly return write failures and invalidate the render cache before mutations; the numeric state-file format is unchanged.
+- Backups use unique temporary files and publish complete archives only after tar succeeds. Restore validates an archive first, reports extraction failures honestly, accepts Y/y, and cancels on EOF.
+- Added `tests/app_marketplace_runtime.sh` with isolated socket/Docker failure doubles, both shared app-menu variants, atomic-save failure coverage, and real tar backup/restore round-trips in temporary directories.
+- Updated native-loader routing checks, directory documentation, both README files, and the live VPS checklist.
+
+Result:
+- Full tracked Bash files plus new modules/tests pass ShellCheck at `info` severity and shfmt validation.
+- Windows preflight passes syntax, strict lint, version synchronization, menu runtime checks, app-market runtime checks, and routing smoke checks.
+- Tests cover shared single-container, Compose, and no-port action menus, failed writes/downloads/callbacks, real temporary-directory backup/restore, and rejection of corrupt archives.
+
+Remaining after round:
+- Run live Linux socket checks and representative app installs/updates/uninstalls on a disposable VPS.
+- Review numeric current/legacy app-ID collisions and migrate marker identity with a separately tested compatibility strategy.
+- Audit application-specific callbacks that intentionally suppress Docker errors; shared menus can only detect errors those callbacks propagate.

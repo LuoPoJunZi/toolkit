@@ -15,7 +15,7 @@ get_toolkit_version() {
 render_banner() {
   local version
   version="$(get_toolkit_version)"
-  printf '%s\n' "$(msg banner_title_fmt "$version")"
+  msg banner_title_fmt "$version"
   msg banner_quick_start
 }
 
@@ -46,7 +46,8 @@ msg() {
   fi
   # Translation values are trusted printf templates with positional placeholders.
   # shellcheck disable=SC2059
-  printf '%s\n' "$(printf "$value" "$@")"
+  printf "$value" "$@"
+  printf '\n'
 }
 
 press_enter() {
@@ -57,7 +58,7 @@ read_menu_choice() {
   local __var_name="$1"
   local __prompt="${2:-$(msg prompt_select)}"
   local __input
-  read -r -p "$__prompt" __input
+  read -r -p "$__prompt" __input || return 1
   printf -v "$__var_name" '%s' "$__input"
 }
 
@@ -79,4 +80,11 @@ menu_item() {
   shift
   local text="$*"
   printf " %-3s %s\n" "${number}." "$text"
+}
+
+menu_item_message() {
+  local number="$1"
+  shift
+  printf ' %-3s ' "${number}."
+  msg "$@"
 }

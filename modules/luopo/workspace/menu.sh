@@ -11,7 +11,7 @@ source "$LUOPO_WORKSPACE_DIR/registry.sh"
 source "$LUOPO_WORKSPACE_DIR/actions.sh"
 
 luopo_render_workspace_menu() {
-  local section section_key section_title item
+  local section section_key section_title item number label group
   echo "========================================"
   echo "后台工作区"
   echo "========================================"
@@ -26,10 +26,9 @@ luopo_render_workspace_menu() {
     IFS='|' read -r section_key section_title <<<"$section"
     echo "[ ${section_title} ]"
     for item in "${LUOPO_WORKSPACE_ITEMS[@]}"; do
-      if [[ "$(luopo_workspace_item_group "$item")" != "$section_key" ]]; then
-        continue
-      fi
-      printf " %-3s %s\n" "$(luopo_workspace_item_number "$item")." "$(luopo_workspace_item_label "$item")"
+      IFS='|' read -r number label _ group <<<"$item"
+      [[ "$group" == "$section_key" ]] || continue
+      menu_item "$number" "$label"
     done
     echo "----------------------------------------"
   done
@@ -51,7 +50,7 @@ luopo_dispatch_workspace_action() {
     return 0
   fi
 
-  handler="$(luopo_workspace_item_handler "$item")"
+  IFS='|' read -r _ _ handler _ <<<"$item"
   "$handler"
 }
 
@@ -62,7 +61,7 @@ luopo_workspace_menu() {
     clear
     send_stats "后台工作区"
     luopo_render_workspace_menu
-    read -r -p "请输入你的选择: " sub_choice
+    read -r -p "请输入你的选择: " sub_choice || return 0
 
     if ! luopo_dispatch_workspace_action "$sub_choice"; then
       return 0

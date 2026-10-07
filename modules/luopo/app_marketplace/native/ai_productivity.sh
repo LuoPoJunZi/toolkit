@@ -460,7 +460,7 @@ luopo_app_marketplace_dify_menu() {
     "41" \
     "Dify大模型知识库" \
     "docker-nginx-1" \
-    "dify" \
+    "" \
     "8058" \
     "开源 LLM 应用开发平台，支持知识库、工作流与 Agent。" \
     "官网介绍: https://github.com/langgenius/dify" \
@@ -501,7 +501,7 @@ luopo_app_marketplace_newapi_menu() {
     "42" \
     "NewAPI大模型资产管理" \
     "new-api" \
-    "calciumion/new-api" \
+    "" \
     "8059" \
     "OpenAI API 分发与额度管理面板。" \
     "官网介绍: https://github.com/Calcium-Ion/new-api" \

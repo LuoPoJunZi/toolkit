@@ -11,7 +11,7 @@ source "$LUOPO_WARP_DIR/registry.sh"
 source "$LUOPO_WARP_DIR/actions.sh"
 
 luopo_render_warp_menu() {
-  local section section_key section_title item
+  local section section_key section_title item number label group
   echo "========================================"
   echo "WARP管理"
   echo "========================================"
@@ -19,10 +19,9 @@ luopo_render_warp_menu() {
     IFS='|' read -r section_key section_title <<<"$section"
     echo "[ ${section_title} ]"
     for item in "${LUOPO_WARP_ITEMS[@]}"; do
-      if [[ "$(luopo_warp_item_group "$item")" != "$section_key" ]]; then
-        continue
-      fi
-      printf " %-3s %s\n" "$(luopo_warp_item_number "$item")." "$(luopo_warp_item_label "$item")"
+      IFS='|' read -r number label _ group <<<"$item"
+      [[ "$group" == "$section_key" ]] || continue
+      menu_item "$number" "$label"
     done
     echo "----------------------------------------"
   done
@@ -36,7 +35,7 @@ luopo_warp_management_menu() {
   while true; do
     clear
     luopo_render_warp_menu
-    read -r -p "请输入你的选择: " sub_choice
+    read -r -p "请输入你的选择: " sub_choice || return 0
     if ! luopo_warp_dispatch_choice "$sub_choice"; then
       return 0
     fi

@@ -5,96 +5,37 @@ set -euo pipefail
 
 luopo_app_marketplace_native_app_state() {
   local container_name="$1"
-  if docker ps -a --format '{{.Names}}' 2>/dev/null | grep -qx "$container_name"; then
+  if docker inspect --type container "$container_name" >/dev/null 2>&1; then
     printf '%s\n' "已安装"
   else
     printf '%s\n' "未安装"
   fi
 }
 
-luopo_app_marketplace_native_app_port_file() {
-  local container_name="$1"
-  printf '/home/docker/%s_port.conf\n' "$container_name"
-}
-
-luopo_app_marketplace_native_app_saved_port() {
-  local container_name="$1"
-  local port_file
-  port_file="$(luopo_app_marketplace_native_app_port_file "$container_name")"
-  if [[ -f "$port_file" ]]; then
-    cat "$port_file"
-  fi
-}
-
-luopo_app_marketplace_native_app_detect_port() {
-  local container_name="$1"
-  docker port "$container_name" 2>/dev/null | head -n1 | awk -F'[:]' '/->/ {print $NF; exit}'
-}
-
-luopo_app_marketplace_native_app_effective_port() {
-  local container_name="$1"
-  local saved_port detected_port
-  saved_port="$(luopo_app_marketplace_native_app_saved_port "$container_name" || true)"
-  if [[ -n "$saved_port" ]]; then
-    printf '%s\n' "$saved_port"
-    return 0
-  fi
-
-  detected_port="$(luopo_app_marketplace_native_app_detect_port "$container_name" || true)"
-  if [[ -n "$detected_port" ]]; then
-    printf '%s\n' "$detected_port"
-    return 0
-  fi
-
-  return 1
-}
-
-luopo_app_marketplace_native_app_store_port() {
-  local container_name="$1"
-  local port="$2"
-  mkdir -p /home/docker
-  printf '%s\n' "$port" >"$(luopo_app_marketplace_native_app_port_file "$container_name")"
-}
-
 luopo_app_marketplace_native_add_app_id() {
   local app_id="$1"
   local legacy_app_id
-  mkdir -p "$(dirname "$LUOPO_APP_MARKETPLACE_STATE_FILE")"
-  touch "$LUOPO_APP_MARKETPLACE_STATE_FILE"
+  LUOPO_APP_MARKETPLACE_RENDER_CACHE_READY=0
+  mkdir -p "$(dirname "$LUOPO_APP_MARKETPLACE_STATE_FILE")" || return 1
+  touch "$LUOPO_APP_MARKETPLACE_STATE_FILE" || return 1
   legacy_app_id="${LUOPO_APP_MARKETPLACE_LEGACY_IDS[$app_id]:-}"
   if [[ -n "$legacy_app_id" ]]; then
-    sed -i "/\b${legacy_app_id}\b/d" "$LUOPO_APP_MARKETPLACE_STATE_FILE"
+    sed -i "/^${legacy_app_id}$/d" "$LUOPO_APP_MARKETPLACE_STATE_FILE" || return 1
   fi
-  grep -qxF "$app_id" "$LUOPO_APP_MARKETPLACE_STATE_FILE" || printf '%s\n' "$app_id" >>"$LUOPO_APP_MARKETPLACE_STATE_FILE"
-  LUOPO_APP_MARKETPLACE_RENDER_CACHE_READY=0
+  grep -qxF "$app_id" "$LUOPO_APP_MARKETPLACE_STATE_FILE" || printf '%s\n' "$app_id" >>"$LUOPO_APP_MARKETPLACE_STATE_FILE" || return 1
 }
 
 luopo_app_marketplace_native_remove_app_id() {
   local app_id="$1"
   local legacy_app_id
+  LUOPO_APP_MARKETPLACE_RENDER_CACHE_READY=0
   if [[ -f "$LUOPO_APP_MARKETPLACE_STATE_FILE" ]]; then
-    sed -i "/\b${app_id}\b/d" "$LUOPO_APP_MARKETPLACE_STATE_FILE"
+    sed -i "/^${app_id}$/d" "$LUOPO_APP_MARKETPLACE_STATE_FILE" || return 1
     legacy_app_id="${LUOPO_APP_MARKETPLACE_LEGACY_IDS[$app_id]:-}"
     if [[ -n "$legacy_app_id" ]]; then
-      sed -i "/\b${legacy_app_id}\b/d" "$LUOPO_APP_MARKETPLACE_STATE_FILE"
+      sed -i "/^${legacy_app_id}$/d" "$LUOPO_APP_MARKETPLACE_STATE_FILE" || return 1
     fi
   fi
-  LUOPO_APP_MARKETPLACE_RENDER_CACHE_READY=0
-}
-
-luopo_app_marketplace_native_prompt_port() {
-  local default_port="$1"
-  local selected_port
-  while true; do
-    read -r -p "输入应用对外服务端口，回车默认使用${default_port}端口: " selected_port
-    selected_port="${selected_port:-$default_port}"
-    if ss -tuln | grep -q ":${selected_port} "; then
-      echo -e "${gl_hong}错误: ${gl_bai}端口 ${selected_port} 已被占用，请更换一个端口"
-    else
-      printf '%s\n' "$selected_port"
-      return 0
-    fi
-  done
 }
 
 luopo_app_marketplace_native_show_access() {
@@ -123,9 +64,19 @@ luopo_app_marketplace_native_show_access() {
 }
 
 luopo_app_marketplace_native_install_docker_runtime() {
-  install jq
-  install_docker
-  mkdir -p /home/docker
+  if ! install jq; then
+    echo "应用依赖安装失败，已停止操作。"
+    return 1
+  fi
+  if ! install_docker; then
+    echo "Docker 安装失败，已停止操作。"
+    return 1
+  fi
+  if ! docker info >/dev/null 2>&1; then
+    echo "Docker 服务不可用，请检查服务状态后重试。"
+    return 1
+  fi
+  mkdir -p "${LUOPO_APP_MARKETPLACE_STATE_FILE%/*}" || return 1
 }
 
 luopo_app_marketplace_native_update_container() {
@@ -222,6 +173,7 @@ luopo_app_marketplace_native_docker_app_menu() {
   local app_id="$1"
   local app_name="$2"
   local container_name="$3"
+  # Compose installers pull their own image set and pass an empty image here.
   local image_name="$4"
   local default_port="$5"
   local description="$6"
@@ -254,20 +206,35 @@ luopo_app_marketplace_native_docker_app_menu() {
     echo "------------------------"
     echo "0. 返回上一级选单"
     echo "------------------------"
-    read -r -p "请输入你的选择: " choice
+    read -r -p "请输入你的选择: " choice || return 0
 
     case "$choice" in
       1)
-        app_port="$(luopo_app_marketplace_native_prompt_port "$default_port")"
-        luopo_app_marketplace_native_install_docker_runtime
-        "$install_fn" "$app_port"
-        luopo_app_marketplace_native_app_store_port "$container_name" "$app_port"
-        luopo_app_marketplace_native_add_app_id "$app_id"
+        app_port="$(luopo_app_marketplace_native_prompt_port "$default_port")" || continue
+        if ! luopo_app_marketplace_native_install_docker_runtime; then
+          break_end
+          continue
+        fi
+        if [[ -n "$image_name" ]] && ! docker pull "$image_name"; then
+          echo "${app_name} 镜像下载失败，未执行安装。"
+          break_end
+          continue
+        fi
+        if ! "$install_fn" "$app_port"; then
+          echo "${app_name} 安装失败，请检查上方错误信息。"
+          break_end
+          continue
+        fi
+        if ! luopo_app_marketplace_native_app_store_port "$container_name" "$app_port" || ! luopo_app_marketplace_native_add_app_id "$app_id"; then
+          echo "${app_name} 已执行安装，但状态保存失败，请检查目录权限。"
+          break_end
+          continue
+        fi
         clear
         echo "${app_name} 已安装完成"
         luopo_app_marketplace_native_show_access "$container_name" "$app_port"
-        if [[ -n "$post_install_fn" ]]; then
-          "$post_install_fn"
+        if [[ -n "$post_install_fn" ]] && ! "$post_install_fn"; then
+          echo "安装后操作失败，请检查上方错误信息。"
         fi
         send_stats "安装${app_name}"
         ;;
@@ -276,26 +243,39 @@ luopo_app_marketplace_native_docker_app_menu() {
         if [[ -z "$app_port" ]]; then
           app_port="$default_port"
         fi
-        luopo_app_marketplace_native_install_docker_runtime
+        if ! luopo_app_marketplace_native_install_docker_runtime; then
+          break_end
+          continue
+        fi
         if ! "$update_fn" "$app_port"; then
           echo "${app_name} 更新失败，原有应用状态已尽量保留。"
           break_end
           continue
         fi
-        luopo_app_marketplace_native_app_store_port "$container_name" "$app_port"
-        luopo_app_marketplace_native_add_app_id "$app_id"
+        if ! luopo_app_marketplace_native_app_store_port "$container_name" "$app_port" || ! luopo_app_marketplace_native_add_app_id "$app_id"; then
+          echo "${app_name} 已执行更新，但状态保存失败，请检查目录权限。"
+          break_end
+          continue
+        fi
         clear
         echo "${app_name} 已更新完成"
         luopo_app_marketplace_native_show_access "$container_name" "$app_port"
-        if [[ -n "$post_install_fn" ]]; then
-          "$post_install_fn"
+        if [[ -n "$post_install_fn" ]] && ! "$post_install_fn"; then
+          echo "更新后操作失败，请检查上方错误信息。"
         fi
         send_stats "更新${app_name}"
         ;;
       3)
-        "$uninstall_fn"
-        rm -f "$(luopo_app_marketplace_native_app_port_file "$container_name")"
-        luopo_app_marketplace_native_remove_app_id "$app_id"
+        if ! "$uninstall_fn"; then
+          echo "${app_name} 卸载失败，保留安装记录。"
+          break_end
+          continue
+        fi
+        if ! rm -f "$(luopo_app_marketplace_native_app_port_file "$container_name")" || ! luopo_app_marketplace_native_remove_app_id "$app_id"; then
+          echo "${app_name} 卸载状态清理失败，请检查目录权限。"
+          break_end
+          continue
+        fi
         send_stats "卸载${app_name}"
         ;;
       5)
@@ -356,28 +336,58 @@ luopo_app_marketplace_native_container_action_menu() {
     echo "------------------------"
     echo "0. 返回上一级选单"
     echo "------------------------"
-    read -r -p "请输入你的选择: " choice
+    read -r -p "请输入你的选择: " choice || return 0
 
     case "$choice" in
       1)
-        luopo_app_marketplace_native_install_docker_runtime
-        "$install_fn"
-        luopo_app_marketplace_native_add_app_id "$app_id"
-        [[ -n "$post_fn" ]] && "$post_fn"
+        if ! luopo_app_marketplace_native_install_docker_runtime; then
+          break_end
+          continue
+        fi
+        if ! "$install_fn"; then
+          echo "${app_name} 安装失败，请检查上方错误信息。"
+          break_end
+          continue
+        fi
+        if ! luopo_app_marketplace_native_add_app_id "$app_id"; then
+          echo "${app_name} 已执行安装，但状态保存失败，请检查目录权限。"
+          break_end
+          continue
+        fi
+        if [[ -n "$post_fn" ]] && ! "$post_fn"; then
+          echo "安装后操作失败，请检查上方错误信息。"
+        fi
         ;;
       2)
-        luopo_app_marketplace_native_install_docker_runtime
+        if ! luopo_app_marketplace_native_install_docker_runtime; then
+          break_end
+          continue
+        fi
         if ! "$update_fn"; then
           echo "${app_name} 更新失败，原有应用状态已尽量保留。"
           break_end
           continue
         fi
-        luopo_app_marketplace_native_add_app_id "$app_id"
-        [[ -n "$post_fn" ]] && "$post_fn"
+        if ! luopo_app_marketplace_native_add_app_id "$app_id"; then
+          echo "${app_name} 已执行更新，但状态保存失败，请检查目录权限。"
+          break_end
+          continue
+        fi
+        if [[ -n "$post_fn" ]] && ! "$post_fn"; then
+          echo "更新后操作失败，请检查上方错误信息。"
+        fi
         ;;
       3)
-        "$uninstall_fn"
-        luopo_app_marketplace_native_remove_app_id "$app_id"
+        if ! "$uninstall_fn"; then
+          echo "${app_name} 卸载失败，保留安装记录。"
+          break_end
+          continue
+        fi
+        if ! luopo_app_marketplace_native_remove_app_id "$app_id"; then
+          echo "${app_name} 卸载状态清理失败，请检查目录权限。"
+          break_end
+          continue
+        fi
         ;;
       0)
         return 0

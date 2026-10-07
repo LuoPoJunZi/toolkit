@@ -82,8 +82,12 @@ Enter choice:
 - Main menu registry: `core/menu_registry.sh`
 - Main menu dispatcher: `core/menu_dispatcher.sh`
 - Feature loading: the main menu loads lightweight entries, then loads feature modules on first use
+- Menu rendering: the main menu, Tools, WARP, Network test, and Workspace parse registry rows directly to reduce subprocess overhead and return cleanly when input ends
 - Active feature modules: `modules/luopo/`
 - App market: the first screen reads local app state once and loads app implementations only after selection
+- App cache: global associative arrays preserve labels, installation state, and legacy ID compatibility after lazy loading
+- App installation: shared workflows validate ports, support cancellation, and report dependency, download, installation, or state-saving failures; port settings use temporary-file replacement
+- App backups: archives become available only after compression succeeds; restore validates the archive first and does not report failed operations as complete
 - Retained but inactive: script hub code at `modules/scripts_hub.sh` and index at `integrations/index.json`
 - Upstream reference backup: `vendor/luopo.sh` may be kept locally, but is not uploaded to GitHub
 

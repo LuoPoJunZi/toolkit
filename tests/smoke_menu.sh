@@ -34,6 +34,7 @@ LUOPO_APP_MARKET_ACTIONS_FILE="$ROOT_DIR/modules/luopo/app_marketplace/actions.s
 LUOPO_APP_MARKET_HELPERS_FILE="$ROOT_DIR/modules/luopo/app_marketplace/helpers.sh"
 LUOPO_APP_MARKET_NATIVE_APPS_FILE="$ROOT_DIR/modules/luopo/app_marketplace/native_apps.sh"
 LUOPO_APP_MARKET_NATIVE_COMMON_FILE="$ROOT_DIR/modules/luopo/app_marketplace/native/common.sh"
+LUOPO_APP_MARKET_NATIVE_PORTS_FILE="$ROOT_DIR/modules/luopo/app_marketplace/native/ports.sh"
 LUOPO_APP_MARKET_NATIVE_PANELS_FILE="$ROOT_DIR/modules/luopo/app_marketplace/native/panels.sh"
 LUOPO_APP_MARKET_NATIVE_FILES_MEDIA_FILE="$ROOT_DIR/modules/luopo/app_marketplace/native/files_media.sh"
 LUOPO_APP_MARKET_NATIVE_FILES_MEDIA_NOTES_FILE="$ROOT_DIR/modules/luopo/app_marketplace/native/files_media/notes_bookmarks.sh"
@@ -48,6 +49,7 @@ LUOPO_APP_MARKET_NATIVE_AI_PRODUCTIVITY_FILE="$ROOT_DIR/modules/luopo/app_market
 LUOPO_APP_MARKET_NATIVE_FILES=(
   "$LUOPO_APP_MARKET_NATIVE_APPS_FILE"
   "$LUOPO_APP_MARKET_NATIVE_COMMON_FILE"
+  "$LUOPO_APP_MARKET_NATIVE_PORTS_FILE"
   "$LUOPO_APP_MARKET_NATIVE_PANELS_FILE"
   "$LUOPO_APP_MARKET_NATIVE_FILES_MEDIA_FILE"
   "$LUOPO_APP_MARKET_NATIVE_FILES_MEDIA_NOTES_FILE"
@@ -343,60 +345,6 @@ assert_docker_confirmation_case_handling() {
   done
 }
 
-assert_lazy_entry_loading() {
-  if ! (
-    # shellcheck disable=SC1090
-    source "$MENU_FILE"
-
-    declare -F entry_system_info >/dev/null
-    declare -F entry_docker_management >/dev/null
-    ! declare -F show_system_info >/dev/null
-    ! declare -F docker_manager >/dev/null
-
-    entry_load_module "$ROOT_DIR/modules/system_info.sh" show_system_info
-    declare -F show_system_info >/dev/null
-    entry_load_module "$ROOT_DIR/modules/system_info.sh" show_system_info
-  ); then
-    fail "main-menu entries should load feature modules only when selected"
-  fi
-}
-
-assert_app_marketplace_lazy_loading_and_cache() {
-  local state_file
-  state_file="$(mktemp)"
-  printf '%s\n' 60 ignored >"$state_file"
-
-  if ! (
-    # shellcheck disable=SC1090
-    source "$LUOPO_APP_MARKET_MENU_FILE"
-    LUOPO_APP_MARKETPLACE_STATE_FILE="$state_file"
-
-    ! declare -F luopo_app_marketplace_native_docker_app_menu >/dev/null
-    if luopo_app_marketplace_dispatch_choice 0; then
-      exit 1
-    fi
-    ! declare -F luopo_app_marketplace_native_docker_app_menu >/dev/null
-    luopo_app_marketplace_refresh_render_cache
-    luopo_app_marketplace_is_installed 10
-    ! luopo_app_marketplace_is_installed 11
-    [[ "${LUOPO_APP_MARKETPLACE_LABELS[10]:-}" == "Beszel服务器监控" ]]
-
-    luopo_app_marketplace_load_native_apps
-    declare -F luopo_app_marketplace_native_docker_app_menu >/dev/null
-    luopo_app_marketplace_native_add_app_id 10
-    [[ "$LUOPO_APP_MARKETPLACE_RENDER_CACHE_READY" == "0" ]]
-    grep -qxF 10 "$state_file"
-    ! grep -qxF 60 "$state_file"
-    luopo_app_marketplace_native_remove_app_id 10
-    ! grep -qxF 10 "$state_file"
-  ); then
-    rm -f "$state_file"
-    fail "app market should cache menu state and defer native apps until selected"
-  fi
-
-  rm -f "$state_file"
-}
-
 # The assertions below intentionally use single-quoted source text literally.
 # shellcheck disable=SC2016
 main() {
@@ -431,6 +379,7 @@ main() {
   assert_file "$LUOPO_APP_MARKET_HELPERS_FILE"
   assert_file "$LUOPO_APP_MARKET_NATIVE_APPS_FILE"
   assert_file "$LUOPO_APP_MARKET_NATIVE_COMMON_FILE"
+  assert_file "$LUOPO_APP_MARKET_NATIVE_PORTS_FILE"
   assert_file "$LUOPO_APP_MARKET_NATIVE_PANELS_FILE"
   assert_file "$LUOPO_APP_MARKET_NATIVE_FILES_MEDIA_FILE"
   assert_file "$LUOPO_APP_MARKET_NATIVE_FILES_MEDIA_NOTES_FILE"
@@ -506,11 +455,13 @@ main() {
   assert_contains_fixed "$EDITORCONFIG_FILE" 'indent_size = 2' "EditorConfig should enforce two-space indentation"
   assert_contains_fixed "$GITATTRIBUTES_FILE" '*.sh text eol=lf' "Bash files should use LF line endings"
   assert_contains_fixed "$SHELLCHECK_CONFIG_FILE" 'severity=info' "ShellCheck should include informational findings"
-  assert_contains_fixed "$LINT_FILE" 'bash -n "${shell_files[@]}"' "lint should syntax-check every tracked Bash file"
+  assert_contains_fixed "$LINT_FILE" 'for file in "${shell_files[@]}"; do' "lint should iterate over every tracked Bash file"
+  assert_contains_fixed "$LINT_FILE" 'bash -n "$file"' "lint should syntax-check each Bash file separately"
   assert_contains_fixed "$LINT_FILE" 'shellcheck "${shell_files[@]}"' "lint should enforce ShellCheck findings"
   assert_contains_fixed "$LINT_FILE" 'shfmt -d -i 2 -ci -bn "${shell_files[@]}"' "lint should verify formatting without rewriting files"
   assert_not_contains_fixed "$LINT_FILE" 'shellcheck "${shell_files[@]}" || true' "lint must not swallow ShellCheck failures"
-  assert_contains_fixed "$PREFLIGHT_SH_FILE" 'bash -n "${shell_files[@]}"' "Bash preflight should syntax-check every tracked shell file"
+  assert_contains_fixed "$PREFLIGHT_SH_FILE" 'for file in "${shell_files[@]}"; do' "Bash preflight should iterate over every tracked shell file"
+  assert_contains_fixed "$PREFLIGHT_SH_FILE" 'bash -n "$file"' "Bash preflight should syntax-check each shell file separately"
   assert_contains_fixed "$PREFLIGHT_SH_FILE" 'bash scripts/lint.sh' "Bash preflight should run strict lint when tools are available"
   assert_contains_fixed "$PREFLIGHT_SH_FILE" 'bash scripts/check-version-sync.sh' "Bash preflight should validate version metadata"
   assert_contains_fixed "$AUTO_RELEASE_FILE" 'TZ=Asia/Shanghai' "auto release should use the maintainer timezone"
@@ -600,7 +551,6 @@ main() {
   assert_not_contains_fixed "$ENTRIES_LOAD_FILE" 'entry_scripts_hub.sh' "entries loader should not activate the retained script hub"
   assert_contains_regex "$ENTRIES_LOAD_FILE" '^entry_load_module\(\) \{' "entries loader should define the shared lazy loader"
   assert_contains_regex "$ENTRIES_LOAD_FILE" '^entry_run_module\(\) \{' "entries loader should define the shared lazy runner"
-  assert_lazy_entry_loading
 
   assert_contains_fixed "$ROOT_DIR/modules/entry_system_info.sh" 'entry_run_module "$ROOT_DIR/modules/system_info.sh" show_system_info' "system information entry should lazy-load its module"
   assert_contains_fixed "$ROOT_DIR/modules/entry_system_update.sh" 'entry_run_module "$ROOT_DIR/modules/system_update.sh" system_update' "system update entry should lazy-load its module"
@@ -799,11 +749,11 @@ main() {
   assert_contains_regex "$LUOPO_APP_MARKET_HELPERS_FILE" '^luopo_app_marketplace_refresh_render_cache\(\) \{' "app market should cache labels and installed state per render"
   assert_contains_fixed "$LUOPO_APP_MARKET_HELPERS_FILE" 'LUOPO_APP_MARKETPLACE_STATE_FILE="/home/docker/appno.txt"' "app market should use one canonical local state path"
   assert_contains_regex "$LUOPO_APP_MARKET_ACTIONS_FILE" '^luopo_app_marketplace_load_native_apps\(\) \{' "app market should define a lazy native-app loader"
-  assert_app_marketplace_lazy_loading_and_cache
   assert_contains_fixed "$LUOPO_APP_MARKET_HELPERS_FILE" 'source "$ROOT_DIR/modules/luopo/ldnmp/helpers.sh"' "app market helpers should source native ldnmp helpers"
   assert_not_contains_fixed "$LUOPO_APP_MARKET_HELPERS_FILE" 'legacy_bridge.sh' "app market helpers should not source legacy bridge"
   assert_native_contains_fixed 'luopo_ldnmp_proxy_site "${yuming}" 127.0.0.1 "${app_port}"' "app market should use native ldnmp proxy helper"
   assert_contains_regex "$LUOPO_APP_MARKET_NATIVE_COMMON_FILE" '^luopo_app_marketplace_native_update_container\(\) \{' "app updates should pull images before recreating containers"
+  assert_contains_fixed "$LUOPO_APP_MARKET_NATIVE_APPS_FILE" 'source "$LUOPO_APP_MARKETPLACE_NATIVE_MODULE_DIR/ports.sh"' "native app loader should load shared port helpers"
   assert_contains_fixed "$LUOPO_APP_MARKET_NATIVE_COMMON_FILE" 'docker pull "$image_name" || return 1' "a failed image pull must stop the container update"
   assert_contains_fixed "$LUOPO_APP_MARKET_NATIVE_COMMON_FILE" 'if ! "$update_fn" "$app_port"; then' "failed app updates must not be reported as successful"
   assert_contains_fixed "$LUOPO_APP_MARKET_NATIVE_PANELS_FILE" 'portainer/portainer-ce:lts' "Portainer should use the maintained CE LTS image"
@@ -1094,6 +1044,8 @@ main() {
     fail "confirmation prompts should consistently display (Y/N)"
   fi
 
+  bash "$ROOT_DIR/tests/menu_runtime.sh"
+  bash "$ROOT_DIR/tests/app_marketplace_runtime.sh"
   echo "[PASS] menu routing smoke checks passed"
 }
 

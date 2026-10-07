@@ -72,7 +72,7 @@ luopo_app_marketplace_gitea_menu() {
     "71" \
     "gitea私有代码仓库" \
     "gitea" \
-    "gitea" \
+    "" \
     "8091" \
     "轻量私有代码托管平台，提供接近 GitHub 的使用体验。" \
     "官网介绍: https://github.com/go-gitea/gitea" \
@@ -112,7 +112,7 @@ luopo_app_marketplace_paperless_menu() {
     "16" \
     "paperless文档管理平台" \
     "paperless-webserver-1" \
-    "paperless" \
+    "" \
     "8095" \
     "开源电子文档管理系统，适合纸质文件数字化与归档。" \
     "官网介绍: https://docs.paperless-ngx.com/" \
@@ -154,7 +154,7 @@ luopo_app_marketplace_umami_menu() {
     "63" \
     "Umami网站统计工具" \
     "umami-umami-1" \
-    "umami" \
+    "" \
     "8103" \
     "开源、轻量、隐私友好的网站分析工具。" \
     "官网介绍: https://github.com/umami-software/umami" \

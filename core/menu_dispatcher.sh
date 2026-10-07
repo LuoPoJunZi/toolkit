@@ -11,9 +11,7 @@ dispatch_menu_action() {
     return 0
   fi
 
-  action_name="$(menu_item_action_name "$item")"
-  handler="$(menu_item_handler "$item")"
-  pause_mode="$(menu_item_pause_mode "$item")"
+  IFS='|' read -r _ _ handler action_name pause_mode _ <<<"$item"
 
   if [[ "$handler" == "entry_exit" ]]; then
     entry_exit
